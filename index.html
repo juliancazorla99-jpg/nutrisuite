@@ -565,11 +565,13 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
     <h3>Nuevo turno</h3>
     <div class="msg" id="turnoMsg"></div>
     <div class="field"><label>Paciente *</label><select id="tPac"></select></div>
+    <div class="field"><label>Tipo de consulta</label><select id="tServicio" onchange="onTurnoServChange()"><option value="">Sin especificar (presencial)</option></select></div>
     <div class="form-grid">
       <div class="field"><label>Fecha *</label><input type="date" id="tFecha"></div>
       <div class="field"><label>Hora</label><input type="time" id="tHora"></div>
     </div>
     <div class="field"><label>Nota</label><input type="text" id="tNota" placeholder="Ej: Control mensual"></div>
+    <div id="tVirtualHint" style="display:none;background:#EDE7F6;color:#6B3FA0;padding:10px 13px;border-radius:11px;font-size:13px;margin-bottom:4px">💻 Al guardar, se va a crear la videollamada de Google Meet automáticamente.</div>
     <div class="form-actions">
       <button class="btn p" onclick="saveTurno()">Guardar turno</button>
       <button class="btn g" onclick="closeModal('turnoModal')">Cancelar</button>
@@ -666,7 +668,10 @@ function goView(v){
 
 /* ===== CARGA ===== */
 async function loadAll(){
-  await Promise.all([loadPatients(),loadTurnos()]);
+  await Promise.all([loadPatients(),loadTurnos(),loadServiciosSilent()]);
+}
+async function loadServiciosSilent(){
+  try{const{data}=await sb.from("servicios").select("*").order("creado",{ascending:false});servicios=data||[];}catch(e){}
 }
 async function loadPatients(){
   $("pLoading").classList.remove("hidden");$("pEmpty").classList.add("hidden");
@@ -860,7 +865,8 @@ function renderTurnos(){
   function fila(t){const[y,m,d]=t.fecha.split("-");
     return`<div class="turno-item">
       <div class="turno-fecha">${d}/${m}</div>
-      <div class="turno-info"><b>${esc(nombreDe(t.paciente_id))}</b><span>${t.hora?"🕐 "+t.hora:""}${t.nota?" · "+esc(t.nota):""}</span></div>
+      <div class="turno-info"><b>${esc(nombreDe(t.paciente_id))}</b><span>${t.hora?"🕐 "+t.hora:""}${t.modalidad==="virtual"?" · 💻 Virtual":""}${t.nota?" · "+esc(t.nota):""}</span></div>
+      ${t.meet_link?`<a href="${esc(t.meet_link)}" target="_blank" class="btn p sm" style="text-decoration:none">📹 Entrar</a>`:""}
       <button class="mini-btn" onclick="delTurno('${t.id}')">🗑</button>
     </div>`;}
   let html="";
@@ -872,19 +878,52 @@ function openTurnoModal(){
   if(!pacientes.length){alert("Primero cargá al menos un paciente.");return;}
   clearMsg($("turnoMsg"));
   $("tPac").innerHTML=pacientes.map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join("");
+  // cargar servicios en el selector
+  $("tServicio").innerHTML=`<option value="">Sin especificar (presencial)</option>`+
+    (servicios||[]).map(s=>`<option value="${s.id}" data-mod="${s.modalidad}">${esc(s.nombre)} (${s.modalidad})</option>`).join("");
   $("tFecha").value=todayISO();$("tHora").value="";$("tNota").value="";
+  $("tVirtualHint").style.display="none";
   $("turnoModal").classList.add("open");
+}
+function onTurnoServChange(){
+  const sel=$("tServicio").selectedOptions[0];
+  const mod=sel?sel.getAttribute("data-mod"):"";
+  $("tVirtualHint").style.display=mod==="virtual"?"block":"none";
 }
 async function saveTurno(){
   const fecha=$("tFecha").value,pid=$("tPac").value;
   if(!fecha||!pid){showMsg($("turnoMsg"),"Elegí paciente y fecha","err");return;}
-  const t={nutri_id:me.id,paciente_id:pid,fecha,hora:$("tHora").value||null,nota:$("tNota").value.trim()||null};
+  const servId=$("tServicio").value||null;
+  const serv=servId?servicios.find(s=>s.id===servId):null;
+  const esVirtual=serv&&serv.modalidad==="virtual";
+  const t={nutri_id:me.id,paciente_id:pid,fecha,hora:$("tHora").value||null,
+    nota:$("tNota").value.trim()||(serv?serv.nombre:null),
+    servicio_id:servId,modalidad:serv?serv.modalidad:"presencial"};
+  const btn=document.querySelector("#turnoModal .btn.p");
   try{
-    const{error}=await sb.from("turnos").insert(t);
+    if(esVirtual){btn.disabled=true;btn.textContent="Creando videollamada…";}
+    const{data:nuevo,error}=await sb.from("turnos").insert(t).select().single();
     if(error)throw error;
+    // si es virtual, generar el Meet
+    if(esVirtual){
+      const{data:{session}}=await sb.auth.getSession();
+      const resp=await fetch(`${SUPABASE_URL}/functions/v1/crear-meet`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+        body:JSON.stringify({turno_id:nuevo.id})
+      });
+      const data=await resp.json();
+      if(data.error){
+        showMsg($("turnoMsg"),"Turno creado, pero la videollamada falló: "+data.error+". ¿Conectaste Google Calendar?","err");
+        btn.disabled=false;btn.textContent="Guardar turno";
+        await loadTurnos();renderTurnos();
+        return;
+      }
+    }
     closeModal("turnoModal");
+    btn.disabled=false;btn.textContent="Guardar turno";
     await loadTurnos();renderTurnos();
-  }catch(e){showMsg($("turnoMsg"),"Error: "+e.message,"err");}
+  }catch(e){showMsg($("turnoMsg"),"Error: "+e.message,"err");btn.disabled=false;btn.textContent="Guardar turno";}
 }
 async function delTurno(id){
   if(!confirm("¿Eliminar este turno?"))return;
@@ -982,7 +1021,7 @@ function renderPatientPortal(p,regs,tur){
   const fut=tur.filter(t=>t.fecha>=hoy);
   if(fut.length){
     $("ptTurnos").innerHTML=fut.map(t=>{const[y,m,d]=t.fecha.split("-");
-      return`<div class="turno-item"><div class="turno-fecha">${d}/${m}</div><div class="turno-info"><b>Consulta</b><span>${t.hora?"🕐 "+t.hora:""}${t.nota?" · "+esc(t.nota):""}</span></div></div>`;}).join("");
+      return`<div class="turno-item"><div class="turno-fecha">${d}/${m}</div><div class="turno-info"><b>Consulta${t.modalidad==="virtual"?" virtual":""}</b><span>${t.hora?"🕐 "+t.hora:""}${t.nota?" · "+esc(t.nota):""}</span></div>${t.meet_link?`<a href="${esc(t.meet_link)}" target="_blank" class="btn p sm" style="text-decoration:none">📹 Entrar</a>`:""}</div>`;}).join("");
   }else{
     $("ptTurnos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">No tenés turnos próximos agendados.</p>`;
   }
