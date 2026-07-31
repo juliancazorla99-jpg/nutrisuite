@@ -8,17 +8,17 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#EDF1E4;--surface:#FFFFFF;--surface-2:#E8F0DC;--ink:#2E3D26;--ink-soft:#5F6E52;--ink-faint:#93A183;
-  --line:#D9E4C9;--brand:#5B8C2A;--brand-strong:#3D6415;--brand-tint:#E2EDD0;--sky:#8DBF4C;--teal:#A3C76A;
-  --good:#4A7C2E;--good-bg:#DDEEC8;--bad:#C0663A;--bad-bg:#F7E7DC;--gold:#C9A227;
-  --glass:rgba(255,255,255,.55);--glass-strong:rgba(255,255,255,.74);--glass-line:rgba(255,255,255,.9);
-  --glass-shadow:0 10px 36px rgba(80,110,40,.12),0 1px 0 rgba(255,255,255,.85) inset,0 0 0 .5px rgba(255,255,255,.4);
+  --bg:#F2F5EA;--surface:#FFFFFF;--surface-2:#EAF0DC;--ink:#2C4019;--ink-soft:#5C6E48;--ink-faint:#93A177;
+  --line:#DBE6C6;--brand:#3E721D;--brand-strong:#2E5714;--brand-tint:#E4EECF;--sky:#9AB352;--teal:#86B564;
+  --good:#3E721D;--good-bg:#DDEEC8;--bad:#C0663A;--bad-bg:#F7E7DC;--gold:#C9A227;--lima:#9AB352;
+  --glass:rgba(255,255,255,.58);--glass-strong:rgba(255,255,255,.76);--glass-line:rgba(255,255,255,.92);
+  --glass-shadow:0 10px 36px rgba(62,114,29,.12),0 1px 0 rgba(255,255,255,.85) inset,0 0 0 .5px rgba(255,255,255,.4);
   --fd:'Outfit',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;--fscript:'Dancing Script',cursive;
   --sidebar:250px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--fb);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(circle at 12% 8%,rgba(141,191,76,.13),transparent 42%),radial-gradient(circle at 88% 92%,rgba(163,199,106,.12),transparent 45%);
+  background-image:radial-gradient(circle at 12% 8%,rgba(134,181,100,.14),transparent 42%),radial-gradient(circle at 88% 92%,rgba(154,179,82,.12),transparent 45%);
   background-attachment:fixed;}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:16px}
@@ -72,8 +72,10 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .sidebar{width:var(--sidebar);position:fixed;top:0;left:0;bottom:0;z-index:40;
   background:var(--glass-strong);backdrop-filter:blur(28px) saturate(1.7);-webkit-backdrop-filter:blur(28px) saturate(1.7);
   border-right:1px solid var(--glass-line);display:flex;flex-direction:column;padding:20px 14px}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
-.sb-brand .n{font-family:var(--fscript);font-weight:700;font-size:24px;letter-spacing:0;line-height:1;color:var(--brand);display:block}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:4px 4px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.cv-logo{width:100%}
+.cv-logo-svg{width:100%;height:auto;display:block}
+.sb-brand .n{font-family:var(--fscript);font-weight:700;font-size:24px;letter-spacing:0;line-height:1;color:var(--lima);display:block}
 .sb-brand .n em{font-style:normal;color:var(--brand)}
 .sb-brand .sub{font-family:'Playfair Display',serif;font-style:italic;font-size:10px;letter-spacing:.04em;color:var(--ink-soft);display:block;margin-top:3px}
 .sb-brand .sub{font-family:'Playfair Display',serif;font-style:italic;font-size:9.5px;letter-spacing:.06em;color:var(--ink-soft);display:block;margin-top:2px}
@@ -248,17 +250,21 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
 <div id="authView">
   <div class="auth-card">
     <div class="brand">
-      <svg width="46" height="46" viewBox="0 0 44 44" aria-hidden="true">
-        <circle cx="22" cy="24" r="15" fill="#F4D03F"/>
-        <circle cx="22" cy="24" r="15" fill="none" stroke="#C9A227" stroke-width="1.5"/>
-        <g stroke="#fff" stroke-width="1.6" opacity=".9"><path d="M22 24 L22 10.5M22 24 L33 18M22 24 L33 30M22 24 L22 37.5M22 24 L11 30M22 24 L11 18"/></g>
-        <circle cx="22" cy="24" r="3.5" fill="#fff" opacity=".85"/>
-        <ellipse cx="16" cy="8" rx="4" ry="2.6" fill="#7CB342" transform="rotate(-30 16 8)"/>
-        <ellipse cx="23" cy="6" rx="3.2" ry="2.1" fill="#8DBF4C" transform="rotate(20 23 6)"/>
+      <svg viewBox="0 0 210 66" style="width:230px;height:auto;display:block;margin:0 auto" aria-hidden="true">
+        <g transform="translate(22,34)">
+          <ellipse cx="0" cy="2" rx="13" ry="11" fill="#F2D13B"/>
+          <ellipse cx="0" cy="2" rx="13" ry="11" fill="none" stroke="#E0BC2E" stroke-width="1"/>
+          <g stroke="#fff" stroke-width="1.1" opacity=".8"><path d="M0 2 L0 -8M0 2 L9 -4M0 2 L9 8M0 2 L0 12M0 2 L-9 8M0 2 L-9 -4"/></g>
+          <circle cx="0" cy="2" r="2.4" fill="#fff" opacity=".7"/>
+          <ellipse cx="-2" cy="-12" rx="4.5" ry="2.4" fill="#8DBF4C" transform="rotate(-38 -2 -12)"/>
+          <ellipse cx="4" cy="-12" rx="4" ry="2.2" fill="#A5CE5F" transform="rotate(28 4 -12)"/>
+          <circle cx="1" cy="-13" r="1.6" fill="#7CB342"/>
+        </g>
+        <text x="120" y="34" text-anchor="middle" font-family="'Dancing Script',cursive" font-weight="700" font-size="32" fill="#9AB352">Candela Viola</text>
+        <text x="120" y="52" text-anchor="middle" font-family="'Playfair Display',serif" font-style="italic" font-size="10.5" fill="#7A8A5E">Lic. en Nutrición</text>
       </svg>
-      <span class="n" id="authBrandName">Candela Viola</span>
     </div>
-    <p class="auth-sub" id="authSub">Lic. en Nutrición · Ingresá a tu cuenta</p>
+    <p class="auth-sub" id="authSub">Ingresá para ver tus pacientes y tu agenda</p>
     <div class="msg" id="authMsg"></div>
     <div class="field" id="nameField" style="display:none">
       <label>Tu nombre</label>
@@ -286,23 +292,30 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
  <div class="app-shell">
   <aside class="sidebar">
     <div class="sb-brand">
-      <span id="brandLogo">
-        <svg width="34" height="34" viewBox="0 0 44 44" aria-hidden="true">
-          <circle cx="22" cy="24" r="15" fill="#F4D03F"/>
-          <circle cx="22" cy="24" r="15" fill="none" stroke="#C9A227" stroke-width="1.5"/>
-          <g stroke="#fff" stroke-width="1.6" opacity=".9"><path d="M22 24 L22 10.5M22 24 L33 18M22 24 L33 30M22 24 L22 37.5M22 24 L11 30M22 24 L11 18"/></g>
-          <circle cx="22" cy="24" r="3.5" fill="#fff" opacity=".85"/>
-          <ellipse cx="16" cy="8" rx="4" ry="2.6" fill="#7CB342" transform="rotate(-30 16 8)"/>
-          <ellipse cx="23" cy="6" rx="3.2" ry="2.1" fill="#8DBF4C" transform="rotate(20 23 6)"/>
+      <div id="brandLogo" class="cv-logo">
+        <svg viewBox="0 0 210 66" class="cv-logo-svg" aria-hidden="true">
+          <!-- limón a la izquierda -->
+          <g transform="translate(22,34)">
+            <ellipse cx="0" cy="2" rx="13" ry="11" fill="#F2D13B"/>
+            <ellipse cx="0" cy="2" rx="13" ry="11" fill="none" stroke="#E0BC2E" stroke-width="1"/>
+            <g stroke="#fff" stroke-width="1.1" opacity=".8"><path d="M0 2 L0 -8M0 2 L9 -4M0 2 L9 8M0 2 L0 12M0 2 L-9 8M0 2 L-9 -4"/></g>
+            <circle cx="0" cy="2" r="2.4" fill="#fff" opacity=".7"/>
+            <ellipse cx="-2" cy="-12" rx="4.5" ry="2.4" fill="#8DBF4C" transform="rotate(-38 -2 -12)"/>
+            <ellipse cx="4" cy="-12" rx="4" ry="2.2" fill="#A5CE5F" transform="rotate(28 4 -12)"/>
+            <circle cx="1" cy="-13" r="1.6" fill="#7CB342"/>
+          </g>
+          <text x="120" y="34" text-anchor="middle" font-family="'Dancing Script',cursive" font-weight="700" font-size="32" fill="#9AB352">Candela Viola</text>
+          <text x="120" y="52" text-anchor="middle" font-family="'Playfair Display',serif" font-style="italic" font-size="10.5" fill="#7A8A5E">Lic. en Nutrición</text>
         </svg>
-      </span>
-      <div><span class="n" id="brandName">Candela Viola</span><span class="sub" id="brandSub">Lic. en Nutrición</span></div>
+      </div>
     </div>
     <div class="sb-sect">Principal</div>
     <button id="nav-pac" class="sb-item on" onclick="goView('pacientes')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 11l2 2 4-4"/></svg><span>Pacientes</span></button>
     <button id="nav-age" class="sb-item" onclick="goView('agenda')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg><span>Agenda</span></button>
+    <button id="nav-bal" class="sb-item" onclick="goView('balance')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>Balance</span></button>
     <div class="sb-sect">Configuración</div>
     <button id="nav-serv" class="sb-item" onclick="goView('servicios')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5 5.5.5-4.2 3.6 1.3 5.4L12 19l-5 2.5 1.3-5.4L4 12.5 9.6 12z"/></svg><span>Servicios</span></button>
@@ -377,6 +390,23 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
       <div id="aLoading" class="loading"><span class="spin"></span> Cargando...</div>
       <div id="aList"></div>
       <div id="aEmpty" class="empty hidden"><div class="big">📅</div><p><b>No hay turnos.</b><br>Tocá «Nuevo turno» para agendar.</p></div>
+    </div>
+
+    <!-- VISTA BALANCE -->
+    <div class="hidden" id="view-balance">
+      <div class="head"><h1>Balance</h1></div>
+      <div id="balLoading" class="loading"><span class="spin"></span> Cargando...</div>
+      <div id="balContent" class="hidden">
+        <div class="stats" id="balKpis"></div>
+        <div class="card">
+          <div class="block-t">📊 Ingresos de los últimos 6 meses</div>
+          <div class="chart-box" id="balChart"></div>
+        </div>
+        <div class="card">
+          <div class="block-t">🧾 Cobros recientes</div>
+          <div id="balList"></div>
+        </div>
+      </div>
     </div>
 
     <!-- VISTA SERVICIOS -->
@@ -750,12 +780,14 @@ sb.auth.onAuthStateChange(async (e,session)=>{
 
 /* ===== NAV ===== */
 function goView(v){
-  ["pacientes","ficha","agenda","servicios"].forEach(x=>$("view-"+x).classList.add("hidden"));
+  ["pacientes","ficha","agenda","servicios","balance"].forEach(x=>$("view-"+x).classList.add("hidden"));
   $("view-"+v).classList.remove("hidden");
   $("nav-pac").classList.toggle("on",v==="pacientes"||v==="ficha");
   $("nav-age").classList.toggle("on",v==="agenda");
+  const nb=$("nav-bal");if(nb)nb.classList.toggle("on",v==="balance");
   const ns=$("nav-serv");if(ns)ns.classList.toggle("on",v==="servicios");
   if(v==="agenda")renderTurnos();
+  if(v==="balance")loadBalance();
   if(v==="servicios"){loadServicios();loadDisponibilidad();checkGoogleStatus();checkMpStatus();}
 }
 
@@ -1606,6 +1638,73 @@ async function renderCobros(){
       </div>`).join("")
     }</div>`;
   }catch(e){box.innerHTML="";}
+}
+
+/* ===== BALANCE ===== */
+async function loadBalance(){
+  $("balLoading").classList.remove("hidden");
+  $("balContent").classList.add("hidden");
+  try{
+    // cobros pagados + consultas con valor
+    const{data:cobros}=await sb.from("cobros").select("*").eq("estado","pagado").order("creado",{ascending:false});
+    const{data:cons}=await sb.from("consultas").select("valor,fecha,paciente_id").not("valor","is",null);
+    $("balLoading").classList.add("hidden");
+    $("balContent").classList.remove("hidden");
+    renderBalance(cobros||[],cons||[]);
+  }catch(e){
+    $("balLoading").classList.add("hidden");
+    $("balContent").classList.remove("hidden");
+    $("balKpis").innerHTML=`<div class="stat"><div class="l">Error</div></div>`;
+  }
+}
+function renderBalance(cobros,cons){
+  const hoy=new Date();
+  const mesActual=hoy.getMonth(),anioActual=hoy.getFullYear();
+  // unificar ingresos: cobros pagados (por creado) + consultas con valor (por fecha)
+  const ingresos=[];
+  cobros.forEach(c=>ingresos.push({monto:Number(c.monto)||0,fecha:new Date(c.pagado_en||c.creado)}));
+  cons.forEach(c=>ingresos.push({monto:Number(c.valor)||0,fecha:new Date(c.fecha+"T00:00:00")}));
+  // KPIs
+  const delMes=ingresos.filter(i=>i.fecha.getMonth()===mesActual&&i.fecha.getFullYear()===anioActual);
+  const totalMes=delMes.reduce((a,i)=>a+i.monto,0);
+  const totalTodo=ingresos.reduce((a,i)=>a+i.monto,0);
+  const cantMes=delMes.length;
+  const prom=cantMes?Math.round(totalMes/cantMes):0;
+  const fmt=(n)=>"$ "+n.toLocaleString('es-AR');
+  $("balKpis").innerHTML=`
+    <div class="stat"><div class="l">Ingresos del mes</div><div class="v" style="font-size:24px">${fmt(totalMes)}</div></div>
+    <div class="stat"><div class="l">Cobros del mes</div><div class="v">${cantMes}</div></div>
+    <div class="stat"><div class="l">Promedio</div><div class="v" style="font-size:22px">${fmt(prom)}</div></div>
+    <div class="stat"><div class="l">Total histórico</div><div class="v" style="font-size:22px">${fmt(totalTodo)}</div></div>`;
+  // gráfico de barras 6 meses
+  const meses=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(anioActual,mesActual-i,1);
+    const m=d.getMonth(),y=d.getFullYear();
+    const suma=ingresos.filter(x=>x.fecha.getMonth()===m&&x.fecha.getFullYear()===y).reduce((a,x)=>a+x.monto,0);
+    meses.push({label:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][m],val:suma});
+  }
+  const max=Math.max(...meses.map(m=>m.val),1);
+  const W=560,H=220,padB=34,padT=20,padL=20,bw=(W-padL*2)/6*0.6,gap=(W-padL*2)/6;
+  let bars="";
+  meses.forEach((m,i)=>{
+    const h=(m.val/max)*(H-padT-padB);
+    const x=padL+i*gap+gap*0.2,y=H-padB-h;
+    bars+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="5" fill="var(--sky)"/>`;
+    if(m.val>0)bars+=`<text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">${(m.val/1000).toFixed(0)}k</text>`;
+    bars+=`<text x="${x+bw/2}" y="${H-14}" text-anchor="middle" font-size="11" fill="var(--ink-faint)">${m.label}</text>`;
+  });
+  $("balChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${bars}</svg>`;
+  // lista de cobros recientes
+  if(cobros.length){
+    $("balList").innerHTML=cobros.slice(0,10).map(c=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)">
+        <div style="flex:1"><b style="font-family:var(--fd);font-size:14px">${esc(c.concepto)}</b><br><span style="font-size:12px;color:var(--ink-soft)">${fmtDate((c.pagado_en||c.creado).slice(0,10))}</span></div>
+        <b style="font-family:var(--fd);color:var(--good)">${fmt(Number(c.monto))}</b>
+      </div>`).join("");
+  }else{
+    $("balList").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Todavía no hay cobros pagados. Cuando cobres consultas, van a aparecer acá.</p>`;
+  }
 }
 
 function closeModal(id){$(id).classList.remove("open");}
