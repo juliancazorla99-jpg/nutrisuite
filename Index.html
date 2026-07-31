@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NutriSuite</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#EEF3F8;--surface:#FFFFFF;--surface-2:#E7EFF7;--ink:#1B2A3A;--ink-soft:#5A6B7D;--ink-faint:#8FA0B2;
+  --line:#DCE6F0;--brand:#1E6FB8;--brand-strong:#164F86;--brand-tint:#DFECF8;--sky:#5AA9E0;--teal:#3BB0C4;
+  --good:#1C8F6B;--good-bg:#DBF3EC;--bad:#C75146;--bad-bg:#F9E8E4;
+  --glass:rgba(255,255,255,.55);--glass-strong:rgba(255,255,255,.72);--glass-line:rgba(255,255,255,.9);
+  --glass-shadow:0 10px 36px rgba(30,80,140,.10),0 1px 0 rgba(255,255,255,.85) inset,0 0 0 .5px rgba(255,255,255,.4);
+  --fd:'Outfit',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;
+  --sidebar:250px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(circle at 12% 8%,rgba(90,169,224,.10),transparent 42%),radial-gradient(circle at 88% 92%,rgba(59,176,196,.09),transparent 45%);
+  background-attachment:fixed;}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:16px}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(90,120,150,.3);border-radius:6px}
+
+/* LOGIN */
+#authView{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:var(--glass-strong);backdrop-filter:blur(30px) saturate(1.6);-webkit-backdrop-filter:blur(30px) saturate(1.6);
+  border:1px solid var(--glass-line);border-radius:26px;padding:38px 32px;width:100%;max-width:410px;box-shadow:var(--glass-shadow)}
+.brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
+.brand .n{font-family:var(--fd);font-weight:800;font-size:27px;letter-spacing:-.02em;color:var(--ink)}
+.brand .n em{font-style:normal;color:var(--brand)}
+.auth-sub{text-align:center;color:var(--ink-soft);font-size:13.5px;margin-bottom:26px;font-family:'Playfair Display',serif;font-style:italic}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:12px 15px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.7);color:var(--ink);transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);background:#fff}
+.field textarea{resize:vertical;min-height:70px}
+.btn{border:none;border-radius:13px;padding:12px 18px;font-weight:600;font-size:15px;transition:transform .12s,filter .15s;font-family:var(--fb)}
+.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn.p{background:linear-gradient(135deg,var(--sky),var(--brand));color:#fff;box-shadow:0 6px 18px rgba(30,111,184,.3)}
+.btn.g{background:rgba(255,255,255,.7);border:1px solid var(--line);color:var(--ink)}
+.btn.d{background:var(--bad-bg);color:var(--bad)}
+.btn.sm{padding:9px 15px;font-size:13px}
+.btn.full{width:100%}
+.auth-toggle{text-align:center;margin-top:18px;font-size:13.5px;color:var(--ink-soft)}
+.auth-toggle a{color:var(--brand);font-weight:600;cursor:pointer;text-decoration:none}
+.msg{padding:11px 14px;border-radius:12px;font-size:13.5px;margin-bottom:14px;display:none}
+.msg.err{background:var(--bad-bg);color:var(--bad);display:block}
+.msg.ok{background:var(--good-bg);color:var(--good);display:block}
+
+/* SIDEBAR APP */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);position:fixed;top:0;left:0;bottom:0;z-index:40;
+  background:var(--glass-strong);backdrop-filter:blur(28px) saturate(1.7);-webkit-backdrop-filter:blur(28px) saturate(1.7);
+  border-right:1px solid var(--glass-line);display:flex;flex-direction:column;padding:20px 14px}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.sb-brand .n{font-family:var(--fd);font-weight:800;font-size:21px;letter-spacing:-.02em;line-height:1}
+.sb-brand .n em{font-style:normal;color:var(--brand)}
+.sb-brand .sub{font-family:'Playfair Display',serif;font-style:italic;font-size:9.5px;letter-spacing:.06em;color:var(--ink-soft);display:block;margin-top:2px}
+.sb-sect{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);padding:0 12px;margin:14px 0 6px}
+.sb-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;font-size:14px;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:background .13s,color .13s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:var(--fb)}
+.sb-item:hover{background:rgba(255,255,255,.6);color:var(--ink)}
+.sb-item.on{background:linear-gradient(135deg,var(--sky),var(--brand));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(30,111,184,.28)}
+.sb-item svg{flex:none}
+.sb-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+.sb-user{display:flex;align-items:center;gap:10px;padding:6px 8px 10px}
+.sb-user .av{width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,var(--sky),var(--brand));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none;font-family:var(--fd)}
+.sb-user .info{min-width:0;flex:1}
+.sb-user .info b{font-family:var(--fd);font-weight:700;font-size:13px;display:block;line-height:1.2}
+.sb-user .info span{font-size:10.5px;color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:150px}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;padding:26px 30px 80px}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.head h1{font-family:var(--fd);font-weight:800;font-size:25px;letter-spacing:-.02em}
+.head .sp{flex:1}
+.card{background:var(--glass);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);
+  border:1px solid var(--glass-line);border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:var(--glass-shadow)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(275px,1fr));gap:14px}
+.pcard{background:var(--glass);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);
+  border:1px solid var(--glass-line);border-radius:18px;padding:16px 18px;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:var(--glass-shadow)}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(30,80,140,.15)}
+.pc-top{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+.av{width:44px;height:44px;border-radius:13px;background:var(--brand-tint);color:var(--brand-strong);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:15px;flex:none}
+.pc-name{font-family:var(--fd);font-weight:700;font-size:15.5px}
+.pc-meta{font-size:12.5px;color:var(--ink-soft)}
+.empty{text-align:center;padding:56px 20px;color:var(--ink-faint)}
+.empty .big{font-size:46px;margin-bottom:10px}
+.search{width:100%;padding:13px 18px;border:1px solid var(--glass-line);border-radius:14px;background:var(--glass);backdrop-filter:blur(12px);margin-bottom:18px;box-shadow:var(--glass-shadow)}
+.search:focus{outline:none;border-color:var(--brand)}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(20,40,60,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:20px;padding:26px;width:100%;max-width:470px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{font-family:var(--fd);font-weight:700;font-size:19px;margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-actions{display:flex;gap:10px;margin-top:16px}
+.loading{text-align:center;padding:44px;color:var(--ink-soft)}
+.spin{display:inline-block;width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ficha */
+.back{background:none;border:none;color:var(--brand);font-weight:600;font-size:14px;margin-bottom:14px;padding:4px 0}
+.pat-hd{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pat-hd-name{flex:1;min-width:140px}
+.pat-hd-actions{display:flex;gap:8px;flex-wrap:wrap}
+.pat-hd .av{width:60px;height:60px;font-size:21px;border-radius:17px}
+.pat-hd h2{font-family:var(--fd);font-weight:800;font-size:23px}
+.pat-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.tag{font-size:12px;background:var(--surface-2);color:var(--ink-soft);padding:4px 11px;border-radius:9px;font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:16px 0}
+.stat{background:var(--glass);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+  border:1px solid var(--glass-line);border-radius:15px;padding:15px 17px;box-shadow:var(--glass-shadow)}
+.stat .l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint)}
+.stat .v{font-family:var(--fd);font-weight:800;font-size:27px;margin-top:3px;letter-spacing:-.02em}
+.stat .v small{font-size:13px;color:var(--ink-soft);font-weight:400}
+.chg{font-size:12px;font-weight:600;margin-top:3px}
+.chg.down{color:var(--good)}.chg.up{color:var(--brand)}
+.block-t{font-family:var(--fd);font-weight:700;font-size:16px;margin:6px 0 12px;display:flex;align-items:center;gap:8px}
+.chart-box{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.hist-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+table.hist{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+table.hist th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-faint);padding:9px 10px;border-bottom:1px solid var(--line)}
+table.hist td{padding:10px;border-bottom:1px solid var(--line)}
+.mini-btn{border:none;background:var(--surface-2);width:30px;height:30px;border-radius:9px;font-size:13px;transition:background .13s}
+.mini-btn:hover{background:var(--bad-bg)}
+.turno-item{display:flex;align-items:center;gap:13px;padding:14px 16px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-line);border-radius:15px;margin-bottom:10px;box-shadow:var(--glass-shadow)}
+.turno-fecha{background:linear-gradient(140deg,var(--sky),var(--brand));color:#fff;border-radius:12px;padding:8px 12px;font-family:var(--fd);font-weight:700;font-size:14px;text-align:center;min-width:62px}
+.turno-info{flex:1}
+.turno-info b{font-size:14.5px;font-family:var(--fd)}
+.turno-info span{font-size:12px;color:var(--ink-soft);display:block;margin-top:1px}
+
+@media(max-width:820px){
+  :root{--sidebar:0px}
+  html,body{overflow-x:hidden;max-width:100vw}
+  .app-shell{display:block}
+  .sidebar{position:sticky;top:0;left:0;right:0;bottom:auto;width:100%;flex-direction:row;flex-wrap:nowrap;align-items:center;padding:9px 12px;border-right:none;border-bottom:1px solid var(--glass-line);gap:4px;overflow-x:auto;max-width:100vw}
+  .main{min-width:0;max-width:100vw;width:100%;overflow-x:hidden;margin-left:0}
+  .card,.pcard,.stat{max-width:100%;overflow:hidden}
+  .chart-box,.hist-scroll,.pg-scroll{overflow-x:auto!important;max-width:100%}
+  .sb-brand{border:none;margin:0;padding:0 6px 0 0;flex:none}
+  .sb-brand .n{font-size:17px}
+  .sb-brand .sub{display:none}
+  .sb-sect{display:none}
+  .sb-item{width:auto;padding:8px 11px;flex:none;font-size:13px}
+  .sb-item span{display:none}
+  .sb-bottom{display:none}
+  .sb-logout-mobile{display:flex!important}
+  .main{margin-left:0;padding:18px 14px 80px}
+  .head h1{font-size:21px}
+  .head .btn{padding:9px 13px;font-size:13.5px}
+  .form-grid{grid-template-columns:1fr}
+  /* ficha: botones que no desborden */
+  .pat-hd{gap:12px}
+  .pat-hd h2{font-size:19px}
+  .pat-hd .av{width:50px;height:50px;font-size:18px}
+  .pat-hd-name{flex:1 1 calc(100% - 62px)}
+  .pat-hd-actions{flex:1 1 100%;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .pat-hd-actions .btn{justify-content:center;font-size:12.5px;padding:10px 8px}
+  .pat-hd-actions .btn.d{grid-column:span 2}
+  /* modales pegados abajo, estilo hoja */
+  .modal-bg{padding:0;align-items:flex-end}
+  .modal{max-width:100%;border-radius:22px 22px 0 0;max-height:92vh;overflow-y:auto;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px))}
+  .modal-wide{max-width:100%}
+  /* stats en 2 columnas */
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat .v{font-size:23px}
+  /* tarjetas de paciente a una columna */
+  .plist{grid-template-columns:1fr}
+  /* portal paciente */
+  #patientView .topbar{padding:12px 16px}
+  /* botones de acción en fila que envuelven bien */
+  .serv-actions,.form-actions{flex-wrap:wrap}
+  .form-actions .btn{flex:1;min-width:120px;justify-content:center}
+  /* búsqueda cómoda */
+  .search{padding:12px 15px}
+}
+@media(max-width:420px){
+  .sb-item{padding:8px 9px}
+  .head{gap:8px}
+  .stats{grid-template-columns:1fr 1fr}
+}
+.modal-wide{max-width:900px}
+.plan-tabs{display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+.plan-tab{border:none;background:none;padding:9px 14px;font:600 13.5px var(--fb);color:var(--ink-soft);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.plan-tab.on{color:var(--brand);border-bottom-color:var(--brand)}
+.pg-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table.pgrid{border-collapse:collapse;width:100%;min-width:720px}
+table.pgrid th,table.pgrid td{border:1px solid var(--line);padding:0;vertical-align:top}
+table.pgrid thead th{background:var(--surface-2);font-family:var(--fd);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);padding:8px 6px;text-align:center}
+table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);font-family:var(--fd);font-weight:700;font-size:12px;padding:8px 10px;white-space:nowrap}
+.pg-cell{width:100%;min-width:92px;border:none;background:none;padding:7px 8px;font:400 12px var(--fb);color:var(--ink);resize:none;outline:none}
+.pg-cell:focus{background:var(--brand-tint)}
+.plan-card2{display:flex;align-items:center;gap:14px}
+.plan-ic{width:46px;height:46px;border-radius:14px;background:var(--brand-tint);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.plan-info{flex:1;min-width:0}
+.plan-info b{font-family:var(--fd);font-weight:700;font-size:15px;display:block}
+.plan-info span{font-size:12.5px;color:var(--ink-soft);display:block;margin-top:2px}
+.arch-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--surface-2);border-radius:12px;margin-bottom:8px}
+.arch-ic{width:38px;height:38px;border-radius:10px;background:var(--brand-tint);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.arch-info{flex:1;min-width:0}
+.arch-info b{font-size:13.5px;font-family:var(--fd);font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arch-info span{font-size:11.5px;color:var(--ink-faint)}
+.serv-card{background:var(--glass);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);border:1px solid var(--glass-line);border-radius:18px;padding:18px 20px;box-shadow:var(--glass-shadow)}
+.serv-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.serv-mod{font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;text-transform:uppercase;letter-spacing:.03em}
+.serv-mod.pres{background:var(--brand-tint);color:var(--brand-strong)}
+.serv-mod.virt{background:#EDE7F6;color:#6B3FA0}
+.serv-card h3{font-family:var(--fd);font-weight:700;font-size:16.5px;margin-bottom:4px}
+.serv-meta{font-size:13px;color:var(--ink-soft);display:flex;gap:14px;margin-top:8px}
+.serv-price{font-family:var(--fd);font-weight:800;font-size:19px;margin-top:10px}
+.serv-actions{display:flex;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
+.disp-row{display:flex;align-items:center;gap:14px;padding:13px 16px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-line);border-radius:14px;margin-bottom:9px;box-shadow:var(--glass-shadow)}
+.disp-dia{background:var(--brand-tint);color:var(--brand-strong);border-radius:10px;padding:7px 13px;font-family:var(--fd);font-weight:700;font-size:13px;min-width:96px;text-align:center}
+.disp-info{flex:1;font-size:14px}
+.disp-info b{font-family:var(--fd)}
+.disp-info span{color:var(--ink-soft);font-size:12.5px;display:block}
+.hueco{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .13s}
+.hueco:hover{border-color:var(--brand)}
+.hueco.sel{background:var(--brand);color:#fff;border-color:var(--brand)}
+.hueco.ocupado{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="authView">
+  <div class="auth-card">
+    <div class="brand">
+      <svg width="36" height="36" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="url(#g)"/><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3E96DB"/><stop offset="100%" stop-color="#1E6FB8"/></linearGradient></defs><path d="M11 23 h5 l2.5 -6 l4 12 l3 -8 l2 2 h5.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="n">Nutri<em>Suite</em></span>
+    </div>
+    <p class="auth-sub" id="authSub">Ingresá a tu cuenta profesional</p>
+    <div class="msg" id="authMsg"></div>
+    <div class="field" id="nameField" style="display:none">
+      <label>Tu nombre</label>
+      <input type="text" id="rName" placeholder="Ej: Lic. Ana García">
+    </div>
+    <div class="field"><label>Email</label><input type="email" id="rEmail" placeholder="tu@email.com" autocomplete="email"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="rPass" placeholder="********" autocomplete="current-password"></div>
+    <button class="btn p full" id="authBtn" onclick="doAuth()">Entrar</button>
+    <div class="auth-toggle" id="authToggle">¿No tenés cuenta? <a onclick="toggleMode()">Registrate</a></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="appView" class="hidden">
+ <div class="app-shell">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <svg width="30" height="30" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="url(#g2)"/><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3E96DB"/><stop offset="100%" stop-color="#1E6FB8"/></linearGradient></defs><path d="M11 23 h5 l2.5 -6 l4 12 l3 -8 l2 2 h5.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span class="n">Nutri<em>Suite</em></span><span class="sub">Seguimiento nutricional</span></div>
+    </div>
+    <div class="sb-sect">Principal</div>
+    <button id="nav-pac" class="sb-item on" onclick="goView('pacientes')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 11l2 2 4-4"/></svg><span>Pacientes</span></button>
+    <button id="nav-age" class="sb-item" onclick="goView('agenda')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg><span>Agenda</span></button>
+    <div class="sb-sect">Configuración</div>
+    <button id="nav-serv" class="sb-item" onclick="goView('servicios')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5 5.5.5-4.2 3.6 1.3 5.4L12 19l-5 2.5 1.3-5.4L4 12.5 9.6 12z"/></svg><span>Servicios</span></button>
+    <button class="sb-item sb-logout-mobile" onclick="logout()" style="display:none;margin-left:auto;color:var(--bad)" title="Cerrar sesión">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+    <div class="sb-bottom">
+      <div class="sb-user">
+        <span class="av" id="sbAv">N</span>
+        <div class="info"><b id="sbName">NutriSuite</b><span id="userEmail"></span></div>
+      </div>
+      <button class="btn g full sm" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- VISTA PACIENTES -->
+    <div id="view-pacientes">
+      <div class="head">
+        <h1>Pacientes</h1><span class="sp"></span>
+        <button class="btn p" onclick="openPatModal()">＋ Nuevo paciente</button>
+      </div>
+      <input class="search" id="searchP" placeholder="Buscar paciente..." oninput="renderPatients()">
+      <div id="pLoading" class="loading"><span class="spin"></span> Cargando...</div>
+      <div id="pList" class="plist"></div>
+      <div id="pEmpty" class="empty hidden"><div class="big">👥</div><p><b>Todavía no tenés pacientes.</b><br>Tocá «Nuevo paciente» para empezar.</p></div>
+    </div>
+
+    <!-- VISTA FICHA -->
+    <div class="hidden" id="view-ficha">
+      <button class="back" onclick="goView('pacientes')">← Volver a pacientes</button>
+      <div class="card">
+        <div class="pat-hd">
+          <div class="av" id="fAv">A</div>
+          <div class="pat-hd-name"><h2 id="fName">—</h2><div class="pat-tags" id="fTags"></div></div>
+          <div class="pat-hd-actions">
+            <button class="btn p sm" onclick="openConsultaModal()">＋ Consulta</button>
+            <button class="btn g sm" onclick="openPlanModal()">🍽 Plan</button>
+            <button class="btn g sm" onclick="openAccesoModal()">🔑 Dar acceso</button>
+            <button class="btn g sm" onclick="editPatient()">✎ Editar</button>
+            <button class="btn d sm" onclick="delPatient()">🗑</button>
+          </div>
+        </div>
+      </div>
+      <div id="fPlanCard"></div>
+      <div class="stats" id="fStats"></div>
+      <div class="card">
+        <div class="block-t">📈 Evolución del peso</div>
+        <div class="chart-box" id="fChart"></div>
+      </div>
+      <div class="card">
+        <div class="block-t">🧾 Historial de consultas</div>
+        <div id="fHist"></div>
+      </div>
+      <div class="card">
+        <div class="block-t">📎 Archivos <span style="flex:1"></span>
+          <button class="btn g sm" onclick="document.getElementById('fileInput').click()" style="margin-left:auto">＋ Subir archivo</button>
+        </div>
+        <input type="file" id="fileInput" style="display:none" onchange="uploadFile(event)" accept=".pdf,.jpg,.jpeg,.png,.webp">
+        <div id="fUploadMsg" class="msg"></div>
+        <div id="fArchivos"></div>
+      </div>
+    </div>
+
+    <!-- VISTA AGENDA -->
+    <div class="hidden" id="view-agenda">
+      <div class="head">
+        <h1>Agenda</h1><span class="sp"></span>
+        <button class="btn p" onclick="openTurnoModal()">＋ Nuevo turno</button>
+      </div>
+      <div id="aLoading" class="loading"><span class="spin"></span> Cargando...</div>
+      <div id="aList"></div>
+      <div id="aEmpty" class="empty hidden"><div class="big">📅</div><p><b>No hay turnos.</b><br>Tocá «Nuevo turno» para agendar.</p></div>
+    </div>
+
+    <!-- VISTA SERVICIOS -->
+    <div class="hidden" id="view-servicios">
+      <div class="head">
+        <h1>Configuración</h1>
+      </div>
+
+      <div class="card" id="googleCard" style="margin-bottom:26px">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="width:46px;height:46px;border-radius:13px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none">
+            <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          </div>
+          <div style="flex:1;min-width:180px">
+            <b style="font-family:var(--fd);font-weight:700;font-size:15.5px;display:block">Google Calendar</b>
+            <span id="googleStatus" style="font-size:13px;color:var(--ink-soft)">Conectá tu calendario para crear videollamadas automáticas en tus turnos virtuales.</span>
+          </div>
+          <button class="btn p" id="googleBtn" onclick="conectarGoogle()">Conectar</button>
+        </div>
+      </div>
+
+      <div class="card" id="mpCard" style="margin-bottom:26px">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="width:46px;height:46px;border-radius:13px;background:#009EE3;display:flex;align-items:center;justify-content:center;flex:none;color:#fff;font-weight:800;font-family:var(--fd);font-size:19px">MP</div>
+          <div style="flex:1;min-width:180px">
+            <b style="font-family:var(--fd);font-weight:700;font-size:15.5px;display:block">Mercado Pago</b>
+            <span id="mpStatus" style="font-size:13px;color:var(--ink-soft)">Conectá tu cuenta para cobrar consultas online. Los pagos van directo a tu cuenta.</span>
+          </div>
+          <button class="btn p" id="mpBtn" onclick="openMpModal()">Conectar</button>
+        </div>
+      </div>
+
+      <div class="head">
+        <h1 style="font-size:21px">Servicios</h1><span class="sp"></span>
+        <button class="btn p" onclick="openServModal()">＋ Nuevo servicio</button>
+      </div>
+      <p style="color:var(--ink-soft);font-size:14px;margin-bottom:18px;max-width:560px">Definí los tipos de consulta que ofrecés. Después los vas a poder usar al agendar turnos y, más adelante, para que los pacientes reserven online.</p>
+      <div id="sLoading" class="loading"><span class="spin"></span> Cargando...</div>
+      <div id="sList" class="plist"></div>
+      <div id="sEmpty" class="empty hidden"><div class="big">🩺</div><p><b>Todavía no cargaste servicios.</b><br>Ej: «Primera consulta», «Control mensual», «Consulta virtual».</p></div>
+
+      <div class="head" style="margin-top:38px">
+        <h1 style="font-size:21px">Disponibilidad</h1><span class="sp"></span>
+        <button class="btn p" onclick="openDispModal()">＋ Agregar horario</button>
+      </div>
+      <p style="color:var(--ink-soft);font-size:14px;margin-bottom:18px;max-width:560px">Definí qué días y en qué horarios atendés. Con esto, tus pacientes van a poder reservar turnos solos en los huecos libres, desde su portal.</p>
+      <div id="dLoading" class="loading"><span class="spin"></span> Cargando...</div>
+      <div id="dList"></div>
+      <div id="dEmpty" class="empty hidden"><div class="big">🕐</div><p><b>Todavía no cargaste tu disponibilidad.</b><br>Ej: Lunes a Viernes de 9 a 17.</p></div>
+    </div>
+  </main>
+ </div>
+</div>
+
+<!-- ===== PORTAL DEL PACIENTE ===== -->
+<div id="patientView" class="hidden">
+  <div class="topbar" style="background:var(--glass-strong);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid var(--glass-line);padding:14px 22px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10">
+    <svg width="26" height="26" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="url(#gp)"/><defs><linearGradient id="gp" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3E96DB"/><stop offset="100%" stop-color="#1E6FB8"/></linearGradient></defs><path d="M11 23 h5 l2.5 -6 l4 12 l3 -8 l2 2 h5.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="font-family:var(--fd);font-weight:800;font-size:19px">Mi seguimiento</span>
+    <span style="flex:1"></span>
+    <button class="btn g sm" onclick="logout()">Salir</button>
+  </div>
+  <div style="max-width:760px;margin:0 auto;padding:24px 18px 60px">
+    <div id="ptLoading" class="loading"><span class="spin"></span> Cargando tu información…</div>
+    <div id="ptContent" class="hidden">
+      <div class="card">
+        <div class="pat-hd">
+          <div class="av" id="ptAv" style="width:56px;height:56px;font-size:20px;border-radius:16px">P</div>
+          <div><h2 id="ptName" style="font-family:var(--fd);font-weight:800;font-size:22px">—</h2>
+          <div class="pat-tags" id="ptTags"></div></div>
+        </div>
+      </div>
+      <div class="stats" id="ptStats"></div>
+      <div id="ptPlan"></div>
+      <div id="ptArchivos"></div>
+      <div class="card">
+        <div class="block-t">📈 Tu evolución</div>
+        <div class="chart-box" id="ptChart"></div>
+      </div>
+      <div class="card">
+        <div class="block-t">📅 Tus próximos turnos <span style="flex:1"></span>
+          <button class="btn p sm" onclick="openReservaModal()" style="margin-left:auto">＋ Reservar turno</button>
+        </div>
+        <div id="ptTurnos"></div>
+      </div>
+    </div>
+    <div id="ptEmpty" class="empty hidden"><div class="big">🌱</div><p><b>Todavía no hay datos cargados.</b><br>Tu profesional los va a ir sumando después de cada consulta.</p></div>
+  </div>
+</div>
+
+<!-- MODAL PACIENTE -->
+<div class="modal-bg" id="patModal">
+  <div class="modal">
+    <h3 id="patModalTitle">Nuevo paciente</h3>
+    <div class="msg" id="patMsg"></div>
+    <div class="field"><label>Nombre *</label><input type="text" id="pNombre" placeholder="Nombre y apellido"></div>
+    <div class="form-grid">
+      <div class="field"><label>Altura (cm)</label><input type="number" id="pAltura" placeholder="165"></div>
+      <div class="field"><label>Nacimiento</label><input type="date" id="pNac"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Sexo</label><select id="pSexo"><option value="">—</option><option value="F">Femenino</option><option value="M">Masculino</option></select></div>
+      <div class="field"><label>Teléfono</label><input type="text" id="pTel" placeholder="11 2345-6789"></div>
+    </div>
+    <div class="field"><label>Objetivo</label><input type="text" id="pObj" placeholder="Ej: Descenso de peso"></div>
+    <div class="field"><label>Notas</label><textarea id="pNotas" placeholder="Antecedentes, alergias, observaciones..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn p" onclick="savePat()">Guardar</button>
+      <button class="btn g" onclick="closeModal('patModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONSULTA -->
+<div class="modal-bg" id="consModal">
+  <div class="modal">
+    <h3>Nueva consulta</h3>
+    <div class="msg" id="consMsg"></div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha *</label><input type="date" id="cFecha"></div>
+      <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="cPeso" placeholder="70.5"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Masa muscular (kg)</label><input type="number" step="0.1" id="cMusc" placeholder="27.0"></div>
+      <div class="field"><label>Grasa corporal (kg)</label><input type="number" step="0.1" id="cGrasa" placeholder="18.0"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>% Grasa</label><input type="number" step="0.1" id="cGrasaPct" placeholder="27.5"></div>
+      <div class="field"><label>Valor cobrado ($)</label><input type="number" id="cValor" placeholder="15000"></div>
+    </div>
+    <div class="field"><label>Nota</label><textarea id="cNota" placeholder="Observaciones de la consulta..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn p" onclick="saveConsulta()">Guardar consulta</button>
+      <button class="btn g" onclick="closeModal('consModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MERCADO PAGO -->
+<div class="modal-bg" id="mpModal">
+  <div class="modal">
+    <h3>Conectar Mercado Pago</h3>
+    <div class="msg" id="mpMsg"></div>
+    <div style="background:var(--surface-2);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--ink-soft);line-height:1.6">
+      <b style="color:var(--ink)">¿Cómo consigo mi token?</b><br>
+      1. Entrá a <b>mercadopago.com.ar/developers</b><br>
+      2. Creá una aplicación (o usá una existente)<br>
+      3. Andá a "Credenciales de prueba"<br>
+      4. Copiá el <b>Access Token</b> (empieza con TEST-)<br>
+      5. Pegalo acá abajo
+    </div>
+    <div class="field"><label>Access Token</label><input type="text" id="mpToken" placeholder="TEST-1234567890..."></div>
+    <div class="hint" style="font-size:12px;color:var(--ink-faint);margin-bottom:8px">🔒 Tu token se guarda encriptado y seguro. Solo se usa para procesar tus cobros.</div>
+    <div class="form-actions">
+      <button class="btn p" id="mpConnBtn" onclick="conectarMp()">Conectar</button>
+      <button class="btn g" onclick="closeModal('mpModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DISPONIBILIDAD -->
+<div class="modal-bg" id="dispModal">
+  <div class="modal">
+    <h3>Agregar horario de atención</h3>
+    <div class="msg" id="dispMsg"></div>
+    <div class="field"><label>Día de la semana</label>
+      <select id="dDia">
+        <option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option>
+        <option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option>
+      </select>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Desde</label><input type="time" id="dDesde" value="09:00"></div>
+      <div class="field"><label>Hasta</label><input type="time" id="dHasta" value="17:00"></div>
+    </div>
+    <div class="field"><label>Duración de cada turno (min)</label><input type="number" id="dDur" value="30"></div>
+    <div class="form-actions">
+      <button class="btn p" onclick="saveDisp()">Guardar</button>
+      <button class="btn g" onclick="closeModal('dispModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SERVICIO -->
+<div class="modal-bg" id="servModal">
+  <div class="modal">
+    <h3 id="servTitle">Nuevo servicio</h3>
+    <div class="msg" id="servMsg"></div>
+    <div class="field"><label>Nombre *</label><input type="text" id="sNombre" placeholder="Ej: Primera consulta"></div>
+    <div class="field"><label>Modalidad</label>
+      <select id="sModalidad"><option value="presencial">Presencial</option><option value="virtual">Virtual</option></select>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Duración (min)</label><input type="number" id="sDuracion" placeholder="30" value="30"></div>
+      <div class="field"><label>Precio ($)</label><input type="number" id="sPrecio" placeholder="15000"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn p" onclick="saveServ()">Guardar</button>
+      <button class="btn g" onclick="closeModal('servModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PLAN ALIMENTARIO -->
+<div class="modal-bg" id="planModal">
+  <div class="modal modal-wide">
+    <h3>🍽 Plan alimentario semanal</h3>
+    <div class="msg" id="planMsg"></div>
+    <p id="planSub" style="font-size:13.5px;color:var(--ink-soft);margin-bottom:14px"></p>
+    <div class="plan-tabs">
+      <button class="plan-tab on" id="pt-menu" onclick="planTab('menu')">📋 Menú semanal</button>
+      <button class="plan-tab" id="pt-nota" onclick="planTab('nota')">📝 Nota</button>
+    </div>
+    <div id="planMenuView">
+      <div class="pg-scroll"><table class="pgrid" id="planGrid"></table></div>
+    </div>
+    <div id="planNotaView" style="display:none">
+      <div class="field"><label>Nota del plan</label><textarea id="planNota" rows="4" placeholder="Ej: Plan de descenso, 1500 kcal. Tomar 2L de agua por día."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn p" onclick="savePlan()">Guardar plan</button>
+      <button class="btn g" onclick="closeModal('planModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DAR ACCESO AL PACIENTE -->
+<div class="modal-bg" id="accesoModal">
+  <div class="modal">
+    <h3>🔑 Dar acceso al paciente</h3>
+    <div class="msg" id="accesoMsg"></div>
+    <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:16px">Creá un usuario para que <b id="accesoNombre"></b> pueda entrar a ver su evolución, sus turnos y su plan desde su propio celular.</p>
+    <div class="field"><label>Email del paciente *</label><input type="email" id="acEmail" placeholder="paciente@email.com"></div>
+    <div class="field"><label>Contraseña temporal *</label><input type="text" id="acPass" placeholder="Mínimo 6 caracteres"></div>
+    <div class="hint" style="font-size:12px;color:var(--ink-faint);margin-bottom:8px">Compartile estos datos al paciente. Después él puede cambiar la contraseña.</div>
+    <div class="form-actions">
+      <button class="btn p" id="acBtn" onclick="crearAcceso()">Crear acceso</button>
+      <button class="btn g" onclick="closeModal('accesoModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESERVA (paciente) -->
+<div class="modal-bg" id="reservaModal">
+  <div class="modal">
+    <h3>Reservar turno</h3>
+    <div class="msg" id="reservaMsg"></div>
+    <div class="field"><label>Tipo de consulta</label><select id="rServicio" onchange="calcHuecos()"></select></div>
+    <div class="field"><label>Día</label><select id="rDia" onchange="calcHuecos()"></select></div>
+    <div class="field"><label>Horarios disponibles</label>
+      <div id="rHuecos" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn p" id="rBtn" onclick="confirmReserva()" disabled>Confirmar turno</button>
+      <button class="btn g" onclick="closeModal('reservaModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TURNO -->
+<div class="modal-bg" id="turnoModal">
+  <div class="modal">
+    <h3>Nuevo turno</h3>
+    <div class="msg" id="turnoMsg"></div>
+    <div class="field"><label>Paciente *</label><select id="tPac"></select></div>
+    <div class="field"><label>Tipo de consulta</label><select id="tServicio" onchange="onTurnoServChange()"><option value="">Sin especificar (presencial)</option></select></div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha *</label><input type="date" id="tFecha"></div>
+      <div class="field"><label>Hora</label><input type="time" id="tHora"></div>
+    </div>
+    <div class="field"><label>Nota</label><input type="text" id="tNota" placeholder="Ej: Control mensual"></div>
+    <div id="tVirtualHint" style="display:none;background:#EDE7F6;color:#6B3FA0;padding:10px 13px;border-radius:11px;font-size:13px;margin-bottom:4px">💻 Al guardar, se va a crear la videollamada de Google Meet automáticamente.</div>
+    <div class="form-actions">
+      <button class="btn p" onclick="saveTurno()">Guardar turno</button>
+      <button class="btn g" onclick="closeModal('turnoModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://dqyggiwmxneumgatqbgg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_m8kySaFg83egbPhej-YjWA_M1EbrSSF";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = (id)=>document.getElementById(id);
+let mode="login", me=null, pacientes=[], turnos=[], currentPat=null, editingPatId=null;
+
+function showMsg(el,t,type){el.textContent=t;el.className="msg "+type;}
+function clearMsg(el){el.className="msg";el.textContent="";}
+function esc(s){return(s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function initials(n){return(n||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();}
+function fmtDate(iso){if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y.slice(2)}`;}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+
+/* ===== AUTH ===== */
+function toggleMode(){
+  mode=mode==="login"?"signup":"login";
+  const s=mode==="signup";
+  $("nameField").style.display=s?"block":"none";
+  $("authBtn").textContent=s?"Crear cuenta":"Entrar";
+  $("authSub").textContent=s?"Creá tu cuenta profesional":"Ingresá a tu cuenta profesional";
+  $("authToggle").innerHTML=s?'¿Ya tenés cuenta? <a onclick="toggleMode()">Iniciá sesión</a>':'¿No tenés cuenta? <a onclick="toggleMode()">Registrate</a>';
+  clearMsg($("authMsg"));
+}
+async function doAuth(){
+  const email=$("rEmail").value.trim(),pass=$("rPass").value;
+  clearMsg($("authMsg"));
+  if(!email||!pass){showMsg($("authMsg"),"Completá email y contraseña","err");return;}
+  $("authBtn").disabled=true;$("authBtn").textContent="Un momento…";
+  try{
+    if(mode==="signup"){
+      const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{nombre:$("rName").value.trim()}}});
+      if(error)throw error;
+      if(data.user&&!data.session){showMsg($("authMsg"),"¡Cuenta creada! Ya podés iniciar sesión.","ok");mode="signup";toggleMode();}
+    }else{
+      const{error}=await sb.auth.signInWithPassword({email,password:pass});
+      if(error)throw error;
+    }
+  }catch(e){
+    let m=e.message||"Error";
+    if(/Invalid login/i.test(m))m="Email o contraseña incorrectos.";
+    if(/already registered/i.test(m))m="Ese email ya tiene cuenta. Iniciá sesión.";
+    if(/at least/i.test(m))m="La contraseña necesita al menos 6 caracteres.";
+    showMsg($("authMsg"),m,"err");
+  }finally{$("authBtn").disabled=false;$("authBtn").textContent=mode==="signup"?"Crear cuenta":"Entrar";}
+}
+async function logout(){await sb.auth.signOut();}
+
+sb.auth.onAuthStateChange(async (e,session)=>{
+  if(session&&session.user){
+    me=session.user;
+    $("authView").classList.add("hidden");
+    // Detectar rol: si el metadata dice paciente, va al portal del paciente
+    const rol=(session.user.user_metadata&&session.user.user_metadata.rol)||"nutricionista";
+    if(rol==="paciente"){
+      $("appView").classList.add("hidden");
+      $("patientView").classList.remove("hidden");
+      loadPatientPortal();
+    }else{
+      $("patientView").classList.add("hidden");
+      $("appView").classList.remove("hidden");
+      $("userEmail").textContent=session.user.email;
+      const nom=(session.user.user_metadata&&session.user.user_metadata.nombre)||"Mi consultorio";
+      $("sbName").textContent=nom;
+      $("sbAv").textContent=initials(nom);
+      loadAll();
+      handleGoogleReturn();
+    }
+  }else{
+    me=null;
+    $("appView").classList.add("hidden");
+    $("patientView").classList.add("hidden");
+    $("authView").classList.remove("hidden");
+  }
+});
+
+/* ===== NAV ===== */
+function goView(v){
+  ["pacientes","ficha","agenda","servicios"].forEach(x=>$("view-"+x).classList.add("hidden"));
+  $("view-"+v).classList.remove("hidden");
+  $("nav-pac").classList.toggle("on",v==="pacientes"||v==="ficha");
+  $("nav-age").classList.toggle("on",v==="agenda");
+  const ns=$("nav-serv");if(ns)ns.classList.toggle("on",v==="servicios");
+  if(v==="agenda")renderTurnos();
+  if(v==="servicios"){loadServicios();loadDisponibilidad();checkGoogleStatus();checkMpStatus();}
+}
+
+/* ===== CARGA ===== */
+async function loadAll(){
+  await Promise.all([loadPatients(),loadTurnos(),loadServiciosSilent()]);
+}
+async function loadServiciosSilent(){
+  try{const{data}=await sb.from("servicios").select("*").order("creado",{ascending:false});servicios=data||[];}catch(e){}
+}
+async function loadPatients(){
+  $("pLoading").classList.remove("hidden");$("pEmpty").classList.add("hidden");
+  try{
+    const{data,error}=await sb.from("pacientes").select("*").order("creado",{ascending:false});
+    if(error)throw error;
+    pacientes=data||[];
+    $("pLoading").classList.add("hidden");
+    renderPatients();
+  }catch(e){$("pLoading").classList.add("hidden");alert("Error cargando pacientes: "+e.message);}
+}
+async function loadTurnos(){
+  try{
+    const{data,error}=await sb.from("turnos").select("*").order("fecha",{ascending:true});
+    if(error)throw error;
+    turnos=data||[];
+  }catch(e){console.error(e);}
+}
+
+/* ===== PACIENTES ===== */
+async function renderPatients(){
+  const q=($("searchP").value||"").toLowerCase().trim();
+  const list=pacientes.filter(p=>!q||(p.nombre||"").toLowerCase().includes(q));
+  if(!pacientes.length){$("pEmpty").classList.remove("hidden");$("pList").innerHTML="";return;}
+  $("pEmpty").classList.add("hidden");
+  // para cada paciente, traer última consulta se hace liviano: mostramos solo datos base aquí
+  $("pList").innerHTML=list.map(p=>`
+    <div class="pcard" onclick="openFicha('${p.id}')">
+      <div class="pc-top"><div class="av">${initials(p.nombre)}</div>
+        <div><div class="pc-name">${esc(p.nombre)}</div>
+        <div class="pc-meta">${p.altura?p.altura+" cm":"Sin altura"}${p.objetivo?" · "+esc(p.objetivo):""}</div></div>
+      </div>
+      ${p.telefono?`<div class="pc-meta">📱 ${esc(p.telefono)}</div>`:""}
+    </div>`).join("");
+}
+function openPatModal(){editingPatId=null;$("patModalTitle").textContent="Nuevo paciente";clearMsg($("patMsg"));
+  ["pNombre","pAltura","pNac","pTel","pObj","pNotas"].forEach(id=>$(id).value="");$("pSexo").value="";
+  $("patModal").classList.add("open");}
+function editPatient(){
+  const p=currentPat;if(!p)return;editingPatId=p.id;
+  $("patModalTitle").textContent="Editar paciente";clearMsg($("patMsg"));
+  $("pNombre").value=p.nombre||"";$("pAltura").value=p.altura||"";$("pNac").value=p.nacimiento||"";
+  $("pSexo").value=p.sexo||"";$("pTel").value=p.telefono||"";$("pObj").value=p.objetivo||"";$("pNotas").value=p.notas||"";
+  $("patModal").classList.add("open");
+}
+async function savePat(){
+  const nombre=$("pNombre").value.trim();
+  if(!nombre){showMsg($("patMsg"),"El nombre es obligatorio","err");return;}
+  const datos={
+    nombre,
+    altura:$("pAltura").value?Number($("pAltura").value):null,
+    nacimiento:$("pNac").value||null,
+    sexo:$("pSexo").value||null,
+    telefono:$("pTel").value.trim()||null,
+    objetivo:$("pObj").value.trim()||null,
+    notas:$("pNotas").value.trim()||null
+  };
+  try{
+    if(editingPatId){
+      const{error}=await sb.from("pacientes").update(datos).eq("id",editingPatId);
+      if(error)throw error;
+    }else{
+      datos.nutri_id=me.id;
+      const{error}=await sb.from("pacientes").insert(datos);
+      if(error)throw error;
+    }
+    closeModal("patModal");
+    await loadPatients();
+    if(editingPatId){currentPat=pacientes.find(x=>x.id===editingPatId);openFicha(editingPatId);}
+  }catch(e){showMsg($("patMsg"),"Error: "+e.message,"err");}
+}
+async function delPatient(){
+  if(!currentPat)return;
+  if(!confirm(`¿Eliminar a ${currentPat.nombre}? Se borran también sus consultas. Esta acción no se puede deshacer.`))return;
+  try{
+    const{error}=await sb.from("pacientes").delete().eq("id",currentPat.id);
+    if(error)throw error;
+    await loadAll();goView("pacientes");
+  }catch(e){alert("Error: "+e.message);}
+}
+
+/* ===== FICHA ===== */
+async function openFicha(id){
+  currentPat=pacientes.find(p=>p.id===id);
+  if(!currentPat)return;
+  goView("ficha");
+  const p=currentPat;
+  $("fAv").textContent=initials(p.nombre);
+  $("fName").textContent=p.nombre;
+  const tags=[];
+  if(p.altura)tags.push(p.altura+" cm");
+  if(p.nacimiento)tags.push(edad(p.nacimiento)+" años");
+  if(p.sexo)tags.push(p.sexo==="F"?"Femenino":"Masculino");
+  if(p.objetivo)tags.push("🎯 "+p.objetivo);
+  $("fTags").innerHTML=tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+  $("fStats").innerHTML=`<div class="stat"><div class="l">Cargando…</div></div>`;
+  $("fChart").innerHTML="";$("fHist").innerHTML="";
+  // cargar consultas
+  try{
+    const{data,error}=await sb.from("consultas").select("*").eq("paciente_id",id).order("fecha",{ascending:true});
+    if(error)throw error;
+    renderFicha(p,data||[]);
+    renderPlanCard();
+    renderArchivos();
+  }catch(e){$("fStats").innerHTML=`<div class="stat"><div class="l">Error: ${esc(e.message)}</div></div>`;}
+}
+function edad(iso){const b=new Date(iso),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;return a;}
+function renderFicha(p,regs){
+  if(!regs.length){
+    $("fStats").innerHTML=`<div class="stat" style="grid-column:1/-1"><div class="l">Sin consultas</div><div class="v" style="font-size:15px;color:var(--ink-soft)">Cargá la primera con «＋ Consulta»</div></div>`;
+    $("fChart").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">El gráfico aparece cuando cargues consultas.</p>`;
+    $("fHist").innerHTML="";return;
+  }
+  const ult=regs[regs.length-1],prev=regs.length>1?regs[regs.length-2]:null;
+  const imc=(ult.peso&&p.altura)?(ult.peso/Math.pow(p.altura/100,2)).toFixed(1):null;
+  function chg(cur,pr,inv){if(cur==null||pr==null)return"";const d=cur-pr;if(Math.abs(d)<0.05)return"";const down=d<0;const cls=down?"down":"up";return`<div class="chg ${cls}">${down?"▼":"▲"} ${Math.abs(d).toFixed(1)}</div>`;}
+  const st=[];
+  st.push(`<div class="stat"><div class="l">Peso</div><div class="v">${ult.peso??"—"}<small> kg</small></div>${prev?chg(ult.peso,prev.peso):""}</div>`);
+  if(imc)st.push(`<div class="stat"><div class="l">IMC</div><div class="v">${imc}</div></div>`);
+  if(ult.musculo!=null)st.push(`<div class="stat"><div class="l">Músculo</div><div class="v">${ult.musculo}<small> kg</small></div>${prev?chg(ult.musculo,prev.musculo):""}</div>`);
+  if(ult.grasa!=null)st.push(`<div class="stat"><div class="l">Grasa</div><div class="v">${ult.grasa}<small> kg</small></div>${prev?chg(ult.grasa,prev.grasa):""}</div>`);
+  if(ult.grasa_pct!=null)st.push(`<div class="stat"><div class="l">% Grasa</div><div class="v">${ult.grasa_pct}<small> %</small></div>${prev?chg(ult.grasa_pct,prev.grasa_pct):""}</div>`);
+  $("fStats").innerHTML=st.join("");
+  $("fChart").innerHTML=lineChart(regs);
+  $("fHist").innerHTML=`<div class="hist-scroll"><table class="hist"><thead><tr><th>Fecha</th><th>Peso</th><th>Músculo</th><th>Grasa</th><th>% Grasa</th><th>Nota</th><th></th></tr></thead><tbody>${
+    [...regs].reverse().map(r=>`<tr>
+      <td><b>${fmtDate(r.fecha)}</b></td><td>${r.peso??"—"}</td><td>${r.musculo??"—"}</td><td>${r.grasa??"—"}</td><td>${r.grasa_pct??"—"}</td>
+      <td style="color:var(--ink-soft)">${esc(r.nota||"")}</td>
+      <td><button class="mini-btn" onclick="delConsulta('${r.id}')">🗑</button></td></tr>`).join("")
+  }</tbody></table></div>`;
+}
+function lineChart(regs){
+  const pts=regs.filter(r=>r.peso!=null);
+  if(pts.length<1)return`<p style="color:var(--ink-faint);font-size:13px">Cargá el peso en las consultas para ver el gráfico.</p>`;
+  const minW=Math.min(480,(window.innerWidth||400)-70);
+  const W=Math.max(minW,pts.length*90),H=220,padL=44,padR=20,padT=20,padB=34;
+  const pesos=pts.map(r=>r.peso),min=Math.min(...pesos),max=Math.max(...pesos);
+  const rng=(max-min)||1,lo=min-rng*0.15,hi=max+rng*0.15,span=hi-lo;
+  const X=i=>padL+(pts.length===1?(W-padL-padR)/2:i*(W-padL-padR)/(pts.length-1));
+  const Y=v=>padT+(1-(v-lo)/span)*(H-padT-padB);
+  let path="",dots="",labels="";
+  pts.forEach((r,i)=>{const x=X(i),y=Y(r.peso);path+=(i?"L":"M")+x+" "+y+" ";
+    dots+=`<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="var(--brand)" stroke-width="2.5"/>`;
+    dots+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${r.peso}</text>`;
+    labels+=`<text x="${x}" y="${H-12}" text-anchor="middle" font-size="10" fill="var(--ink-faint)">${fmtDate(r.fecha)}</text>`;});
+  const needScroll = pts.length > 5;
+  const svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:${needScroll?W+'px':'100%'};height:auto;display:block">
+    <path d="${path}" fill="none" stroke="var(--brand)" stroke-width="2.5" stroke-linejoin="round"/>
+    ${dots}${labels}</svg>`;
+  return svg;
+}
+
+/* ===== CONSULTAS ===== */
+function openConsultaModal(){if(!currentPat)return;clearMsg($("consMsg"));
+  ["cPeso","cMusc","cGrasa","cGrasaPct","cValor","cNota"].forEach(id=>$(id).value="");
+  $("cFecha").value=todayISO();$("consModal").classList.add("open");}
+async function saveConsulta(){
+  if(!currentPat)return;
+  const fecha=$("cFecha").value;
+  if(!fecha){showMsg($("consMsg"),"La fecha es obligatoria","err");return;}
+  const c={
+    paciente_id:currentPat.id,nutri_id:me.id,fecha,
+    peso:$("cPeso").value?Number($("cPeso").value):null,
+    musculo:$("cMusc").value?Number($("cMusc").value):null,
+    grasa:$("cGrasa").value?Number($("cGrasa").value):null,
+    grasa_pct:$("cGrasaPct").value?Number($("cGrasaPct").value):null,
+    valor:$("cValor").value?Number($("cValor").value):null,
+    nota:$("cNota").value.trim()||null
+  };
+  try{
+    const{error}=await sb.from("consultas").insert(c);
+    if(error)throw error;
+    closeModal("consModal");
+    openFicha(currentPat.id);
+  }catch(e){showMsg($("consMsg"),"Error: "+e.message,"err");}
+}
+async function delConsulta(id){
+  if(!confirm("¿Eliminar esta consulta?"))return;
+  try{const{error}=await sb.from("consultas").delete().eq("id",id);if(error)throw error;openFicha(currentPat.id);}
+  catch(e){alert("Error: "+e.message);}
+}
+
+/* ===== TURNOS ===== */
+function renderTurnos(){
+  $("aLoading").classList.add("hidden");
+  if(!turnos.length){$("aEmpty").classList.remove("hidden");$("aList").innerHTML="";return;}
+  $("aEmpty").classList.add("hidden");
+  const hoy=todayISO();
+  const futuros=turnos.filter(t=>t.fecha>=hoy),pasados=turnos.filter(t=>t.fecha<hoy).reverse();
+  const nombreDe=(id)=>{const p=pacientes.find(x=>x.id===id);return p?p.nombre:"(paciente eliminado)";};
+  function fila(t){const[y,m,d]=t.fecha.split("-");
+    return`<div class="turno-item">
+      <div class="turno-fecha">${d}/${m}</div>
+      <div class="turno-info"><b>${esc(nombreDe(t.paciente_id))}</b><span>${t.hora?"🕐 "+t.hora:""}${t.modalidad==="virtual"?" · 💻 Virtual":""}${t.nota?" · "+esc(t.nota):""}</span></div>
+      ${t.meet_link?`<a href="${esc(t.meet_link)}" target="_blank" class="btn p sm" style="text-decoration:none">📹 Entrar</a>`:""}
+      <button class="mini-btn" onclick="delTurno('${t.id}')">🗑</button>
+    </div>`;}
+  let html="";
+  if(futuros.length){html+=`<div class="block-t">Próximos</div>`+futuros.map(fila).join("");}
+  if(pasados.length){html+=`<div class="block-t" style="margin-top:18px;color:var(--ink-faint)">Pasados</div>`+pasados.map(fila).join("");}
+  $("aList").innerHTML=html;
+}
+function openTurnoModal(){
+  if(!pacientes.length){alert("Primero cargá al menos un paciente.");return;}
+  clearMsg($("turnoMsg"));
+  $("tPac").innerHTML=pacientes.map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join("");
+  // cargar servicios en el selector
+  $("tServicio").innerHTML=`<option value="">Sin especificar (presencial)</option>`+
+    (servicios||[]).map(s=>`<option value="${s.id}" data-mod="${s.modalidad}">${esc(s.nombre)} (${s.modalidad})</option>`).join("");
+  $("tFecha").value=todayISO();$("tHora").value="";$("tNota").value="";
+  $("tVirtualHint").style.display="none";
+  $("turnoModal").classList.add("open");
+}
+function onTurnoServChange(){
+  const sel=$("tServicio").selectedOptions[0];
+  const mod=sel?sel.getAttribute("data-mod"):"";
+  $("tVirtualHint").style.display=mod==="virtual"?"block":"none";
+}
+async function saveTurno(){
+  const fecha=$("tFecha").value,pid=$("tPac").value;
+  if(!fecha||!pid){showMsg($("turnoMsg"),"Elegí paciente y fecha","err");return;}
+  const servId=$("tServicio").value||null;
+  const serv=servId?servicios.find(s=>s.id===servId):null;
+  const esVirtual=serv&&serv.modalidad==="virtual";
+  const t={nutri_id:me.id,paciente_id:pid,fecha,hora:$("tHora").value||null,
+    nota:$("tNota").value.trim()||(serv?serv.nombre:null),
+    servicio_id:servId,modalidad:serv?serv.modalidad:"presencial"};
+  const btn=document.querySelector("#turnoModal .btn.p");
+  try{
+    if(esVirtual){btn.disabled=true;btn.textContent="Creando videollamada…";}
+    const{data:nuevo,error}=await sb.from("turnos").insert(t).select().single();
+    if(error)throw error;
+    // si es virtual, generar el Meet
+    if(esVirtual){
+      const{data:{session}}=await sb.auth.getSession();
+      const resp=await fetch(`${SUPABASE_URL}/functions/v1/crear-meet`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+        body:JSON.stringify({turno_id:nuevo.id})
+      });
+      const data=await resp.json();
+      if(data.error){
+        showMsg($("turnoMsg"),"Turno creado, pero la videollamada falló: "+data.error+". ¿Conectaste Google Calendar?","err");
+        btn.disabled=false;btn.textContent="Guardar turno";
+        await loadTurnos();renderTurnos();
+        return;
+      }
+    }
+    closeModal("turnoModal");
+    btn.disabled=false;btn.textContent="Guardar turno";
+    await loadTurnos();renderTurnos();
+  }catch(e){showMsg($("turnoMsg"),"Error: "+e.message,"err");btn.disabled=false;btn.textContent="Guardar turno";}
+}
+async function delTurno(id){
+  if(!confirm("¿Eliminar este turno?"))return;
+  try{const{error}=await sb.from("turnos").delete().eq("id",id);if(error)throw error;await loadTurnos();renderTurnos();}
+  catch(e){alert("Error: "+e.message);}
+}
+
+/* ===== DAR ACCESO AL PACIENTE ===== */
+function openAccesoModal(){
+  if(!currentPat)return;
+  clearMsg($("accesoMsg"));
+  $("accesoNombre").textContent=currentPat.nombre;
+  $("acEmail").value=currentPat.email||"";
+  $("acPass").value="";
+  $("accesoModal").classList.add("open");
+}
+async function crearAcceso(){
+  const email=$("acEmail").value.trim(),password=$("acPass").value;
+  if(!email||password.length<6){showMsg($("accesoMsg"),"Poné un email válido y una contraseña de al menos 6 caracteres","err");return;}
+  $("acBtn").disabled=true;$("acBtn").textContent="Creando…";
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const resp=await fetch(`${SUPABASE_URL}/functions/v1/crear-paciente`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+      body:JSON.stringify({email,password,paciente_id:currentPat.id})
+    });
+    const data=await resp.json();
+    if(!resp.ok||data.error)throw new Error(data.error||"Error");
+    // guardar el email en la ficha también
+    await sb.from("pacientes").update({email}).eq("id",currentPat.id);
+    showMsg($("accesoMsg"),"✓ Acceso creado. Ya podés pasarle el email y la contraseña al paciente.","ok");
+    $("acBtn").textContent="¡Listo!";
+    setTimeout(()=>{closeModal("accesoModal");$("acBtn").disabled=false;$("acBtn").textContent="Crear acceso";loadPatients();},1800);
+  }catch(err){
+    let m=String(err.message||err);
+    if(/already been registered|already exists/i.test(m))m="Ese email ya tiene una cuenta.";
+    showMsg($("accesoMsg"),"Error: "+m,"err");
+    $("acBtn").disabled=false;$("acBtn").textContent="Crear acceso";
+  }
+}
+
+/* ===== PORTAL DEL PACIENTE ===== */
+async function loadPatientPortal(){
+  $("ptLoading").classList.remove("hidden");
+  $("ptContent").classList.add("hidden");
+  $("ptEmpty").classList.add("hidden");
+  try{
+    // El paciente solo puede leer SU ficha (por RLS). Traemos la que le corresponde.
+    const{data:pacs,error}=await sb.from("pacientes").select("*").eq("user_id",me.id);
+    if(error)throw error;
+    if(!pacs||!pacs.length){$("ptLoading").classList.add("hidden");$("ptEmpty").classList.remove("hidden");return;}
+    const p=pacs[0];
+    _miPacienteId=p.id;_miNutriId=p.nutri_id;
+    // consultas (SIN nota_privada: no la pedimos)
+    const{data:regs}=await sb.from("consultas").select("id,fecha,peso,musculo,grasa,grasa_pct,nota").eq("paciente_id",p.id).order("fecha",{ascending:true});
+    const{data:tur}=await sb.from("turnos").select("*").eq("paciente_id",p.id).order("fecha",{ascending:true});
+    const{data:planes}=await sb.from("planes").select("*").eq("paciente_id",p.id).eq("activo",true).order("creado",{ascending:false});
+    $("ptLoading").classList.add("hidden");
+    $("ptContent").classList.remove("hidden");
+    renderPatientPortal(p,regs||[],tur||[]);
+    renderPortalPlan((planes&&planes[0])||null);
+    renderPortalArchivos(p.id);
+  }catch(e){
+    $("ptLoading").classList.add("hidden");
+    $("ptEmpty").classList.remove("hidden");
+    console.error(e);
+  }
+}
+function renderPatientPortal(p,regs,tur){
+  $("ptAv").textContent=initials(p.nombre);
+  $("ptName").textContent=p.nombre;
+  const tags=[];
+  if(p.altura)tags.push(p.altura+" cm");
+  if(p.objetivo)tags.push("🎯 "+p.objetivo);
+  $("ptTags").innerHTML=tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+  // stats de la última consulta
+  if(regs.length){
+    const u=regs[regs.length-1],pr=regs.length>1?regs[regs.length-2]:null;
+    const imc=(u.peso&&p.altura)?(u.peso/Math.pow(p.altura/100,2)).toFixed(1):null;
+    function chg(c,v){if(c==null||v==null)return"";const d=c-v;if(Math.abs(d)<0.05)return"";const dn=d<0;return`<div class="chg ${dn?'down':'up'}">${dn?'▼':'▲'} ${Math.abs(d).toFixed(1)}</div>`;}
+    const st=[];
+    st.push(`<div class="stat"><div class="l">Peso</div><div class="v">${u.peso??"—"}<small> kg</small></div>${pr?chg(u.peso,pr.peso):""}</div>`);
+    if(imc)st.push(`<div class="stat"><div class="l">IMC</div><div class="v">${imc}</div></div>`);
+    if(u.musculo!=null)st.push(`<div class="stat"><div class="l">Músculo</div><div class="v">${u.musculo}<small> kg</small></div>${pr?chg(u.musculo,pr.musculo):""}</div>`);
+    if(u.grasa_pct!=null)st.push(`<div class="stat"><div class="l">% Grasa</div><div class="v">${u.grasa_pct}<small> %</small></div>${pr?chg(u.grasa_pct,pr.grasa_pct):""}</div>`);
+    $("ptStats").innerHTML=st.join("");
+    $("ptChart").innerHTML=lineChart(regs);
+  }else{
+    $("ptStats").innerHTML=`<div class="stat" style="grid-column:1/-1"><div class="l">Sin consultas aún</div></div>`;
+    $("ptChart").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Tu evolución va a aparecer acá después de tus consultas.</p>`;
+  }
+  // turnos futuros
+  const hoy=todayISO();
+  const fut=tur.filter(t=>t.fecha>=hoy);
+  if(fut.length){
+    $("ptTurnos").innerHTML=fut.map(t=>{const[y,m,d]=t.fecha.split("-");
+      return`<div class="turno-item"><div class="turno-fecha">${d}/${m}</div><div class="turno-info"><b>Consulta${t.modalidad==="virtual"?" virtual":""}</b><span>${t.hora?"🕐 "+t.hora:""}${t.nota?" · "+esc(t.nota):""}</span></div>${t.meet_link?`<a href="${esc(t.meet_link)}" target="_blank" class="btn p sm" style="text-decoration:none">📹 Entrar</a>`:""}</div>`;}).join("");
+  }else{
+    $("ptTurnos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">No tenés turnos próximos agendados.</p>`;
+  }
+}
+function renderPortalPlan(plan){
+  const box=$("ptPlan");if(!box)return;
+  if(!plan||(!plan.menu&&!plan.nota)){box.innerHTML="";return;}
+  let grid="";
+  if(plan.menu&&menuTieneAlgo(plan.menu)){
+    const comidasConAlgo=PLAN_COMIDAS.filter(c=>(plan.menu[c]||[]).some(v=>v&&v.trim()));
+    grid=`<div class="pg-scroll" style="margin-top:8px"><table class="pgrid"><thead><tr><th></th>${PLAN_DIAS.map(d=>`<th>${d}</th>`).join("")}</tr></thead><tbody>${
+      comidasConAlgo.map(c=>`<tr><td class="pg-comida">${c}</td>${(plan.menu[c]||[]).map(v=>`<td style="padding:7px 8px;font-size:12px;color:var(--ink)">${v&&v.trim()?esc(v):"—"}</td>`).join("")}</tr>`).join("")
+    }</tbody></table></div>`;
+  }
+  box.innerHTML=`<div class="card">
+    <div class="block-t">🍽 Tu plan alimentario</div>
+    ${plan.nota?`<p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:8px">${esc(plan.nota)}</p>`:""}
+    ${grid}
+  </div>`;
+}
+
+/* ===== PLAN ALIMENTARIO (nutri) ===== */
+const PLAN_COMIDAS=["Desayuno","Media mañana","Almuerzo","Merienda","Cena","Colación"];
+const PLAN_DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+let _menu=null, _planActual=null;
+function emptyMenu(){const m={};PLAN_COMIDAS.forEach(c=>m[c]=["","","","","","",""]);return m;}
+async function openPlanModal(){
+  if(!currentPat)return;
+  clearMsg($("planMsg"));
+  $("planSub").textContent=currentPat.nombre;
+  // cargar plan activo existente
+  try{
+    const{data}=await sb.from("planes").select("*").eq("paciente_id",currentPat.id).eq("activo",true).order("creado",{ascending:false});
+    _planActual=(data&&data[0])||null;
+  }catch(e){_planActual=null;}
+  _menu=(_planActual&&_planActual.menu)?JSON.parse(JSON.stringify(_planActual.menu)):emptyMenu();
+  PLAN_COMIDAS.forEach(c=>{if(!Array.isArray(_menu[c]))_menu[c]=["","","","","","",""];});
+  $("planNota").value=(_planActual&&_planActual.nota)||"";
+  renderPlanGrid();planTab('menu');
+  $("planModal").classList.add("open");
+}
+function planTab(t){
+  $("pt-menu").classList.toggle("on",t==="menu");
+  $("pt-nota").classList.toggle("on",t==="nota");
+  $("planMenuView").style.display=t==="menu"?"":"none";
+  $("planNotaView").style.display=t==="nota"?"":"none";
+}
+function renderPlanGrid(){
+  let h=`<thead><tr><th></th>${PLAN_DIAS.map(d=>`<th>${d}</th>`).join("")}</tr></thead><tbody>`;
+  PLAN_COMIDAS.forEach(c=>{
+    h+=`<tr><td class="pg-comida">${c}</td>`;
+    for(let i=0;i<7;i++){const v=(_menu[c]&&_menu[c][i])||"";
+      h+=`<td><textarea class="pg-cell" rows="2" placeholder="—" oninput="_menu['${c}'][${i}]=this.value">${esc(v)}</textarea></td>`;}
+    h+=`</tr>`;
+  });
+  $("planGrid").innerHTML=h+`</tbody>`;
+}
+function menuTieneAlgo(m){return PLAN_COMIDAS.some(c=>(m[c]||[]).some(v=>v&&v.trim()));}
+async function savePlan(){
+  if(!currentPat)return;
+  const nota=$("planNota").value.trim()||null;
+  const tieneMenu=menuTieneAlgo(_menu);
+  if(!tieneMenu&&!nota){showMsg($("planMsg"),"Cargá al menos una comida o una nota","err");return;}
+  try{
+    if(_planActual){
+      const{error}=await sb.from("planes").update({menu:_menu,nota}).eq("id",_planActual.id);
+      if(error)throw error;
+    }else{
+      const{error}=await sb.from("planes").insert({paciente_id:currentPat.id,nutri_id:me.id,menu:_menu,nota,activo:true});
+      if(error)throw error;
+    }
+    closeModal("planModal");
+    renderPlanCard();
+  }catch(e){showMsg($("planMsg"),"Error: "+e.message,"err");}
+}
+async function renderPlanCard(){
+  const box=$("fPlanCard");if(!box)return;
+  box.innerHTML="";
+  if(!currentPat)return;
+  try{
+    const{data}=await sb.from("planes").select("*").eq("paciente_id",currentPat.id).eq("activo",true).order("creado",{ascending:false});
+    const plan=(data&&data[0])||null;
+    if(!plan)return;
+    const dias=plan.menu?PLAN_DIAS.filter((d,i)=>PLAN_COMIDAS.some(c=>(plan.menu[c]||[])[i]&&plan.menu[c][i].trim())).length:0;
+    box.innerHTML=`<div class="card plan-card2">
+      <div class="plan-ic">🍽</div>
+      <div class="plan-info"><b>Plan alimentario activo</b>
+        ${dias?`<span>🗓 Menú semanal (${dias} día${dias===1?"":"s"} cargados)</span>`:""}
+        ${plan.nota?`<span>${esc(plan.nota)}</span>`:""}</div>
+      <button class="btn g sm" onclick="openPlanModal()">Editar</button>
+    </div>`;
+  }catch(e){}
+}
+
+/* ===== ARCHIVOS ===== */
+async function uploadFile(e){
+  const file=e.target.files[0];
+  if(!file||!currentPat)return;
+  if(file.size>10*1024*1024){showMsg($("fUploadMsg"),"El archivo es muy grande (máx 10 MB)","err");return;}
+  showMsg($("fUploadMsg"),"Subiendo…","ok");
+  try{
+    const ext=file.name.split(".").pop();
+    const ruta=`${currentPat.id}/${Date.now()}.${ext}`;
+    const{error:upErr}=await sb.storage.from("archivos").upload(ruta,file);
+    if(upErr)throw upErr;
+    const{error:dbErr}=await sb.from("archivos").insert({
+      paciente_id:currentPat.id,nutri_id:me.id,nombre:file.name,ruta,tipo:file.type
+    });
+    if(dbErr)throw dbErr;
+    clearMsg($("fUploadMsg"));
+    $("fileInput").value="";
+    renderArchivos();
+  }catch(err){showMsg($("fUploadMsg"),"Error: "+err.message,"err");}
+}
+async function renderArchivos(){
+  const box=$("fArchivos");if(!box||!currentPat)return;
+  box.innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Cargando…</p>`;
+  try{
+    const{data,error}=await sb.from("archivos").select("*").eq("paciente_id",currentPat.id).order("creado",{ascending:false});
+    if(error)throw error;
+    if(!data.length){box.innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Todavía no hay archivos. Subí estudios, análisis o fotos.</p>`;return;}
+    box.innerHTML=data.map(a=>`
+      <div class="arch-row">
+        <div class="arch-ic">${a.tipo&&a.tipo.includes("pdf")?"📄":"🖼"}</div>
+        <div class="arch-info"><b>${esc(a.nombre)}</b><span>${fmtDate(a.creado.slice(0,10))}</span></div>
+        <button class="btn g sm" onclick="verArchivo('${a.ruta}')">Ver</button>
+        <button class="mini-btn" onclick="delArchivo('${a.id}','${a.ruta}')">🗑</button>
+      </div>`).join("");
+  }catch(e){box.innerHTML=`<p style="color:var(--bad);font-size:13px">Error: ${esc(e.message)}</p>`;}
+}
+async function verArchivo(ruta){
+  try{
+    const{data,error}=await sb.storage.from("archivos").createSignedUrl(ruta,300); // link válido 5 min
+    if(error)throw error;
+    window.open(data.signedUrl,"_blank");
+  }catch(e){alert("Error al abrir: "+e.message);}
+}
+async function delArchivo(id,ruta){
+  if(!confirm("¿Eliminar este archivo?"))return;
+  try{
+    await sb.storage.from("archivos").remove([ruta]);
+    await sb.from("archivos").delete().eq("id",id);
+    renderArchivos();
+  }catch(e){alert("Error: "+e.message);}
+}
+async function renderPortalArchivos(pacId){
+  const box=$("ptArchivos");if(!box)return;
+  try{
+    const{data}=await sb.from("archivos").select("*").eq("paciente_id",pacId).order("creado",{ascending:false});
+    if(!data||!data.length){box.innerHTML="";return;}
+    box.innerHTML=`<div class="card"><div class="block-t">📎 Tus archivos</div>${
+      data.map(a=>`<div class="arch-row"><div class="arch-ic">${a.tipo&&a.tipo.includes("pdf")?"📄":"🖼"}</div>
+        <div class="arch-info"><b>${esc(a.nombre)}</b><span>${fmtDate(a.creado.slice(0,10))}</span></div>
+        <button class="btn g sm" onclick="verArchivo('${a.ruta}')">Ver</button></div>`).join("")
+    }</div>`;
+  }catch(e){box.innerHTML="";}
+}
+
+/* ===== SERVICIOS ===== */
+let servicios=[], editingServId=null;
+async function loadServicios(){
+  $("sLoading").classList.remove("hidden");
+  $("sEmpty").classList.add("hidden");
+  $("sList").innerHTML="";
+  try{
+    const{data,error}=await sb.from("servicios").select("*").order("creado",{ascending:false});
+    if(error)throw error;
+    servicios=data||[];
+    $("sLoading").classList.add("hidden");
+    renderServicios();
+  }catch(e){$("sLoading").classList.add("hidden");$("sList").innerHTML=`<p style="color:var(--bad)">Error: ${esc(e.message)}</p>`;}
+}
+function renderServicios(){
+  if(!servicios.length){$("sEmpty").classList.remove("hidden");$("sList").innerHTML="";return;}
+  $("sEmpty").classList.add("hidden");
+  $("sList").innerHTML=servicios.map(s=>`
+    <div class="serv-card">
+      <div class="serv-top">
+        <span class="serv-mod ${s.modalidad==='virtual'?'virt':'pres'}">${s.modalidad==='virtual'?'💻 Virtual':'🏥 Presencial'}</span>
+        ${!s.activo?'<span class="serv-mod" style="background:var(--surface-2);color:var(--ink-faint)">Inactivo</span>':''}
+      </div>
+      <h3>${esc(s.nombre)}</h3>
+      <div class="serv-meta"><span>⏱ ${s.duracion||30} min</span></div>
+      <div class="serv-price">${s.precio!=null?'$ '+Number(s.precio).toLocaleString('es-AR'):'Sin precio'}</div>
+      <div class="serv-actions">
+        <button class="btn g sm" onclick="editServ('${s.id}')">✎ Editar</button>
+        <button class="btn d sm" onclick="delServ('${s.id}')">🗑</button>
+      </div>
+    </div>`).join("");
+}
+function openServModal(){
+  editingServId=null;
+  $("servTitle").textContent="Nuevo servicio";
+  clearMsg($("servMsg"));
+  $("sNombre").value="";$("sModalidad").value="presencial";$("sDuracion").value="30";$("sPrecio").value="";
+  $("servModal").classList.add("open");
+}
+function editServ(id){
+  const s=servicios.find(x=>x.id===id);if(!s)return;
+  editingServId=id;
+  $("servTitle").textContent="Editar servicio";
+  clearMsg($("servMsg"));
+  $("sNombre").value=s.nombre||"";$("sModalidad").value=s.modalidad||"presencial";
+  $("sDuracion").value=s.duracion||30;$("sPrecio").value=s.precio||"";
+  $("servModal").classList.add("open");
+}
+async function saveServ(){
+  const nombre=$("sNombre").value.trim();
+  if(!nombre){showMsg($("servMsg"),"El nombre es obligatorio","err");return;}
+  const datos={
+    nombre,modalidad:$("sModalidad").value,
+    duracion:$("sDuracion").value?parseInt($("sDuracion").value):30,
+    precio:$("sPrecio").value?Number($("sPrecio").value):null
+  };
+  try{
+    if(editingServId){
+      const{error}=await sb.from("servicios").update(datos).eq("id",editingServId);
+      if(error)throw error;
+    }else{
+      datos.nutri_id=me.id;
+      const{error}=await sb.from("servicios").insert(datos);
+      if(error)throw error;
+    }
+    closeModal("servModal");
+    loadServicios();
+  }catch(e){showMsg($("servMsg"),"Error: "+e.message,"err");}
+}
+async function delServ(id){
+  if(!confirm("¿Eliminar este servicio?"))return;
+  try{const{error}=await sb.from("servicios").delete().eq("id",id);if(error)throw error;loadServicios();}
+  catch(e){alert("Error: "+e.message);}
+}
+
+/* ===== DISPONIBILIDAD (nutri) ===== */
+const DIAS_NOM=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+let disponibilidad=[];
+async function loadDisponibilidad(){
+  $("dLoading").classList.remove("hidden");
+  $("dEmpty").classList.add("hidden");
+  $("dList").innerHTML="";
+  try{
+    const{data,error}=await sb.from("disponibilidad").select("*").order("dia_semana",{ascending:true});
+    if(error)throw error;
+    disponibilidad=data||[];
+    $("dLoading").classList.add("hidden");
+    renderDisponibilidad();
+  }catch(e){$("dLoading").classList.add("hidden");$("dList").innerHTML=`<p style="color:var(--bad)">Error: ${esc(e.message)}</p>`;}
+}
+function renderDisponibilidad(){
+  if(!disponibilidad.length){$("dEmpty").classList.remove("hidden");$("dList").innerHTML="";return;}
+  $("dEmpty").classList.add("hidden");
+  $("dList").innerHTML=disponibilidad.map(d=>`
+    <div class="disp-row">
+      <div class="disp-dia">${DIAS_NOM[d.dia_semana]}</div>
+      <div class="disp-info"><b>${d.hora_desde} a ${d.hora_hasta}</b><span>Turnos de ${d.duracion} min</span></div>
+      <button class="mini-btn" onclick="delDisp('${d.id}')">🗑</button>
+    </div>`).join("");
+}
+function openDispModal(){clearMsg($("dispMsg"));$("dDia").value="1";$("dDesde").value="09:00";$("dHasta").value="17:00";$("dDur").value="30";$("dispModal").classList.add("open");}
+async function saveDisp(){
+  const desde=$("dDesde").value,hasta=$("dHasta").value;
+  if(!desde||!hasta){showMsg($("dispMsg"),"Poné los horarios","err");return;}
+  if(desde>=hasta){showMsg($("dispMsg"),"El horario 'desde' tiene que ser antes que 'hasta'","err");return;}
+  try{
+    const{error}=await sb.from("disponibilidad").insert({
+      nutri_id:me.id,dia_semana:parseInt($("dDia").value),
+      hora_desde:desde,hora_hasta:hasta,duracion:parseInt($("dDur").value)||30
+    });
+    if(error)throw error;
+    closeModal("dispModal");loadDisponibilidad();
+  }catch(e){showMsg($("dispMsg"),"Error: "+e.message,"err");}
+}
+async function delDisp(id){
+  if(!confirm("¿Eliminar este horario?"))return;
+  try{const{error}=await sb.from("disponibilidad").delete().eq("id",id);if(error)throw error;loadDisponibilidad();}
+  catch(e){alert("Error: "+e.message);}
+}
+
+/* ===== RESERVA (paciente) ===== */
+let _dispPaciente=[], _serviciosPaciente=[], _turnosPaciente=[], _miPacienteId=null, _miNutriId=null, _huecoSel=null;
+async function openReservaModal(){
+  clearMsg($("reservaMsg"));
+  $("rHuecos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Cargando…</p>`;
+  $("reservaModal").classList.add("open");
+  try{
+    // el paciente ya tiene su ficha cargada en el portal (guardamos su id)
+    const{data:disp}=await sb.from("disponibilidad").select("*");
+    const{data:serv}=await sb.from("servicios").select("*").eq("activo",true);
+    _dispPaciente=disp||[];_serviciosPaciente=serv||[];
+    // servicios en el select
+    $("rServicio").innerHTML=_serviciosPaciente.length
+      ? _serviciosPaciente.map(s=>`<option value="${s.id}">${esc(s.nombre)} (${s.modalidad})</option>`).join("")
+      : `<option value="">La profesional no cargó servicios aún</option>`;
+    // próximos 14 días que tengan disponibilidad
+    const dias=[];
+    const hoy=new Date();
+    for(let i=1;i<=21;i++){
+      const d=new Date(hoy);d.setDate(d.getDate()+i);
+      const dow=d.getDay();
+      if(_dispPaciente.some(x=>x.dia_semana===dow)){
+        const iso=d.toISOString().slice(0,10);
+        dias.push({iso,label:`${DIAS_NOM[dow]} ${d.getDate()}/${d.getMonth()+1}`});
+      }
+    }
+    $("rDia").innerHTML=dias.length?dias.map(d=>`<option value="${d.iso}">${d.label}</option>`).join(""):`<option value="">Sin días disponibles</option>`;
+    calcHuecos();
+  }catch(e){$("rHuecos").innerHTML=`<p style="color:var(--bad);font-size:13px">Error: ${esc(e.message)}</p>`;}
+}
+async function calcHuecos(){
+  _huecoSel=null;$("rBtn").disabled=true;
+  const iso=$("rDia").value;
+  if(!iso){$("rHuecos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">No hay días disponibles.</p>`;return;}
+  const dow=new Date(iso+"T00:00:00").getDay();
+  const franjas=_dispPaciente.filter(d=>d.dia_semana===dow);
+  // turnos ya tomados ese día
+  const{data:tomados}=await sb.from("turnos").select("hora").eq("fecha",iso);
+  const ocupadas=(tomados||[]).map(t=>t.hora);
+  // generar huecos
+  const huecos=[];
+  franjas.forEach(f=>{
+    let[h,m]=f.hora_desde.split(":").map(Number);
+    const[hh,mm]=f.hora_hasta.split(":").map(Number);
+    const dur=f.duracion||30;
+    while(h*60+m+dur<=hh*60+mm){
+      const hora=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+      huecos.push(hora);
+      m+=dur;while(m>=60){m-=60;h++;}
+    }
+  });
+  if(!huecos.length){$("rHuecos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">No hay horarios ese día.</p>`;return;}
+  $("rHuecos").innerHTML=huecos.map(hora=>{
+    const ocup=ocupadas.includes(hora);
+    return `<button class="hueco ${ocup?'ocupado':''}" ${ocup?'disabled':`onclick="selHueco('${hora}',this)"`}>${hora}</button>`;
+  }).join("");
+}
+function selHueco(hora,el){
+  _huecoSel=hora;
+  document.querySelectorAll("#rHuecos .hueco").forEach(b=>b.classList.remove("sel"));
+  el.classList.add("sel");
+  $("rBtn").disabled=false;
+}
+async function confirmReserva(){
+  if(!_huecoSel||!_miPacienteId){showMsg($("reservaMsg"),"Elegí un horario","err");return;}
+  const iso=$("rDia").value, servId=$("rServicio").value||null;
+  const serv=_serviciosPaciente.find(s=>s.id===servId);
+  $("rBtn").disabled=true;$("rBtn").textContent="Reservando…";
+  try{
+    const{error}=await sb.from("turnos").insert({
+      nutri_id:_miNutriId,paciente_id:_miPacienteId,fecha:iso,hora:_huecoSel,
+      servicio_id:servId,nota:serv?serv.nombre:null,modalidad:serv?serv.modalidad:"presencial",
+      estado:"confirmado",creado_por:"paciente"
+    });
+    if(error)throw error;
+    showMsg($("reservaMsg"),"✓ ¡Turno reservado!","ok");
+    setTimeout(()=>{closeModal("reservaModal");$("rBtn").disabled=false;$("rBtn").textContent="Confirmar turno";loadPatientPortal();},1400);
+  }catch(e){showMsg($("reservaMsg"),"Error: "+e.message,"err");$("rBtn").disabled=false;$("rBtn").textContent="Confirmar turno";}
+}
+
+/* ===== GOOGLE CALENDAR ===== */
+async function conectarGoogle(){
+  $("googleBtn").disabled=true;$("googleBtn").textContent="Abriendo…";
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const resp=await fetch(`${SUPABASE_URL}/functions/v1/google-auth`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`}
+    });
+    const data=await resp.json();
+    if(data.url){ window.location.href=data.url; }
+    else throw new Error(data.error||"Error");
+  }catch(e){
+    alert("Error al conectar: "+e.message);
+    $("googleBtn").disabled=false;$("googleBtn").textContent="Conectar";
+  }
+}
+async function checkGoogleStatus(){
+  if(!me)return;
+  try{
+    const{data}=await sb.from("google_conexiones").select("email_google,conectado").eq("nutri_id",me.id);
+    const con=data&&data[0]&&data[0].conectado;
+    if(con){
+      $("googleStatus").innerHTML=`✅ Conectado${data[0].email_google?" · "+esc(data[0].email_google):""}`;
+      $("googleBtn").textContent="Reconectar";
+      $("googleBtn").className="btn g";
+    }else{
+      $("googleStatus").textContent="Conectá tu calendario para crear videollamadas automáticas en tus turnos virtuales.";
+      $("googleBtn").textContent="Conectar";
+      $("googleBtn").className="btn p";
+    }
+  }catch(e){}
+}
+// Detectar la vuelta de Google (?google=ok / ?google=error)
+function handleGoogleReturn(){
+  const params=new URLSearchParams(window.location.search);
+  const g=params.get("google");
+  if(g){
+    // limpiar la URL
+    window.history.replaceState({},"",window.location.pathname);
+    if(g==="ok"){ setTimeout(()=>{ alert("✅ ¡Google Calendar conectado! Ya podés crear turnos virtuales con videollamada."); goView("servicios"); },300); }
+    else{ alert("Hubo un problema conectando Google. Probá de nuevo."); }
+  }
+}
+
+/* ===== MERCADO PAGO ===== */
+function openMpModal(){clearMsg($("mpMsg"));$("mpToken").value="";$("mpModal").classList.add("open");}
+async function conectarMp(){
+  const tok=$("mpToken").value.trim();
+  if(!tok){showMsg($("mpMsg"),"Pegá tu Access Token","err");return;}
+  $("mpConnBtn").disabled=true;$("mpConnBtn").textContent="Verificando…";
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const resp=await fetch(`${SUPABASE_URL}/functions/v1/mp-conectar`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+      body:JSON.stringify({access_token:tok})
+    });
+    const data=await resp.json();
+    if(data.error)throw new Error(data.error);
+    showMsg($("mpMsg"),`✓ ¡Conectado! (modo ${data.modo}${data.cuenta?" · "+data.cuenta:""})`,"ok");
+    setTimeout(()=>{closeModal("mpModal");checkMpStatus();},1600);
+  }catch(e){
+    showMsg($("mpMsg"),"Error: "+e.message,"err");
+  }finally{
+    $("mpConnBtn").disabled=false;$("mpConnBtn").textContent="Conectar";
+  }
+}
+async function checkMpStatus(){
+  if(!me)return;
+  try{
+    const{data}=await sb.from("mp_conexiones").select("modo,conectado").eq("nutri_id",me.id);
+    const con=data&&data[0]&&data[0].conectado;
+    if(con){
+      $("mpStatus").innerHTML=`✅ Conectado · modo ${data[0].modo}`;
+      $("mpBtn").textContent="Reconectar";$("mpBtn").className="btn g";
+    }else{
+      $("mpStatus").textContent="Conectá tu cuenta para cobrar consultas online. Los pagos van directo a tu cuenta.";
+      $("mpBtn").textContent="Conectar";$("mpBtn").className="btn p";
+    }
+  }catch(e){}
+}
+
+function closeModal(id){$(id).classList.remove("open");}
+</script>
+</body>
+</html>
