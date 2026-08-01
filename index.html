@@ -783,6 +783,640 @@ body.dark .pt-next-card,body.dark .pt-stats .stat,body.dark .pt-chart-card,body.
 body.dark .pt-icon-btn{background:rgba(65,73,55,.78);border-color:rgba(210,224,184,.12);color:var(--ink)}body.dark .pt-prefs-profile{background:rgba(65,73,55,.6)}body.dark .pt-avatar-edit,body.dark .pt-prefs-photo i{background:#3b4432;color:var(--brand-strong)}
 @media(max-width:520px){.pt-topbar{padding-top:max(10px,env(safe-area-inset-top));gap:8px}.pt-brand-official{width:78px;height:44px}.pt-brand-lockup small{display:none}.pt-icon-btn{width:38px;height:38px}.pt-exit{padding:8px 10px}.pt-prefs-modal{border-radius:24px 24px 0 0}.pt-prefs-profile{align-items:flex-start}.pt-prefs-photo{width:62px;height:62px}}
 </style>
+
+<style id="sidebar-selection-final-fix">
+/* Corrección definitiva solicitada: solo sidebar de escritorio */
+@media (min-width: 821px) {
+  .app-shell > .sidebar {
+    background: rgba(238, 243, 226, 0.92) !important;
+    border-right-color: #DCE6C9 !important;
+  }
+
+  .app-shell > .sidebar .sb-item.on,
+  .app-shell > .sidebar button.sb-item.on {
+    background: #F8FBF2 !important;
+    background-image: none !important;
+    color: #35561F !important;
+    border: 0 !important;
+    border-left: 3px solid #78A83E !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    padding-left: 9px !important;
+  }
+
+  .app-shell > .sidebar .sb-item.on svg,
+  .app-shell > .sidebar button.sb-item.on svg {
+    color: #5E8C35 !important;
+    stroke: #5E8C35 !important;
+  }
+
+  .app-shell > .sidebar .sb-item:hover:not(.on) {
+    background: #F4F8EC !important;
+    background-image: none !important;
+    color: #35561F !important;
+    box-shadow: none !important;
+  }
+
+  body.dark .app-shell > .sidebar .sb-item.on,
+  body.dark .app-shell > .sidebar button.sb-item.on {
+    background: rgba(224, 234, 203, 0.16) !important;
+    color: #DDE9CB !important;
+    border-left-color: #91B45E !important;
+  }
+}
+</style>
+
+
+<style id="dark-sidebar-fix">
+@media (min-width:821px){
+body.dark .app-shell>.sidebar{
+ background:rgba(42,50,34,.92)!important;
+ border-right:1px solid rgba(120,145,90,.22)!important;
+}
+body.dark .app-shell>.sidebar .sb-item{
+ color:#B8C7A8!important;
+}
+body.dark .app-shell>.sidebar .sb-item:hover:not(.on){
+ background:rgba(255,255,255,.05)!important;
+ color:#E7EFDA!important;
+}
+body.dark .app-shell>.sidebar .sb-item.on{
+ background:rgba(168,196,118,.14)!important;
+ color:#EAF2DF!important;
+ border-left:3px solid #98C35B!important;
+ box-shadow:none!important;
+}
+body.dark .app-shell>.sidebar .sb-item.on svg{
+ color:#98C35B!important;
+ stroke:#98C35B!important;
+}
+}
+</style>
+
+
+<style id="dark-mode-premium-fix">
+/* Modo noche más profundo, mate y con contraste real */
+body.dark{
+  --bg:#0F120D !important;
+  --surface:#171B14 !important;
+  --surface-2:#20261B !important;
+  --ink:#F0F4E9 !important;
+  --ink-soft:#BAC5AE !important;
+  --ink-faint:#85917B !important;
+  --line:#313A2A !important;
+  --brand:#9BC85B !important;
+  --brand-strong:#CBE69C !important;
+  --brand-tint:#26331D !important;
+  --good:#9BC85B !important;
+  --good-bg:#22301B !important;
+  --bad:#F09A73 !important;
+  --bad-bg:#3A241D !important;
+  --glass:rgba(24,29,20,.84) !important;
+  --glass-strong:rgba(20,24,17,.93) !important;
+  --glass-line:rgba(180,205,145,.10) !important;
+  --glass-shadow:0 10px 28px rgba(0,0,0,.28) !important;
+  background:#0F120D !important;
+  background-image:
+    radial-gradient(circle at 10% 8%,rgba(115,145,75,.06),transparent 34%),
+    radial-gradient(circle at 90% 92%,rgba(90,115,60,.045),transparent 38%) !important;
+}
+
+/* Vidrio mate, sin reflejos artificiales */
+body.dark .card,
+body.dark .kpi,
+body.dark .qa,
+body.dark .pcard,
+body.dark .stat,
+body.dark .turno-item,
+body.dark .cal-wrap,
+body.dark .serv-card,
+body.dark .disp-row,
+body.dark .payment-row,
+body.dark #patientView .pat-hero,
+body.dark #patientView .pat-next,
+body.dark #patientView .pat-metric,
+body.dark #patientView .pat-chart,
+body.dark #patientView .pat-section-card,
+body.dark #patientView .pat-appointment{
+  background:rgba(24,29,20,.90) !important;
+  border-color:rgba(180,205,145,.10) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.22) !important;
+  backdrop-filter:blur(14px) saturate(1.05) !important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.05) !important;
+}
+
+/* Sidebar coherente con el fondo oscuro */
+@media (min-width:821px){
+  body.dark .app-shell>.sidebar{
+    background:#151A12 !important;
+    border-right:1px solid #2B3325 !important;
+    box-shadow:none !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+}
+
+/* Inputs y selects oscuros legibles */
+body.dark input,
+body.dark select,
+body.dark textarea{
+  background:#171C14 !important;
+  color:#F0F4E9 !important;
+  border-color:#394331 !important;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+  color:#7E8975 !important;
+}
+
+/* Botones: evitar blanco sobre blanco */
+body.dark .btn,
+body.dark button{
+  color:inherit;
+}
+
+body.dark .btn.g,
+body.dark .cal-navbtn,
+body.dark .cal-today,
+body.dark .mini-btn,
+body.dark .ta-btn,
+body.dark .hueco,
+body.dark .pay-filter,
+body.dark .period-btn,
+body.dark .pref-btn,
+body.dark .notif-close,
+body.dark #patientView button:not(.btn-p):not(.btn-primary){
+  background:#20261B !important;
+  color:#E8EEDD !important;
+  border-color:#3A4432 !important;
+  box-shadow:none !important;
+}
+
+body.dark .btn.g:hover,
+body.dark .cal-navbtn:hover,
+body.dark .cal-today:hover,
+body.dark .mini-btn:hover,
+body.dark .ta-btn:hover,
+body.dark .hueco:hover,
+body.dark .pay-filter:hover,
+body.dark .period-btn:hover,
+body.dark .pref-btn:hover,
+body.dark #patientView button:not(.btn-p):not(.btn-primary):hover{
+  background:#2A3223 !important;
+  color:#FFFFFF !important;
+  border-color:#536145 !important;
+}
+
+/* Botones principales */
+body.dark .btn.p,
+body.dark .btn-primary,
+body.dark #patientView .btn-p{
+  background:linear-gradient(135deg,#709C3E,#4E7529) !important;
+  color:#FFFFFF !important;
+  border-color:transparent !important;
+  box-shadow:0 7px 18px rgba(69,105,38,.24) !important;
+}
+
+/* Tabs y opciones seleccionadas */
+body.dark .cp-btn.on,
+body.dark .ct-btn.on,
+body.dark .ag-tab.on,
+body.dark .plan-tab.on,
+body.dark .pay-filter.on,
+body.dark .period-btn.on,
+body.dark .pref-btn.on,
+body.dark .hueco.sel,
+body.dark #patientView .pat-chart-tab.on,
+body.dark #patientView .pat-nav-item.on{
+  background:#2A3820 !important;
+  color:#DDF0C3 !important;
+  border-color:#52693D !important;
+  box-shadow:none !important;
+}
+
+/* Tabs no seleccionadas del gráfico del paciente */
+body.dark #patientView .pat-chart-tab{
+  background:#1C2118 !important;
+  color:#B9C4AF !important;
+  border:1px solid #323B2B !important;
+}
+
+body.dark #patientView .pat-chart-tab:hover{
+  background:#252C20 !important;
+  color:#F3F6EF !important;
+}
+
+/* Textos y enlaces */
+body.dark .dash-link,
+body.dark .back,
+body.dark .photo-link,
+body.dark a{
+  color:#A9D66C;
+}
+
+body.dark .tag,
+body.dark .chart-summary,
+body.dark .notif-ic,
+body.dark .plan-ic,
+body.dark .arch-ic{
+  background:#242C1E !important;
+  color:#C7DDB0 !important;
+}
+
+/* Menús y modales */
+body.dark .modal,
+body.dark .menu-drop{
+  background:#171B14 !important;
+  color:#F0F4E9 !important;
+  border-color:#30382A !important;
+  box-shadow:0 24px 60px rgba(0,0,0,.50) !important;
+}
+
+/* Barra móvil del panel y portal */
+@media (max-width:820px){
+  body.dark .sidebar,
+  body.dark #patientView .pat-bottom-nav{
+    background:rgba(17,21,14,.90) !important;
+    border-color:rgba(180,205,145,.11) !important;
+    box-shadow:0 14px 34px rgba(0,0,0,.34) !important;
+    backdrop-filter:blur(16px) saturate(1.05) !important;
+    -webkit-backdrop-filter:blur(16px) saturate(1.05) !important;
+  }
+}
+</style>
+
+
+<style id="dark-mode-graphite-final">
+/* =========================================================
+   MODO NOCHE FINAL · GRAFITO MATE + ACENTO LIMA
+   Nutricionista + portal paciente + móvil
+   ========================================================= */
+
+body.dark{
+  --bg:#080C0D !important;
+  --surface:#101617 !important;
+  --surface-2:#171E1E !important;
+  --ink:#F2F5F0 !important;
+  --ink-soft:#B2BBB5 !important;
+  --ink-faint:#7F8A83 !important;
+  --line:#293132 !important;
+  --brand:#9BCB43 !important;
+  --brand-strong:#C9ED84 !important;
+  --brand-tint:#1E2A19 !important;
+  --sky:#9BCB43 !important;
+  --teal:#82B33B !important;
+  --good:#9BCB43 !important;
+  --good-bg:#1C2918 !important;
+  --bad:#F08A70 !important;
+  --bad-bg:#34201C !important;
+  --glass:rgba(16,22,23,.94) !important;
+  --glass-strong:rgba(11,16,17,.97) !important;
+  --glass-line:rgba(185,205,190,.10) !important;
+  --glass-shadow:0 10px 28px rgba(0,0,0,.28) !important;
+  background:#080C0D !important;
+  background-image:
+    radial-gradient(circle at 18% 7%,rgba(113,145,58,.045),transparent 28%),
+    radial-gradient(circle at 82% 90%,rgba(78,110,40,.035),transparent 32%) !important;
+}
+
+/* Eliminar brillos y reflejos plásticos */
+body.dark .card::before,
+body.dark .kpi::before,
+body.dark .qa::before,
+body.dark .pcard::before,
+body.dark .stat::before,
+body.dark .turno-item::before,
+body.dark .serv-card::before,
+body.dark .disp-row::before{
+  display:none !important;
+  content:none !important;
+}
+
+/* Superficies principales */
+body.dark .card,
+body.dark .kpi,
+body.dark .qa,
+body.dark .pcard,
+body.dark .stat,
+body.dark .turno-item,
+body.dark .serv-card,
+body.dark .disp-row,
+body.dark .cal-wrap,
+body.dark .search,
+body.dark .payment-row,
+body.dark .auth-card,
+body.dark .modal,
+body.dark .menu-drop,
+body.dark .all-chart-card,
+body.dark .arch-row,
+body.dark .pg-scroll{
+  background:#111718 !important;
+  background-image:none !important;
+  border:1px solid #2A3233 !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.20) !important;
+  backdrop-filter:blur(10px) saturate(1.02) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.02) !important;
+}
+
+/* Hover sobrio */
+body.dark .card:hover,
+body.dark .pcard:hover,
+body.dark .stat:hover,
+body.dark .turno-item:hover,
+body.dark .payment-row:hover{
+  background:#151C1D !important;
+  border-color:#364141 !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.25) !important;
+}
+
+/* Sidebar escritorio */
+@media (min-width:821px){
+  body.dark .app-shell>.sidebar{
+    background:#0C1112 !important;
+    background-image:none !important;
+    border-right:1px solid #252D2E !important;
+    box-shadow:none !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+  body.dark .app-shell>.sidebar .sb-item{
+    color:#AEB7B1 !important;
+  }
+  body.dark .app-shell>.sidebar .sb-item:hover:not(.on){
+    background:#151C1D !important;
+    color:#F3F6F2 !important;
+    box-shadow:none !important;
+  }
+  body.dark .app-shell>.sidebar .sb-item.on{
+    background:#181F1C !important;
+    color:#C8EB80 !important;
+    border:0 !important;
+    border-left:4px solid #A6D84F !important;
+    box-shadow:none !important;
+  }
+  body.dark .app-shell>.sidebar .sb-item.on svg{
+    color:#A6D84F !important;
+    stroke:#A6D84F !important;
+  }
+  body.dark .sb-bottom{
+    border-top-color:#293132 !important;
+  }
+}
+
+/* Inputs, selects y campos */
+body.dark input,
+body.dark select,
+body.dark textarea{
+  background:#0E1415 !important;
+  color:#F1F4F0 !important;
+  border:1px solid #313A3B !important;
+  box-shadow:none !important;
+}
+body.dark input:focus,
+body.dark select:focus,
+body.dark textarea:focus{
+  background:#11191A !important;
+  border-color:#71933E !important;
+  outline:none !important;
+}
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+  color:#727C76 !important;
+}
+body.dark option{
+  background:#111718 !important;
+  color:#F1F4F0 !important;
+}
+
+/* Botones secundarios y utilitarios */
+body.dark .btn.g,
+body.dark .ta-btn,
+body.dark .mini-btn,
+body.dark .period-btn,
+body.dark .pay-filter,
+body.dark .pref-btn,
+body.dark .ag-tab,
+body.dark .cal-navbtn,
+body.dark .cal-today,
+body.dark .hueco,
+body.dark .notif-close,
+body.dark .pt-exit,
+body.dark .pt-icon-btn,
+body.dark .pt-text-btn,
+body.dark .pt-chart-tab{
+  background:#151C1D !important;
+  background-image:none !important;
+  color:#E4E9E5 !important;
+  border:1px solid #323C3D !important;
+  box-shadow:none !important;
+}
+body.dark .btn.g:hover,
+body.dark .ta-btn:hover,
+body.dark .mini-btn:hover,
+body.dark .period-btn:hover,
+body.dark .pay-filter:hover,
+body.dark .pref-btn:hover,
+body.dark .ag-tab:hover,
+body.dark .cal-navbtn:hover,
+body.dark .cal-today:hover,
+body.dark .hueco:hover,
+body.dark .pt-exit:hover,
+body.dark .pt-icon-btn:hover,
+body.dark .pt-chart-tab:hover{
+  background:#1D2526 !important;
+  color:#FFFFFF !important;
+  border-color:#475354 !important;
+}
+
+/* Acciones principales */
+body.dark .btn.p,
+body.dark .btn-primary,
+body.dark .pt-next-card .btn,
+body.dark .pt-turnos .btn{
+  background:linear-gradient(135deg,#86B63D,#567E26) !important;
+  color:#FFFFFF !important;
+  border:0 !important;
+  box-shadow:0 7px 18px rgba(72,108,31,.22) !important;
+}
+
+/* Estados seleccionados */
+body.dark .cp-btn.on,
+body.dark .ct-btn.on,
+body.dark .ag-tab.on,
+body.dark .plan-tab.on,
+body.dark .pay-filter.on,
+body.dark .period-btn.on,
+body.dark .pref-btn.on,
+body.dark .hueco.sel,
+body.dark .pt-chart-tab.on,
+body.dark .pt-bottom-nav button.on{
+  background:#202A1C !important;
+  background-image:none !important;
+  color:#D8F2A8 !important;
+  border-color:#4F683B !important;
+  box-shadow:none !important;
+}
+
+/* Etiquetas y pequeños bloques */
+body.dark .tag,
+body.dark .chart-summary,
+body.dark .notif-ic,
+body.dark .plan-ic,
+body.dark .arch-ic,
+body.dark .pt-next-icon,
+body.dark .pt-section-badge{
+  background:#1B251A !important;
+  color:#C8E99B !important;
+  border-color:#33432C !important;
+}
+
+/* Filas de archivos, sin blanco ni brillo */
+body.dark .arch-row,
+body.dark .patient-portal .arch-row{
+  background:#141B1C !important;
+  color:#EEF2EE !important;
+  border:1px solid #2D3738 !important;
+  box-shadow:none !important;
+}
+body.dark .arch-row:hover,
+body.dark .patient-portal .arch-row:hover{
+  background:#192122 !important;
+  border-color:#3A4748 !important;
+}
+body.dark .arch-info b{
+  color:#F3F6F2 !important;
+}
+body.dark .arch-info span{
+  color:#89938D !important;
+}
+body.dark .arch-row .btn,
+body.dark .arch-row button{
+  background:#1B2421 !important;
+  color:#EAF0E9 !important;
+  border:1px solid #38443F !important;
+  box-shadow:none !important;
+}
+body.dark .arch-row .btn:hover,
+body.dark .arch-row button:hover{
+  background:#253027 !important;
+  color:#FFFFFF !important;
+}
+
+/* Portal del paciente */
+body.dark .patient-portal{
+  background:#080C0D !important;
+  background-image:
+    radial-gradient(circle at 15% 5%,rgba(115,145,58,.04),transparent 28%),
+    radial-gradient(circle at 88% 82%,rgba(80,110,45,.03),transparent 32%) !important;
+}
+body.dark .pt-topbar{
+  background:rgba(8,12,13,.94) !important;
+  border-bottom:1px solid #252E2F !important;
+  box-shadow:none !important;
+  backdrop-filter:blur(12px) saturate(1.02) !important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.02) !important;
+}
+body.dark .pt-hero,
+body.dark .pt-next-card,
+body.dark .pt-stats .stat,
+body.dark .pt-chart-card,
+body.dark .patient-portal #ptPlan>.card,
+body.dark .patient-portal #ptArchivos>.card,
+body.dark .pt-turnos .turno-item{
+  background:#111718 !important;
+  background-image:none !important;
+  border:1px solid #2A3233 !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.20) !important;
+}
+body.dark .pt-avatar,
+body.dark .pt-prefs-photo{
+  background:#19221A !important;
+  color:#B8E766 !important;
+  border-color:#344135 !important;
+  box-shadow:none !important;
+}
+body.dark .pt-avatar-edit,
+body.dark .pt-prefs-photo i{
+  background:#18201D !important;
+  color:#B8E766 !important;
+  border-color:#3A4742 !important;
+}
+body.dark .pt-prefs-profile{
+  background:#12191A !important;
+  border:1px solid #293233 !important;
+}
+body.dark .patient-portal #ptPlan .pg-scroll{
+  background:#0E1415 !important;
+}
+body.dark .patient-portal #ptPlan table.pgrid thead th{
+  background:#1A241A !important;
+  color:#D5E7BE !important;
+}
+body.dark .patient-portal #ptPlan table.pgrid td,
+body.dark .patient-portal #ptPlan table.pgrid th{
+  border-color:#293332 !important;
+}
+body.dark .pt-bottom-nav{
+  background:rgba(10,15,16,.94) !important;
+  border:1px solid #293233 !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.32) !important;
+  backdrop-filter:blur(12px) saturate(1.02) !important;
+  -webkit-backdrop-filter:blur(12px) saturate(1.02) !important;
+}
+
+/* Gráficos y tablas */
+body.dark svg text{
+  fill:#AAB4AE;
+}
+body.dark .hist tbody tr:hover,
+body.dark .dash-prow:hover{
+  background:#171F20 !important;
+}
+body.dark table.hist th,
+body.dark table.hist td,
+body.dark .dash-prow,
+body.dark .dash-cita{
+  border-color:#2A3334 !important;
+}
+
+/* Modal backdrop */
+body.dark .modal-bg{
+  background:rgba(0,0,0,.68) !important;
+  backdrop-filter:blur(4px) !important;
+}
+
+/* Móvil */
+@media(max-width:820px){
+  body.dark .sidebar{
+    background:rgba(9,14,15,.94) !important;
+    border:1px solid #293233 !important;
+    box-shadow:0 12px 30px rgba(0,0,0,.34) !important;
+    backdrop-filter:blur(12px) saturate(1.02) !important;
+    -webkit-backdrop-filter:blur(12px) saturate(1.02) !important;
+  }
+  body.dark .sidebar .sb-item.on{
+    background:#202A1C !important;
+    color:#D8F2A8 !important;
+    border:1px solid #445A34 !important;
+    box-shadow:none !important;
+  }
+  body.dark .card,
+  body.dark .kpi,
+  body.dark .qa,
+  body.dark .pcard,
+  body.dark .stat,
+  body.dark .turno-item{
+    background:#111718 !important;
+  }
+}
+
+/* Reducir reflejo general de imágenes/miniaturas internas */
+body.dark img{
+  filter:none;
+}
+</style>
+
 </head>
 <body>
 
@@ -1164,7 +1798,7 @@ body.dark .pt-icon-btn{background:rgba(65,73,55,.78);border-color:rgba(210,224,1
         <div class="pt-section-head"><div><span>Tu progreso</span><h2>Evolución</h2></div><span class="pt-section-badge">Última medición</span></div>
         <div class="pt-stats" id="ptStats"></div>
         <div class="pt-chart-card">
-          <div class="pt-chart-head"><div><small>EVOLUCIÓN DEL PESO</small><b id="ptChartHeadline">Tu recorrido</b></div><span>📈</span></div>
+          <div class="pt-chart-head"><div><small id="ptChartLabel">EVOLUCIÓN DEL PESO</small><b id="ptChartHeadline">Tu recorrido</b></div><div class="pt-chart-controls" id="ptChartControls"><button class="pt-chart-btn on" type="button" data-metric="peso" onclick="selectPatientChart('peso',this)">Peso</button><button class="pt-chart-btn" type="button" data-metric="imc" onclick="selectPatientChart('imc',this)">IMC</button><button class="pt-chart-btn" type="button" data-metric="musculo" onclick="selectPatientChart('musculo',this)">Músculo</button><button class="pt-chart-btn" type="button" data-metric="grasa_pct" onclick="selectPatientChart('grasa_pct',this)">% grasa</button></div></div>
           <div class="chart-box" id="ptChart"></div>
         </div>
       </section>
@@ -1383,15 +2017,17 @@ body.dark .pt-icon-btn{background:rgba(65,73,55,.78);border-color:rgba(210,224,1
   <div class="modal">
     <h3>Reservar turno</h3>
     <div class="msg" id="reservaMsg"></div>
-    <div class="field"><label>Tipo de consulta</label><select id="rServicio" onchange="calcHuecos()"></select></div>
+    <div class="field"><label>Tipo de consulta</label><select id="rServicio" onchange="calcHuecos();updateReservaPaymentInfo()"></select></div>
     <div class="field"><label>Día</label><select id="rDia" onchange="calcHuecos()"></select></div>
     <div class="field"><label>Horarios disponibles</label>
       <div id="rHuecos" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div>
     </div>
-    <div class="form-actions">
-      <button class="btn p" id="rBtn" onclick="confirmReserva()" disabled>Confirmar turno</button>
-      <button class="btn g" onclick="closeModal('reservaModal')">Cancelar</button>
+    <div id="reservaPagoInfo">Elegí un servicio para ver el importe de la seña.</div>
+    <div class="reserva-actions">
+      <button class="btn g" id="rBtn" onclick="confirmReserva(false)" disabled>Reservar sin abonar</button>
+      <button class="btn p" id="rPayBtn" onclick="confirmReserva(true)" disabled>Reservar y abonar seña</button>
     </div>
+    <button class="btn g full" style="margin-top:8px" onclick="closeModal('reservaModal')">Cancelar</button>
   </div>
 </div>
 
@@ -2340,6 +2976,7 @@ async function loadPatientPortal(){
 }
 function renderPatientPortal(p,regs,tur){
   _ptCurrentPatient=p;
+  _ptChartRegs=regs||[];_ptChartPatient=p;_ptChartMetric="peso";
   applyPatientPhoto(p);
   setPatientMotion(localStorage.getItem(ptStorageKey("reduce_motion"))==="1");
   const first=(p.nombre||"Paciente").trim().split(/\s+/)[0];
@@ -2359,7 +2996,7 @@ function renderPatientPortal(p,regs,tur){
     if(u.musculo!=null)st.push(`<div class="stat"><div class="l">Músculo</div><div class="v">${u.musculo}<small> kg</small></div>${pr?chg(u.musculo,pr.musculo):""}</div>`);
     if(u.grasa_pct!=null)st.push(`<div class="stat"><div class="l">% Grasa</div><div class="v">${u.grasa_pct}<small> %</small></div>${pr?chg(u.grasa_pct,pr.grasa_pct):""}</div>`);
     $("ptStats").innerHTML=st.join("");
-    $("ptChart").innerHTML=miniChart(regs,r=>r.peso,"kg");
+    renderPatientChart("peso");
   }else{
     $("ptStats").innerHTML=`<div class="stat" style="grid-column:1/-1"><div class="l">Sin consultas aún</div></div>`;
     $("ptChart").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Tu evolución va a aparecer acá después de tus consultas.</p>`;
@@ -2378,6 +3015,31 @@ function renderPatientPortal(p,regs,tur){
     $("ptTurnos").innerHTML=`<div class="pt-chart-card" style="text-align:center;padding:25px"><div style="font-size:30px;margin-bottom:7px">📅</div><b>No tenés turnos próximos</b><p style="color:var(--ink-soft);font-size:12.5px;margin-top:5px">Cuando reserves uno, va a aparecer acá.</p></div>`;
   }
 }
+function selectPatientChart(metric,btn){
+  _ptChartMetric=metric;
+  document.querySelectorAll("#ptChartControls .pt-chart-btn").forEach(b=>b.classList.toggle("on",b.dataset.metric===metric));
+  renderPatientChart(metric);
+}
+function renderPatientChart(metric){
+  const box=$("ptChart"),label=$("ptChartLabel"),head=$("ptChartHeadline");if(!box)return;
+  const p=_ptChartPatient||{};
+  const cfg={
+    peso:{label:"EVOLUCIÓN DEL PESO",unit:"kg",get:r=>r.peso},
+    imc:{label:"EVOLUCIÓN DEL IMC",unit:"",get:r=>(r.peso&&p.altura)?Number((r.peso/Math.pow(p.altura/100,2)).toFixed(1)):null},
+    musculo:{label:"EVOLUCIÓN DE MASA MUSCULAR",unit:"kg",get:r=>r.musculo},
+    grasa_pct:{label:"EVOLUCIÓN DEL PORCENTAJE DE GRASA",unit:"%",get:r=>r.grasa_pct}
+  }[metric]||null;
+  if(!cfg)return;
+  if(label)label.textContent=cfg.label;
+  const valid=(_ptChartRegs||[]).filter(r=>cfg.get(r)!=null&&Number.isFinite(Number(cfg.get(r))));
+  if(!valid.length){box.innerHTML=`<p style="color:var(--ink-faint);font-size:13px;padding:30px 4px">Todavía no hay mediciones suficientes para mostrar este gráfico.</p>`;if(head)head.textContent="Sin datos disponibles";return;}
+  box.innerHTML=miniChart(valid,cfg.get,cfg.unit);
+  if(head){
+    const a=Number(cfg.get(valid[0])),b=Number(cfg.get(valid[valid.length-1])),d=b-a;
+    head.textContent=valid.length>1?`${d>0?"Subió":"Bajó"} ${Math.abs(d).toFixed(1)}${cfg.unit?" "+cfg.unit:""} en el período`:"Tu última medición";
+  }
+}
+
 function renderPortalPlan(plan){
   const box=$("ptPlan");if(!box)return;
   if(!plan||(!plan.menu&&!plan.nota)){box.innerHTML=`<div class="pt-chart-card" style="text-align:center;padding:24px"><div style="font-size:30px;margin-bottom:7px">🍽</div><b>Tu plan todavía no está disponible</b><p style="color:var(--ink-soft);font-size:12.5px;margin-top:5px">Cuando tu profesional lo publique, vas a verlo acá.</p></div>`;return;}
@@ -2654,6 +3316,8 @@ async function delDisp(id){
 
 /* ===== RESERVA (paciente) ===== */
 let _dispPaciente=[], _serviciosPaciente=[], _turnosPaciente=[], _miPacienteId=null, _miNutriId=null, _huecoSel=null;
+let _ptChartRegs=[], _ptChartPatient=null, _ptChartMetric="peso";
+const PT_SENIA_PCT=.30;
 async function openReservaModal(){
   clearMsg($("reservaMsg"));
   $("rHuecos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">Cargando…</p>`;
@@ -2680,10 +3344,11 @@ async function openReservaModal(){
     }
     $("rDia").innerHTML=dias.length?dias.map(d=>`<option value="${d.iso}">${d.label}</option>`).join(""):`<option value="">Sin días disponibles</option>`;
     calcHuecos();
+    updateReservaPaymentInfo();
   }catch(e){$("rHuecos").innerHTML=`<p style="color:var(--bad);font-size:13px">Error: ${esc(e.message)}</p>`;}
 }
 async function calcHuecos(){
-  _huecoSel=null;$("rBtn").disabled=true;
+  _huecoSel=null;$("rBtn").disabled=true;if($("rPayBtn"))$("rPayBtn").disabled=true;
   const iso=$("rDia").value;
   if(!iso){$("rHuecos").innerHTML=`<p style="color:var(--ink-faint);font-size:13px">No hay días disponibles.</p>`;return;}
   const dow=new Date(iso+"T00:00:00").getDay();
@@ -2713,23 +3378,74 @@ function selHueco(hora,el){
   _huecoSel=hora;
   document.querySelectorAll("#rHuecos .hueco").forEach(b=>b.classList.remove("sel"));
   el.classList.add("sel");
-  $("rBtn").disabled=false;
+  $("rBtn").disabled=false;if($("rPayBtn"))$("rPayBtn").disabled=false;
 }
-async function confirmReserva(){
+function updateReservaPaymentInfo(){
+  const serv=_serviciosPaciente.find(s=>s.id===$("rServicio").value);
+  const box=$("reservaPagoInfo"),payBtn=$("rPayBtn");if(!box)return;
+  if(!serv||serv.precio==null||Number(serv.precio)<=0){
+    box.innerHTML=`Este servicio no tiene precio cargado. Podés reservar el turno, pero no abonar una seña desde acá.`;
+    if(payBtn)payBtn.disabled=true;
+    return;
+  }
+  const senia=Math.round(Number(serv.precio)*PT_SENIA_PCT);
+  box.innerHTML=`Valor de la consulta: <b>$ ${Number(serv.precio).toLocaleString("es-AR")}</b><br>Seña para confirmar (${Math.round(PT_SENIA_PCT*100)}%): <b>$ ${senia.toLocaleString("es-AR")}</b>`;
+  if(payBtn)payBtn.disabled=!_huecoSel;
+}
+async function confirmReserva(pagarSenia=false){
   if(!_huecoSel||!_miPacienteId){showMsg($("reservaMsg"),"Elegí un horario","err");return;}
   const iso=$("rDia").value, servId=$("rServicio").value||null;
   const serv=_serviciosPaciente.find(s=>s.id===servId);
-  $("rBtn").disabled=true;$("rBtn").textContent="Reservando…";
+  if(pagarSenia&&(!serv||serv.precio==null||Number(serv.precio)<=0)){showMsg($("reservaMsg"),"Este servicio no tiene precio cargado para calcular la seña.","err");return;}
+  const activeBtn=pagarSenia?$("rPayBtn"):$("rBtn");
+  const oldText=activeBtn.textContent;
+  let paymentWindow=null;
+  if(pagarSenia)paymentWindow=window.open("about:blank","_blank");
+  $("rBtn").disabled=true;if($("rPayBtn"))$("rPayBtn").disabled=true;
+  activeBtn.textContent=pagarSenia?"Reservando y generando pago…":"Reservando…";
   try{
-    const{error}=await sb.from("turnos").insert({
+    const{data:turno,error}=await sb.from("turnos").insert({
       nutri_id:_miNutriId,paciente_id:_miPacienteId,fecha:iso,hora:_huecoSel,
       servicio_id:servId,nota:serv?serv.nombre:null,modalidad:serv?serv.modalidad:"presencial",
       estado:"confirmado",creado_por:"paciente"
-    });
+    }).select().single();
     if(error)throw error;
-    showMsg($("reservaMsg"),"✓ ¡Turno reservado!","ok");
-    setTimeout(()=>{closeModal("reservaModal");$("rBtn").disabled=false;$("rBtn").textContent="Confirmar turno";loadPatientPortal();},1400);
-  }catch(e){showMsg($("reservaMsg"),"Error: "+e.message,"err");$("rBtn").disabled=false;$("rBtn").textContent="Confirmar turno";}
+    if(pagarSenia){
+      const senia=Math.round(Number(serv.precio)*PT_SENIA_PCT);
+      try{
+        const{data:{session}}=await sb.auth.getSession();
+        const resp=await fetch(`${SUPABASE_URL}/functions/v1/mp-crear-pago`,{
+          method:"POST",
+          headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+          body:JSON.stringify({
+            concepto:`Seña ${serv.nombre} · ${fmtDate(iso)} ${_huecoSel}`,
+            monto:senia,
+            paciente_id:_miPacienteId,
+            nutri_id:_miNutriId,
+            turno_id:turno&&turno.id?turno.id:null,
+            tipo:"senia_turno"
+          })
+        });
+        const data=await resp.json();
+        if(!resp.ok||data.error)throw new Error(data.error||"No se pudo generar el pago");
+        const url=data.init_point||data.url||data.payment_url||data.sandbox_init_point;
+        if(url){
+          if(paymentWindow)paymentWindow.location.href=url;else window.open(url,"_blank");
+          showMsg($("reservaMsg"),"✓ Turno reservado. Abrimos Mercado Pago para abonar la seña.","ok");
+        }else throw new Error("Mercado Pago no devolvió el enlace de pago");
+      }catch(payErr){
+        if(paymentWindow)paymentWindow.close();
+        showMsg($("reservaMsg"),`✓ El turno quedó reservado, pero no se pudo abrir el pago de la seña: ${payErr.message}`,"ok");
+      }
+    }else{
+      showMsg($("reservaMsg"),"✓ ¡Turno reservado!","ok");
+    }
+    setTimeout(()=>{closeModal("reservaModal");activeBtn.textContent=oldText;loadPatientPortal();},pagarSenia?2400:1400);
+  }catch(e){
+    if(paymentWindow)paymentWindow.close();
+    showMsg($("reservaMsg"),"Error: "+e.message,"err");
+    $("rBtn").disabled=false;if($("rPayBtn"))$("rPayBtn").disabled=false;activeBtn.textContent=oldText;
+  }
 }
 
 /* ===== GOOGLE CALENDAR ===== */
@@ -3586,6 +4302,35 @@ body.dark #patientView .pt-topbar{background:rgba(45,51,38,.9)!important}
   #patientView .pt-bottom-nav{left:8px!important;right:8px!important;width:auto!important;transform:none!important}
 }
 
+
+/* ===== AJUSTES FINALES PORTAL: SELECCIÓN CLARA + SELECTOR DE GRÁFICO ===== */
+#patientView .pt-bottom-nav button.on{
+  background:rgba(233,243,215,.92)!important;
+  color:#355b1d!important;
+  box-shadow:0 3px 10px rgba(62,114,29,.07)!important;
+}
+body.dark #patientView .pt-bottom-nav button.on{
+  background:rgba(146,174,105,.16)!important;
+  color:var(--ink)!important;
+}
+#patientView .pt-chart-controls{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#patientView .pt-chart-btn{border:1px solid rgba(112,142,76,.18);background:rgba(247,250,241,.75);color:var(--ink-soft);padding:6px 10px;border-radius:999px;font:700 10.5px var(--fb);transition:.16s ease}
+#patientView .pt-chart-btn:hover{border-color:rgba(62,114,29,.35);color:var(--brand-strong)}
+#patientView .pt-chart-btn.on{background:#e9f3d7!important;color:#355b1d!important;border-color:#d8e8bb!important;box-shadow:none!important}
+body.dark #patientView .pt-chart-btn{background:rgba(62,70,52,.72);border-color:rgba(200,218,170,.12)}
+body.dark #patientView .pt-chart-btn.on{background:rgba(146,174,105,.18)!important;color:var(--ink)!important}
+#patientView .pt-chart-head{gap:12px;align-items:flex-start}
+#reservaPagoInfo{padding:12px 13px;border-radius:14px;background:var(--brand-tint);color:var(--ink-soft);font-size:12.5px;line-height:1.45;margin-top:8px}
+#reservaPagoInfo b{color:var(--brand-strong)}
+.reserva-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.reserva-actions .btn{width:100%;padding-left:10px;padding-right:10px}
+@media(max-width:520px){
+  #patientView .pt-chart-head{display:block}
+  #patientView .pt-chart-controls{justify-content:flex-start;margin-top:10px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none}
+  #patientView .pt-chart-controls::-webkit-scrollbar{display:none}
+  #patientView .pt-chart-btn{flex:none}
+  .reserva-actions{grid-template-columns:1fr}
+}
 </style></head><body>
     <div class="topbar">
       <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
