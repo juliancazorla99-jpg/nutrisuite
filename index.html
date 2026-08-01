@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NutriSuite</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@1,500&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@1,500&family=Dancing+Script:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -13,7 +13,7 @@
   --good:#3E721D;--good-bg:#DDEEC8;--bad:#C0663A;--bad-bg:#F7E7DC;--gold:#C9A227;--lima:#9AB352;
   --glass:rgba(255,255,255,.44);--glass-strong:rgba(255,255,255,.66);--glass-line:rgba(255,255,255,.7);
   --glass-shadow:0 10px 36px rgba(62,114,29,.12),0 1px 0 rgba(255,255,255,.85) inset,0 0 0 .5px rgba(255,255,255,.4);
-  --fd:'Outfit',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif;--fscript:'Dancing Script',cursive;
+  --fd:'Geist','Outfit',system-ui,sans-serif;--fb:'Geist','Inter',system-ui,sans-serif;--fscript:'Dancing Script',cursive;
   --sidebar:250px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -585,6 +585,26 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
   .qa-tx b{font-size:16px}
 }
 
+
+/* ===== PULIDO DE INICIO + NOTIFICACIONES ===== */
+.mobile-head-actions{display:flex;align-items:center;gap:10px}
+.notif-bell{position:relative;width:46px;height:46px;border:1px solid rgba(255,255,255,.88);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--brand-strong);background:rgba(244,249,235,.68);box-shadow:0 8px 22px rgba(62,114,29,.10),0 1px 0 rgba(255,255,255,.95) inset;backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);cursor:pointer}
+.notif-dot{position:absolute;right:8px;top:7px;width:8px;height:8px;border-radius:50%;background:#7EAF3F;border:2px solid rgba(255,255,255,.92)}
+.notif-modal{max-width:420px}
+.notif-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.notif-head h3{margin:0}.notif-close{border:0;background:var(--surface-2);width:34px;height:34px;border-radius:50%;font-size:22px;color:var(--ink-soft)}
+.notif-row{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.notif-row:last-child{border-bottom:0}.notif-ic{width:38px;height:38px;border-radius:12px;background:var(--brand-tint);display:flex;align-items:center;justify-content:center;flex:none;color:var(--brand-strong)}.notif-txt b{display:block;font-size:13.5px}.notif-txt span{display:block;color:var(--ink-soft);font-size:12px;margin-top:2px;line-height:1.35}.notif-empty{text-align:center;color:var(--ink-soft);padding:28px 10px}.notif-empty svg{display:block;margin:0 auto 10px;color:var(--brand)}
+.hist-multi{padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.44);margin-bottom:14px}.hist-multi-title{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:9px}.hist-checks{display:flex;flex-wrap:wrap;gap:7px}.hist-check{display:flex;align-items:center;gap:6px;padding:8px 11px;border:1px solid var(--line);background:var(--surface);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer}.hist-check:has(input:checked){background:var(--brand-tint);border-color:var(--brand);color:var(--brand-strong)}.hist-check input{accent-color:var(--brand)}.hist-help{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:8px}
+@media(min-width:821px){.mobile-brand-logo img{width:92px}.dash-kpis .kpi:nth-child(3){grid-column:auto}.dash-kpis .kpi:nth-child(3) .k-v{font-size:36px}}
+@media(max-width:820px){
+  .mobile-brand-head{min-height:58px;margin-bottom:15px}.mobile-brand-logo{width:102px;min-height:52px}.mobile-brand-logo img{width:84px}
+  .notif-bell{width:44px;height:44px}.profile-chip,.profile-photo{width:50px;height:50px}.profile-edit-dot{width:22px;height:22px}
+  .dash-kpis{grid-template-columns:repeat(2,1fr)}.dash-kpis .kpi:nth-child(3){grid-column:1/-1;order:-1;padding:19px 20px}.dash-kpis .kpi:nth-child(3) .k-v{font-size:38px}.dash-kpis .kpi:nth-child(3) .k-l{font-size:11.5px}
+  .qa-ic{width:48px;height:48px;border-radius:50%;box-shadow:0 1px 0 rgba(255,255,255,.9) inset}.qa-ic svg{width:23px;height:23px}
+  .sidebar{background:rgba(247,250,241,.49)}.sb-item.on{border-radius:28px;transform:translateY(-1px)}
+  .dash-cita .dc-n span{flex-wrap:wrap;gap:4px}.dash-cita .dc-n span .appt-icon{font-size:12px}
+}
+@media(max-width:390px){.mobile-brand-logo img{width:76px}.notif-bell{width:41px;height:41px}.profile-chip,.profile-photo{width:47px;height:47px}}
+
 </style>
 </head>
 <body>
@@ -660,10 +680,16 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
     <div class="hidden" id="view-inicio">
       <div class="mobile-brand-head">
         <div class="mobile-brand-logo" id="mobileBrandLogo" aria-label="Candela Viola Nutrición"></div>
-        <button class="profile-chip" type="button" onclick="goView('servicios')" aria-label="Abrir mi cuenta">
-          <span class="profile-photo" id="topProfilePhoto"><span id="topProfileInitials">CV</span></span>
-          <span class="profile-edit-dot">✎</span>
-        </button>
+        <div class="mobile-head-actions">
+          <button class="notif-bell" type="button" onclick="openNotifications()" aria-label="Ver notificaciones">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+            <span class="notif-dot" id="notifDot"></span>
+          </button>
+          <button class="profile-chip" type="button" onclick="goView('servicios')" aria-label="Abrir mi cuenta">
+            <span class="profile-photo" id="topProfilePhoto"><span id="topProfileInitials">CV</span></span>
+            <span class="profile-edit-dot">✎</span>
+          </button>
+        </div>
       </div>
       <div class="dash-hello">
         <h1 id="dashSaludo">Hola</h1>
@@ -1175,6 +1201,14 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
 </div>
 
 
+<!-- MODAL NOTIFICACIONES -->
+<div class="modal-bg" id="notifModal">
+  <div class="modal notif-modal">
+    <div class="notif-head"><h3>Notificaciones</h3><button class="notif-close" onclick="closeModal('notifModal')">×</button></div>
+    <div id="notifList"></div>
+  </div>
+</div>
+
 <!-- MODAL HISTORIA -->
 <div class="modal-bg" id="historiaModal">
   <div class="modal modal-wide" style="max-width:820px">
@@ -1182,6 +1216,11 @@ table.pgrid .pg-comida{background:var(--brand-tint);color:var(--brand-strong);fo
     <div class="hist-config">
       <div>
         <div class="field"><label>¿Qué querés mostrar?</label><select id="histParam" onchange="actualizarHistoriaOpciones()"></select></div>
+        <div class="hist-multi hidden" id="histMulti">
+          <label class="hist-multi-title">Parámetros incluidos</label>
+          <div class="hist-checks" id="histChecks"></div>
+          <span class="hist-help">Elegí entre 2 y 5 indicadores para crear un resumen integral.</span>
+        </div>
         <div class="form-grid">
           <div class="field"><label>Desde</label><select id="histDesde" onchange="renderHistoriaPreview()"></select></div>
           <div class="field"><label>Hasta</label><select id="histHasta" onchange="renderHistoriaPreview()"></select></div>
@@ -2874,92 +2913,88 @@ function generarInforme(){
 
 let _histStyle="claro";
 const HIST_PARAMS={
-  peso:{label:"Descenso de peso",campo:"peso",unidad:"kg",good:"down"},
-  musculo:{label:"Masa muscular",campo:"musculo",unidad:"kg",good:"up"},
-  grasa:{label:"Grasa corporal",campo:"grasa",unidad:"kg",good:"down"},
-  grasa_pct:{label:"Porcentaje de grasa",campo:"grasa_pct",unidad:"%",good:"down"},
-  imc:{label:"Índice de masa corporal",campo:"imc",unidad:"",good:"down"}
+  peso:{label:"Descenso de peso",short:"Peso",campo:"peso",unidad:"kg",good:"down"},
+  musculo:{label:"Masa muscular",short:"Músculo",campo:"musculo",unidad:"kg",good:"up"},
+  grasa:{label:"Grasa corporal",short:"Grasa",campo:"grasa",unidad:"kg",good:"down"},
+  grasa_pct:{label:"Porcentaje de grasa",short:"% grasa",campo:"grasa_pct",unidad:"%",good:"down"},
+  imc:{label:"Índice de masa corporal",short:"IMC",campo:"imc",unidad:"",good:"down"}
 };
+function availableHistParams(){
+  return Object.entries(HIST_PARAMS).filter(([,v])=>_chartRegs.some(r=>r[v.campo]!=null&&r[v.campo]!==""));
+}
 function openHistoriaModal(){
   if(!currentPat||!_chartRegs||!_chartRegs.length){alert("Este paciente todavía no tiene consultas para generar una historia.");return;}
-  const sel=$("histParam");sel.innerHTML="";
-  Object.entries(HIST_PARAMS).forEach(([k,v])=>{
-    const cantidad=_chartRegs.filter(r=>r[v.campo]!=null&&r[v.campo]!=="").length;
-    if(cantidad>=1)sel.insertAdjacentHTML("beforeend",`<option value="${k}">${v.label}</option>`);
-  });
+  const avail=availableHistParams(),sel=$("histParam");sel.innerHTML="";
+  if(avail.length>=2)sel.insertAdjacentHTML("beforeend",`<option value="general">Balance general del avance</option>`);
+  avail.forEach(([k,v])=>sel.insertAdjacentHTML("beforeend",`<option value="${k}">${v.label}</option>`));
   if(!sel.options.length){alert("No hay mediciones disponibles para crear una historia.");return;}
+  $("histChecks").innerHTML=avail.map(([k,v],i)=>`<label class="hist-check"><input type="checkbox" value="${k}" ${i<3?'checked':''} onchange="renderHistoriaPreview()">${v.short}</label>`).join("");
   _histStyle="claro";document.querySelectorAll(".hist-design").forEach((b,i)=>b.classList.toggle("on",i===0));
-  actualizarHistoriaOpciones();
-  $("historiaModal").classList.add("open");
+  actualizarHistoriaOpciones();$("historiaModal").classList.add("open");
+}
+function selectedGeneralParams(){
+  return [...document.querySelectorAll('#histChecks input:checked')].map(x=>x.value).filter(k=>HIST_PARAMS[k]);
 }
 function actualizarHistoriaOpciones(){
-  const key=$("histParam").value,cfg=HIST_PARAMS[key];
-  const regs=[..._chartRegs].filter(r=>r[cfg.campo]!=null&&r[cfg.campo]!=="").sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const opts=regs.map((r,i)=>`<option value="${i}">${fmtDate(r.fecha)} · ${Number(r[cfg.campo]).toFixed(1)}${cfg.unidad}</option>`).join("");
-  $("histDesde").innerHTML=opts;$("histHasta").innerHTML=opts;
-  $("histDesde").value="0";$("histHasta").value=String(Math.max(0,regs.length-1));
-  $("histTitulo").value=cfg.label;
-  renderHistoriaPreview();
+  const key=$("histParam").value,isGeneral=key==="general";$("histMulti").classList.toggle("hidden",!isGeneral);
+  let regs;
+  if(isGeneral){regs=[..._chartRegs].sort((a,b)=>a.fecha.localeCompare(b.fecha));}
+  else{const cfg=HIST_PARAMS[key];regs=[..._chartRegs].filter(r=>r[cfg.campo]!=null&&r[cfg.campo]!=="").sort((a,b)=>a.fecha.localeCompare(b.fecha));}
+  const opts=regs.map((r,i)=>`<option value="${i}">${fmtDate(r.fecha)}</option>`).join("");
+  $("histDesde").innerHTML=opts;$("histHasta").innerHTML=opts;$("histDesde").value="0";$("histHasta").value=String(Math.max(0,regs.length-1));
+  $("histTitulo").value=isGeneral?"Balance general del avance":HIST_PARAMS[key].label;renderHistoriaPreview();
 }
-function setHistoriaStyle(style,btn){
-  _histStyle=style;document.querySelectorAll(".hist-design").forEach(b=>b.classList.remove("on"));btn.classList.add("on");renderHistoriaPreview();
-}
+function setHistoriaStyle(style,btn){_histStyle=style;document.querySelectorAll(".hist-design").forEach(b=>b.classList.remove("on"));btn.classList.add("on");renderHistoriaPreview();}
 function getHistoriaData(){
-  const key=$("histParam").value,cfg=HIST_PARAMS[key];
-  const regs=[..._chartRegs].filter(r=>r[cfg.campo]!=null&&r[cfg.campo]!=="").sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  let i=Number($("histDesde").value||0),j=Number($("histHasta").value||0);if(i>j){[i,j]=[j,i]}
-  const subset=regs.slice(i,j+1),a=subset[0],b=subset[subset.length-1];
-  return {key,cfg,regs:subset,a,b,v0:Number(a[cfg.campo]),v1:Number(b[cfg.campo])};
+  const key=$("histParam").value,isGeneral=key==="general";let regs;
+  if(isGeneral)regs=[..._chartRegs].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  else{const cfg=HIST_PARAMS[key];regs=[..._chartRegs].filter(r=>r[cfg.campo]!=null&&r[cfg.campo]!=="").sort((a,b)=>a.fecha.localeCompare(b.fecha));}
+  let i=Number($("histDesde").value||0),j=Number($("histHasta").value||0);if(i>j)[i,j]=[j,i];const subset=regs.slice(i,j+1);
+  if(isGeneral)return {key,isGeneral,regs:subset,a:subset[0],b:subset[subset.length-1],params:selectedGeneralParams()};
+  const cfg=HIST_PARAMS[key],a=subset[0],b=subset[subset.length-1];return {key,isGeneral,cfg,regs:subset,a,b,v0:Number(a[cfg.campo]),v1:Number(b[cfg.campo])};
+}
+function getParamPeriodData(regs,key){
+  const cfg=HIST_PARAMS[key],valid=regs.filter(r=>r[cfg.campo]!=null&&r[cfg.campo]!=="");if(!valid.length)return null;
+  const a=valid[0],b=valid[valid.length-1],v0=Number(a[cfg.campo]),v1=Number(b[cfg.campo]),dif=v1-v0,good=cfg.good==="down"?dif<0:dif>0;
+  return {key,cfg,valid,v0,v1,dif,good};
 }
 async function renderHistoriaPreview(){
-  const canvas=$("histPreview");if(!canvas||!$("histParam").value)return;
-  const d=getHistoriaData(),c=canvas.getContext("2d"),W=1080,H=1920;
-  const palettes={
-    claro:{bg:"#EAF0DC",blob:"#D6E6B8",card:"#FFFFFF",ink:"#2C4019",soft:"#5C6E48",accent:"#3E721D"},
-    fuerte:{bg:"#315F20",blob:"#8EBB58",card:"#F4F8EA",ink:"#F7FAF1",soft:"#D9E7C7",accent:"#9BCB62"},
-    minimal:{bg:"#F8F9F3",blob:"#E5ECD8",card:"#FFFFFF",ink:"#26351C",soft:"#728064",accent:"#4B7C2C"}
-  },p=palettes[_histStyle];
-  c.clearRect(0,0,W,H);c.fillStyle=p.bg;c.fillRect(0,0,W,H);
-  c.fillStyle=p.blob;c.beginPath();c.arc(970,120,330,0,Math.PI*2);c.fill();c.beginPath();c.arc(45,1810,280,0,Math.PI*2);c.fill();
-  c.fillStyle=p.ink;c.font="800 58px Inter, sans-serif";wrapCanvasText(c,$("histTitulo").value||d.cfg.label,90,285,880,72);
-  c.fillStyle=p.soft;c.font="500 29px Inter, sans-serif";c.fillText(`${fmtDate(d.a.fecha)}  →  ${fmtDate(d.b.fecha)}`,90,455);
-  c.fillStyle=p.card;roundRect(c,70,555,940,740,44);c.fill();
-  const dif=d.v1-d.v0,good=d.cfg.good==="down"?dif<0:dif>0;
-  c.fillStyle=p.accent;c.font="800 112px Inter, sans-serif";c.fillText(`${dif>0?"+":""}${dif.toFixed(1)}${d.cfg.unidad}`,120,785);
-  c.fillStyle=_histStyle==="fuerte"?"#506744":p.soft;c.font="600 29px Inter, sans-serif";c.fillText(good?"Cambio favorable en el período":"Cambio registrado en el período",120,842);
-  drawHistoriaChart(c,d.regs,d.cfg.campo,130,930,820,230,p.accent);
-  c.fillStyle=_histStyle==="fuerte"?"#30451F":p.ink;c.font="700 34px Inter, sans-serif";c.fillText(`Inicio: ${d.v0.toFixed(1)}${d.cfg.unidad}`,120,1210);c.fillText(`Actual: ${d.v1.toFixed(1)}${d.cfg.unidad}`,560,1210);
-  c.fillStyle=p.ink;c.font="700 34px Inter, sans-serif";c.fillText("Cada paso cuenta.",90,1425);
-  c.fillStyle=p.soft;c.font="400 27px Inter, sans-serif";c.fillText(`${d.regs.length} consulta${d.regs.length===1?"":"s"} incluidas en esta evolución`,90,1475);
-  await drawHistoriaLogo(c,90,1610,300);
+  const canvas=$("histPreview");if(!canvas||!$("histParam").value)return;const d=getHistoriaData();if(!d.regs.length)return;
+  const c=canvas.getContext("2d"),W=1080,H=1920,palettes={claro:{bg:"#EAF0DC",blob:"#D6E6B8",card:"#FFFFFF",ink:"#2C4019",soft:"#5C6E48",accent:"#3E721D"},fuerte:{bg:"#315F20",blob:"#8EBB58",card:"#F4F8EA",ink:"#F7FAF1",soft:"#D9E7C7",accent:"#9BCB62"},minimal:{bg:"#F8F9F3",blob:"#E5ECD8",card:"#FFFFFF",ink:"#26351C",soft:"#728064",accent:"#4B7C2C"}},p=palettes[_histStyle];
+  c.clearRect(0,0,W,H);c.fillStyle=p.bg;c.fillRect(0,0,W,H);c.fillStyle=p.blob;c.beginPath();c.arc(970,120,330,0,Math.PI*2);c.fill();c.beginPath();c.arc(45,1810,280,0,Math.PI*2);c.fill();
+  c.fillStyle=p.ink;c.font="800 58px Geist, Inter, sans-serif";wrapCanvasText(c,$("histTitulo").value||(d.isGeneral?"Balance general del avance":d.cfg.label),90,250,880,68);
+  c.fillStyle=p.soft;c.font="500 28px Geist, Inter, sans-serif";c.fillText(`${fmtDate(d.a.fecha)}  →  ${fmtDate(d.b.fecha)}`,90,430);
+  if(d.isGeneral)drawGeneralStory(c,d,p);else drawSingleStory(c,d,p);
+  await drawHistoriaLogo(c,90,1640,260);
 }
-function drawHistoriaChart(c,regs,campo,x,y,w,h,color){
-  const vals=regs.map(r=>Number(r[campo])).filter(Number.isFinite);if(!vals.length)return;
-  const min=Math.min(...vals),max=Math.max(...vals),span=(max-min)||1;c.strokeStyle=color;c.lineWidth=12;c.lineJoin="round";c.lineCap="round";c.beginPath();
-  vals.forEach((v,i)=>{const px=x+i*(w/Math.max(vals.length-1,1)),py=y+h-(v-min)/span*h;i?c.lineTo(px,py):c.moveTo(px,py)});c.stroke();
-  vals.forEach((v,i)=>{const px=x+i*(w/Math.max(vals.length-1,1)),py=y+h-(v-min)/span*h;c.fillStyle=color;c.beginPath();c.arc(px,py,13,0,Math.PI*2);c.fill()});
+function drawSingleStory(c,d,p){
+  c.fillStyle=p.card;roundRect(c,70,525,940,760,44);c.fill();const dif=d.v1-d.v0,good=d.cfg.good==="down"?dif<0:dif>0;
+  c.fillStyle=p.accent;c.font="800 112px Geist, Inter, sans-serif";c.fillText(`${dif>0?"+":""}${dif.toFixed(1)}${d.cfg.unidad}`,120,755);
+  c.fillStyle=_histStyle==="fuerte"?"#506744":p.soft;c.font="600 29px Geist, Inter, sans-serif";c.fillText(good?"Cambio favorable en el período":"Cambio registrado en el período",120,815);
+  drawHistoriaChart(c,d.regs,d.cfg.campo,130,900,820,230,p.accent);c.fillStyle=_histStyle==="fuerte"?"#30451F":p.ink;c.font="700 34px Geist, Inter, sans-serif";c.fillText(`Inicio: ${d.v0.toFixed(1)}${d.cfg.unidad}`,120,1205);c.fillText(`Actual: ${d.v1.toFixed(1)}${d.cfg.unidad}`,560,1205);
+  c.fillStyle=p.ink;c.font="700 34px Geist, Inter, sans-serif";c.fillText("Cada paso cuenta.",90,1410);c.fillStyle=p.soft;c.font="400 27px Geist, Inter, sans-serif";c.fillText(`${d.regs.length} consulta${d.regs.length===1?"":"s"} incluidas`,90,1460);
 }
-function wrapCanvasText(c,text,x,y,maxWidth,lineHeight){
-  const words=text.split(/\s+/);let line="",yy=y;for(const word of words){const test=line?line+" "+word:word;if(c.measureText(test).width>maxWidth&&line){c.fillText(line,x,yy);line=word;yy+=lineHeight}else line=test}if(line)c.fillText(line,x,yy);
+function drawGeneralStory(c,d,p){
+  let params=d.params;if(params.length<2)params=availableHistParams().slice(0,3).map(([k])=>k);params=params.slice(0,5);const items=params.map(k=>getParamPeriodData(d.regs,k)).filter(Boolean);
+  c.fillStyle=p.card;roundRect(c,70,510,940,930,44);c.fill();c.fillStyle=_histStyle==="fuerte"?"#30451F":p.ink;c.font="700 30px Geist, Inter, sans-serif";c.fillText("Resumen de indicadores",115,585);
+  const cols=items.length<=3?1:2,cardW=cols===1?850:405,cardH=items.length<=3?205:250,gap=28;
+  items.forEach((it,idx)=>{const col=idx%cols,row=Math.floor(idx/cols),x=115+col*(cardW+28),y=630+row*(cardH+gap);c.fillStyle=_histStyle==="fuerte"?"#E8F0DD":"#F1F6E8";roundRect(c,x,y,cardW,cardH,28);c.fill();c.fillStyle="#56723C";c.font="700 24px Geist, Inter, sans-serif";c.fillText(it.cfg.short,x+28,y+45);c.fillStyle="#274117";c.font=`800 ${cols===1?54:46}px Geist, Inter, sans-serif`;c.fillText(`${it.dif>0?"+":""}${it.dif.toFixed(1)}${it.cfg.unidad}`,x+28,y+112);c.fillStyle="#708061";c.font="500 20px Geist, Inter, sans-serif";c.fillText(`${it.v0.toFixed(1)} → ${it.v1.toFixed(1)}${it.cfg.unidad}`,x+28,y+153);c.fillStyle=it.good?"#4F842E":"#9A6A3B";c.font="700 18px Geist, Inter, sans-serif";c.fillText(it.good?"Evolución favorable":"Cambio registrado",x+28,y+185);});
+  c.fillStyle=p.ink;c.font="700 32px Geist, Inter, sans-serif";c.fillText("Un proceso construido consulta a consulta.",90,1520);c.fillStyle=p.soft;c.font="400 25px Geist, Inter, sans-serif";c.fillText(`${d.regs.length} consultas consideradas en el balance`,90,1570);
 }
-function drawHistoriaLogo(c,x,y,w){
-  return new Promise(resolve=>{
-    const logo=(document.querySelector("#brandLogo img")||document.querySelector(".brand img"));
-    if(!logo||!logo.src){resolve();return}
-    const img=new Image();
-    img.onload=()=>{c.drawImage(img,x,y,w,w*img.height/img.width);resolve()};
-    img.onerror=()=>resolve();
-    img.src=logo.src;
-    if(img.complete&&img.naturalWidth){c.drawImage(img,x,y,w,w*img.height/img.width);resolve()}
-  });
-}
-async function descargarHistoria(){
-  await renderHistoriaPreview();
-  const canvas=$("histPreview"),key=$("histParam").value;
-  const a=document.createElement("a");
-  a.download=`historia-${key}-${todayISO()}.png`;
-  a.href=canvas.toDataURL("image/png");
-  a.click();
+function drawHistoriaChart(c,regs,campo,x,y,w,h,color){const vals=regs.map(r=>Number(r[campo])).filter(Number.isFinite);if(!vals.length)return;const min=Math.min(...vals),max=Math.max(...vals),span=(max-min)||1;c.strokeStyle=color;c.lineWidth=12;c.lineJoin="round";c.lineCap="round";c.beginPath();vals.forEach((v,i)=>{const px=x+i*(w/Math.max(vals.length-1,1)),py=y+h-(v-min)/span*h;i?c.lineTo(px,py):c.moveTo(px,py)});c.stroke();vals.forEach((v,i)=>{const px=x+i*(w/Math.max(vals.length-1,1)),py=y+h-(v-min)/span*h;c.fillStyle=color;c.beginPath();c.arc(px,py,13,0,Math.PI*2);c.fill()});}
+function wrapCanvasText(c,text,x,y,maxWidth,lineHeight){const words=text.split(/\s+/);let line="",yy=y;for(const word of words){const test=line?line+" "+word:word;if(c.measureText(test).width>maxWidth&&line){c.fillText(line,x,yy);line=word;yy+=lineHeight}else line=test}if(line)c.fillText(line,x,yy);}
+function drawHistoriaLogo(c,x,y,w){return new Promise(resolve=>{const logo=(document.querySelector("#brandLogo img")||document.querySelector(".brand img"));if(!logo||!logo.src){resolve();return}const img=new Image();let done=false;const paint=()=>{if(done)return;done=true;c.drawImage(img,x,y,w,w*img.height/img.width);resolve()};img.onload=paint;img.onerror=()=>resolve();img.src=logo.src;if(img.complete&&img.naturalWidth)paint();});}
+async function descargarHistoria(){await renderHistoriaPreview();const canvas=$("histPreview"),key=$("histParam").value,a=document.createElement("a");a.download=`historia-${key}-${todayISO()}.png`;a.href=canvas.toDataURL("image/png");a.click();}
+
+function openNotifications(){
+  const list=$("notifList"),items=[];
+  try{
+    if(typeof turnos!=="undefined"&&Array.isArray(turnos)){const hoy=todayISO(),n=turnos.filter(t=>String(t.fecha||"").slice(0,10)===hoy&&!t.atendido).length;if(n)items.push({ic:"calendar",t:`${n} turno${n===1?'':'s'} para hoy`,s:"Revisá tu agenda y los horarios pendientes."});}
+    if(typeof cobros!=="undefined"&&Array.isArray(cobros)){const n=cobros.filter(c=>c.estado==="pendiente"||c.estado==="vencido").length;if(n)items.push({ic:"wallet",t:`${n} cobro${n===1?'':'s'} por revisar`,s:"Hay movimientos pendientes o vencidos."});}
+  }catch(e){}
+  if(!items.length){list.innerHTML=`<div class="notif-empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><b>Todo al día</b><div style="margin-top:4px;font-size:12px">No hay novedades importantes por ahora.</div></div>`;}
+  else list.innerHTML=items.map(i=>`<div class="notif-row"><div class="notif-ic">${i.ic==='wallet'?'$':'◷'}</div><div class="notif-txt"><b>${i.t}</b><span>${i.s}</span></div></div>`).join('');
+  $("notifDot").style.display=items.length?'block':'none';$("notifModal").classList.add("open");
 }
 
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
