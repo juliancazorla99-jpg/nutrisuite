@@ -2392,15 +2392,15 @@ async function loadAll(){
   goView("inicio");
 }
 async function loadDashCobros(){
-  try{const{data}=await sb.from("cobros").select("*");_dashCobros=data||[];}catch(e){_dashCobros=[];}
+  try{const{data}=await sb.from("cobros").select("*").eq("nutri_id",me.id);_dashCobros=data||[];}catch(e){_dashCobros=[];}
 }
 async function loadServiciosSilent(){
-  try{const{data}=await sb.from("servicios").select("*").order("creado",{ascending:false});servicios=data||[];}catch(e){}
+  try{const{data}=await sb.from("servicios").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});servicios=data||[];}catch(e){}
 }
 async function loadPatients(){
   $("pLoading").classList.remove("hidden");$("pEmpty").classList.add("hidden");
   try{
-    const{data,error}=await sb.from("pacientes").select("*").order("creado",{ascending:false});
+    const{data,error}=await sb.from("pacientes").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});
     if(error)throw error;
     pacientes=data||[];
     $("pLoading").classList.add("hidden");
@@ -2409,7 +2409,7 @@ async function loadPatients(){
 }
 async function loadTurnos(){
   try{
-    const{data,error}=await sb.from("turnos").select("*").order("fecha",{ascending:true});
+    const{data,error}=await sb.from("turnos").select("*").eq("nutri_id",me.id).order("fecha",{ascending:true});
     if(error)throw error;
     turnos=data||[];
   }catch(e){console.error(e);}
@@ -3214,7 +3214,7 @@ async function loadServicios(){
   $("sEmpty").classList.add("hidden");
   $("sList").innerHTML="";
   try{
-    const{data,error}=await sb.from("servicios").select("*").order("creado",{ascending:false});
+    const{data,error}=await sb.from("servicios").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});
     if(error)throw error;
     servicios=data||[];
     $("sLoading").classList.add("hidden");
@@ -3290,7 +3290,7 @@ async function loadDisponibilidad(){
   $("dEmpty").classList.add("hidden");
   $("dList").innerHTML="";
   try{
-    const{data,error}=await sb.from("disponibilidad").select("*").order("dia_semana",{ascending:true});
+    const{data,error}=await sb.from("disponibilidad").select("*").eq("nutri_id",me.id).order("dia_semana",{ascending:true});
     if(error)throw error;
     disponibilidad=data||[];
     $("dLoading").classList.add("hidden");
@@ -3337,8 +3337,8 @@ async function openReservaModal(){
   $("reservaModal").classList.add("open");
   try{
     // el paciente ya tiene su ficha cargada en el portal (guardamos su id)
-    const{data:disp}=await sb.from("disponibilidad").select("*");
-    const{data:serv}=await sb.from("servicios").select("*").eq("activo",true);
+    const{data:disp}=await sb.from("disponibilidad").select("*").eq("nutri_id",_miNutriId);
+    const{data:serv}=await sb.from("servicios").select("*").eq("nutri_id",_miNutriId).eq("activo",true);
     _dispPaciente=disp||[];_serviciosPaciente=serv||[];
     // servicios en el select
     $("rServicio").innerHTML=_serviciosPaciente.length
@@ -3367,7 +3367,7 @@ async function calcHuecos(){
   const dow=new Date(iso+"T00:00:00").getDay();
   const franjas=_dispPaciente.filter(d=>d.dia_semana===dow);
   // turnos ya tomados ese día
-  const{data:tomados}=await sb.from("turnos").select("hora").eq("fecha",iso);
+  const{data:tomados}=await sb.from("turnos").select("hora").eq("nutri_id",_miNutriId).eq("fecha",iso);
   const ocupadas=(tomados||[]).map(t=>t.hora);
   // generar huecos
   const huecos=[];
@@ -3623,8 +3623,8 @@ let _balancePeriod=1,_paymentFilter="todos",_balanceCobros=[],_balanceCons=[];
 async function loadBalance(){
   $("balLoading").classList.remove("hidden");$("balContent").classList.add("hidden");
   try{
-    const{data:cobros}=await sb.from("cobros").select("*").order("creado",{ascending:false});
-    const{data:cons}=await sb.from("consultas").select("valor,fecha,paciente_id").not("valor","is",null);
+    const{data:cobros}=await sb.from("cobros").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});
+    const{data:cons}=await sb.from("consultas").select("valor,fecha,paciente_id").eq("nutri_id",me.id).not("valor","is",null);
     _balanceCobros=cobros||[];_balanceCons=cons||[];
     $("balLoading").classList.add("hidden");$("balContent").classList.remove("hidden");renderBalance();syncBalanceToSheets(false);
   }catch(e){$("balLoading").classList.add("hidden");$("balContent").classList.remove("hidden");$("balKpis").innerHTML=`<div class="stat"><div class="l">Error al cargar</div></div>`;}
