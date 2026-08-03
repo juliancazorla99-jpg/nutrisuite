@@ -110,6 +110,24 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .pref-btn.on{background:var(--brand-tint);color:var(--brand-strong);border-color:var(--brand)}
 #montosBtn{flex:0 0 auto;padding:9px 12px}
 .cal-more{font-size:10px;color:var(--ink-faint);font-weight:600;padding-left:3px}
+/* Día seleccionado en el calendario */
+.cal-cell.sel{border-color:var(--brand);background:var(--brand-tint);box-shadow:0 0 0 2px var(--brand-tint)}
+.cal-cell.sel .cal-daynum{color:var(--brand-strong);font-weight:800}
+/* Panel de detalle del día tocado */
+.cal-dia-detalle{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:0 8px 30px rgba(56,90,38,.07)}
+.caldia-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.caldia-head h3{font-family:var(--fd);font-size:18px;color:var(--brand-strong);margin:0}
+.btn.sm{padding:8px 16px;font-size:13px}
+.caldia-empty{color:var(--ink-faint);font-size:14px;text-align:center;padding:16px 0}
+.caldia-list{display:flex;flex-direction:column;gap:8px}
+.caldia-item{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;transition:all .13s}
+.caldia-item:hover{border-color:var(--brand);transform:translateX(2px)}
+.caldia-item.virt{border-left:3px solid #6B3FA0}
+.caldia-hora{font-weight:800;color:var(--brand-strong);font-size:15px;min-width:52px}
+.caldia-nom{flex:1;font-weight:600;color:var(--ink);font-size:14px}
+.caldia-tag{font-size:10px;font-weight:700;color:#6B3FA0;background:#EDE7F6;padding:2px 8px;border-radius:20px;margin-left:4px}
+.caldia-meet{font-size:12px;color:var(--brand);text-decoration:none;font-weight:600;white-space:nowrap}
+.caldia-meet:hover{text-decoration:underline}
 /* Lista agrupada por fecha */
 .ag-daygroup{margin-bottom:22px}
 .turno-item.atendido{opacity:.72}
@@ -2684,7 +2702,7 @@ async function delConsulta(id){
 }
 
 /* ===== TURNOS ===== */
-let _agendaVista=localStorage_get_vista(), _calMes=null;
+let _agendaVista=localStorage_get_vista(), _calMes=null, _diaSelCal=null;
 function localStorage_get_vista(){return "calendario";}
 function nombrePacTurno(id){const p=pacientes.find(x=>x.id===id);return p?p.nombre:"(paciente eliminado)";}
 function renderTurnos(){ renderAgenda(); }
@@ -2774,7 +2792,7 @@ function renderAgendaCalendario(lista){
     const esHoy=iso===hoy;
     let evsHtml=evs.slice(0,3).map(t=>`<div class="cal-ev ${t.modalidad==='virtual'?'virt':''}">${t.hora?t.hora+" ":""}${esc(nombrePacTurno(t.paciente_id).split(" ")[0])}${t.meet_link?` <a href="${esc(t.meet_link)}" target="_blank" onclick="event.stopPropagation()" class="cal-meet" title="Entrar a la videollamada">📹</a>`:""}</div>`).join("");
     if(evs.length>3)evsHtml+=`<div class="cal-more">+${evs.length-3} más</div>`;
-    cells+=`<div class="cal-cell ${esHoy?'today':''}" onclick="clickDiaCal('${iso}')"><div class="cal-daynum">${d}</div>${evsHtml}</div>`;
+    cells+=`<div class="cal-cell ${esHoy?'today':''}" data-iso="${iso}" onclick="clickDiaCal('${iso}')"><div class="cal-daynum">${d}</div>${evsHtml}</div>`;
   }
   $("agCalView").innerHTML=`
     <div class="cal-wrap">
@@ -2787,7 +2805,8 @@ function renderAgendaCalendario(lista){
         </div>
       </div>
       <div class="cal-grid">${dowNames.map(d=>`<div class="cal-dow">${d}</div>`).join("")}${cells}</div>
-    </div>`;
+    </div>
+    <div id="calDiaDetalle" class="cal-dia-detalle hidden"></div>`;
 }
 function calNav(delta){
   if(!_calMes){const h=new Date();_calMes={mes:h.getMonth(),anio:h.getFullYear()};}
@@ -2798,7 +2817,43 @@ function calNav(delta){
 }
 function calHoy(){const h=new Date();_calMes={mes:h.getMonth(),anio:h.getFullYear()};renderAgenda();}
 function clickDiaCal(iso){
-  // abrir nuevo turno con esa fecha precargada
+  // mostrar la lista de turnos de ese día abajo del calendario
+  _diaSelCal=iso;
+  renderDiaSeleccionado(iso);
+  // resaltar el día tocado
+  document.querySelectorAll(".cal-cell.sel").forEach(c=>c.classList.remove("sel"));
+  const cell=document.querySelector(`.cal-cell[data-iso="${iso}"]`);
+  if(cell)cell.classList.add("sel");
+}
+
+function renderDiaSeleccionado(iso){
+  const cont=$("calDiaDetalle");
+  if(!cont)return;
+  const evs=(turnos||[]).filter(t=>t.fecha===iso).sort((a,b)=>(a.hora||"").localeCompare(b.hora||""));
+  const [y,m,d]=iso.split("-").map(Number);
+  const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const titulo=`${d} de ${meses[m-1]}`;
+  let html=`<div class="caldia-head"><h3>Turnos del ${titulo}</h3><button class="btn p sm" onclick="clickNuevoTurnoDia('${iso}')">＋ Agendar</button></div>`;
+  if(!evs.length){
+    html+=`<p class="caldia-empty">No hay turnos este día. Tocá "Agendar" para sumar uno.</p>`;
+  }else{
+    html+=`<div class="caldia-list">`+evs.map(t=>{
+      const nom=esc(nombrePacTurno(t.paciente_id));
+      const virt=t.modalidad==="virtual";
+      const meet=t.meet_link?`<a href="${esc(t.meet_link)}" target="_blank" class="caldia-meet">📹 Videollamada</a>`:"";
+      return `<div class="caldia-item ${virt?'virt':''}">
+        <span class="caldia-hora">${t.hora||"--:--"}</span>
+        <span class="caldia-nom">${nom}${virt?' <span class="caldia-tag">virtual</span>':''}</span>
+        ${meet}
+      </div>`;
+    }).join("")+`</div>`;
+  }
+  cont.innerHTML=html;
+  cont.classList.remove("hidden");
+  cont.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function clickNuevoTurnoDia(iso){
   openTurnoModal();
   $("tFecha").value=iso;
 }
