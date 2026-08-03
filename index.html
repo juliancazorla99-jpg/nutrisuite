@@ -1514,6 +1514,35 @@ html.perf-lite *,html.perf-lite *::before,html.perf-lite *::after{
 }
 </style>
 
+
+<style id="patient-summary-cards-v3">
+.plist{grid-template-columns:repeat(auto-fill,minmax(315px,1fr));gap:14px}
+.patient-summary-card{min-height:152px;padding:18px 20px!important;border-radius:21px!important;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.pc-card-head{display:flex;align-items:flex-start;gap:13px;min-width:0}
+.patient-summary-card .av{width:52px;height:52px;border-radius:16px;font-size:17px;box-shadow:0 6px 18px rgba(62,114,29,.08)}
+.pc-identity{min-width:0;flex:1}
+.patient-summary-card .pc-name{font-size:16px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.patient-summary-card .pc-meta{font-size:12px;margin-top:2px;line-height:1.35}
+.pc-next{display:inline-flex;align-items:center;width:fit-content;max-width:100%;margin-top:7px;padding:4px 8px;border-radius:9px;background:var(--brand-tint);color:var(--brand-strong);font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-next.muted{background:var(--surface-2);color:var(--ink-faint)}
+.pc-card-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-top:16px}
+.pc-measure{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.pc-weight{font-family:var(--fd);font-weight:800;font-size:25px;line-height:1;letter-spacing:-.025em;color:var(--ink)}
+.pc-weight small{font-size:12px;font-weight:500;color:var(--ink-soft);margin-left:3px}
+.pc-change{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:var(--surface-2);font-size:11px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+.pc-change.down{color:var(--good);background:var(--good-bg)}
+.pc-change.up{color:var(--ink-soft);background:var(--surface-2)}
+.pc-change.neutral{color:var(--ink-faint)}
+.pc-trend{width:96px;min-width:96px;height:38px;display:flex;align-items:center;justify-content:flex-end}
+.pc-spark{width:96px;height:34px;overflow:visible}
+.pc-spark polyline{fill:none;stroke:var(--brand);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pc-spark circle{fill:var(--brand)}
+.pc-spark-empty{font-size:10px;color:var(--ink-faint);text-align:right;line-height:1.2}
+body.dark .pc-next{background:rgba(141,191,76,.13)}
+@media(max-width:820px){.plist{grid-template-columns:1fr}.patient-summary-card{min-height:146px;padding:16px!important}.patient-summary-card .av{width:48px;height:48px;border-radius:15px}.pc-weight{font-size:23px}}
+@media(max-width:390px){.pc-card-foot{gap:8px}.pc-trend{width:76px;min-width:76px}.pc-spark{width:76px}.pc-change{font-size:10px;padding:4px 7px}}
+</style>
+
 </head>
 <body>
 
@@ -2243,7 +2272,7 @@ const SUPABASE_URL = "https://dqyggiwmxneumgatqbgg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_m8kySaFg83egbPhej-YjWA_M1EbrSSF";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = (id)=>document.getElementById(id);
-let mode="login", me=null, pacientes=[], turnos=[], currentPat=null, editingPatId=null;
+let mode="login", me=null, pacientes=[], turnos=[], currentPat=null, editingPatId=null, pacientesConsultas={};
 let _dashCobros=[];
 
 function showMsg(el,t,type){el.textContent=t;el.className="msg "+type;}
@@ -2489,6 +2518,7 @@ function renderDashPacientes(){
 /* ===== CARGA ===== */
 async function loadAll(){
   await Promise.all([loadPatients(),loadTurnos(),loadServiciosSilent(),loadDashCobros()]);
+  renderPatients();
   goView("inicio");
 }
 async function loadDashCobros(){
@@ -2500,9 +2530,18 @@ async function loadServiciosSilent(){
 async function loadPatients(){
   $("pLoading").classList.remove("hidden");$("pEmpty").classList.add("hidden");
   try{
-    const{data,error}=await sb.from("pacientes").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});
+    const[{data,error},{data:consultas,error:consultasError}]=await Promise.all([
+      sb.from("pacientes").select("*").eq("nutri_id",me.id).order("creado",{ascending:false}),
+      sb.from("consultas").select("paciente_id,fecha,peso").eq("nutri_id",me.id).order("fecha",{ascending:true})
+    ]);
     if(error)throw error;
+    if(consultasError)console.warn("No se pudieron cargar los resúmenes de pacientes:",consultasError);
     pacientes=data||[];
+    pacientesConsultas={};
+    (consultas||[]).forEach(r=>{
+      if(!pacientesConsultas[r.paciente_id])pacientesConsultas[r.paciente_id]=[];
+      pacientesConsultas[r.paciente_id].push(r);
+    });
     $("pLoading").classList.add("hidden");
     renderPatients();
   }catch(e){$("pLoading").classList.add("hidden");alert("Error cargando pacientes: "+e.message);}
@@ -2521,22 +2560,63 @@ async function renderPatients(){
   const list=pacientes.filter(p=>!q||(p.nombre||"").toLowerCase().includes(q));
   if(!pacientes.length){$("pEmpty").classList.remove("hidden");$("pList").innerHTML="";return;}
   $("pEmpty").classList.add("hidden");
-  // para cada paciente, traer última consulta se hace liviano: mostramos solo datos base aquí
+
+  const hoy=todayISO();
+  const fmtPeso=v=>{
+    const n=Number(v);
+    return Number.isFinite(n)?n.toLocaleString("es-AR",{minimumFractionDigits:1,maximumFractionDigits:1}):"—";
+  };
+  const sparkline=regs=>{
+    const pts=regs.filter(r=>Number.isFinite(Number(r.peso))).slice(-6);
+    if(pts.length<2)return '<div class="pc-spark-empty">Sin evolución aún</div>';
+    const vals=pts.map(r=>Number(r.peso)),min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;
+    const coords=vals.map((v,i)=>{
+      const x=4+(i/(vals.length-1))*92;
+      const y=29-((v-min)/range)*23;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const last=coords[coords.length-1].split(",");
+    return `<svg class="pc-spark" viewBox="0 0 100 34" aria-hidden="true">
+      <polyline points="${coords.join(" ")}"></polyline>
+      <circle cx="${last[0]}" cy="${last[1]}" r="2.8"></circle>
+    </svg>`;
+  };
+
   $("pList").innerHTML=list.map(p=>{
-    const phoneLine=p.telefono
-      ? `<div class="pc-meta patient-contact-line"><span>📱 ${esc(p.telefono)}</span><button class="mini-wa" onclick="openPatientWhatsAppById(\'${p.id}\',event)" aria-label="Abrir WhatsApp">WA</button></div>`
-      : `<div class="pc-meta">Sin teléfono registrado</div>`;
-    const waAction=p.telefono
-      ? `<button class="patient-wa-btn" onclick="openPatientWhatsAppById(\'${p.id}\',event)">WhatsApp</button>`
-      : ``;
-    return `<div class="pcard" onclick="openFicha(\'${p.id}\')">
-      <div class="pc-top"><div class="av">${initials(p.nombre)}</div>
-        <div><div class="pc-name">${esc(p.nombre)}</div>
-        <div class="pc-meta">${p.altura?p.altura+" cm":"Sin altura"}${p.objetivo?" · "+esc(p.objetivo):""}</div></div>
+    const regs=(pacientesConsultas[p.id]||[]).filter(r=>r.fecha).sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
+    const conPeso=regs.filter(r=>Number.isFinite(Number(r.peso)));
+    const ult=conPeso.length?conPeso[conPeso.length-1]:null;
+    const prev=conPeso.length>1?conPeso[conPeso.length-2]:null;
+    const cambio=ult&&prev?Number(ult.peso)-Number(prev.peso):null;
+    const cambioHtml=cambio===null
+      ? '<span class="pc-change neutral">Sin comparación</span>'
+      : `<span class="pc-change ${cambio<0?"down":cambio>0?"up":"neutral"}">${cambio<0?"▼":cambio>0?"▲":"•"} ${Math.abs(cambio).toLocaleString("es-AR",{minimumFractionDigits:1,maximumFractionDigits:1})} kg</span>`;
+
+    const proximo=(turnos||[])
+      .filter(t=>t.paciente_id===p.id&&String(t.fecha||"").slice(0,10)>=hoy&&!t.atendido)
+      .sort((a,b)=>(String(a.fecha)+String(a.hora||"")).localeCompare(String(b.fecha)+String(b.hora||"")))[0];
+
+    const turnoHtml=proximo
+      ? `<div class="pc-next">📅 Turno ${fmtDate(String(proximo.fecha).slice(0,10))}${proximo.hora?" "+esc(proximo.hora):""}</div>`
+      : '<div class="pc-next muted">Sin próximo turno</div>';
+
+    return `<article class="pcard patient-summary-card" onclick="openFicha('${p.id}')">
+      <div class="pc-card-head">
+        <div class="av">${initials(p.nombre)}</div>
+        <div class="pc-identity">
+          <div class="pc-name">${esc(p.nombre)}</div>
+          <div class="pc-meta">${regs.length} consulta${regs.length===1?"":"s"}${regs.length?" · última "+fmtDate(regs[regs.length-1].fecha):""}</div>
+          ${turnoHtml}
+        </div>
       </div>
-      ${phoneLine}
-      <div class="patient-card-actions">${waAction}<button class="patient-open-btn" onclick="event.stopPropagation();openFicha(\'${p.id}\')">Ver ficha →</button></div>
-    </div>`;
+      <div class="pc-card-foot">
+        <div class="pc-measure">
+          <span class="pc-weight">${ult?fmtPeso(ult.peso):"—"}<small>${ult?" kg":""}</small></span>
+          ${cambioHtml}
+        </div>
+        <div class="pc-trend">${sparkline(regs)}</div>
+      </div>
+    </article>`;
   }).join("");
 }
 function openPatModal(){editingPatId=null;$("patModalTitle").textContent="Nuevo paciente";clearMsg($("patMsg"));
@@ -4519,7 +4599,21 @@ body.dark #patientView .pt-chart-btn.on{background:rgba(146,174,105,.18)!importa
       <img src="${logoSrc}" style="width:105px;max-height:62px;object-fit:contain;margin-bottom:5px" alt="Candela Viola">
       <div class="fs">Lic. en Nutrición · Este informe es un resumen de tu seguimiento y no reemplaza la consulta profesional.</div>
     </div>
-    </body></html>`;
+    
+<script id="auth-enter-support">
+document.addEventListener("keydown",function(event){
+  if(event.key!=="Enter"||event.isComposing)return;
+  const auth=document.getElementById("authView");
+  if(!auth||auth.classList.contains("hidden"))return;
+  const target=event.target;
+  if(!target||!["rEmail","rPass","rName"].includes(target.id))return;
+  event.preventDefault();
+  const button=document.getElementById("authBtn");
+  if(button&&!button.disabled)doAuth();
+});
+</script>
+
+</body></html>`;
   const w=window.open("","_blank");
   if(!w){alert("Permití las ventanas emergentes para ver el informe.");return;}
   w.document.write(html);
