@@ -2087,6 +2087,111 @@ html,body{
 }
 </style>
 
+
+<style id="candela-anamnesis-ia-scroll">
+.cv-anamnesis-modal{width:min(960px,94vw);max-width:960px;max-height:min(88dvh,920px);padding:0;overflow:hidden;display:flex;flex-direction:column}
+.cv-anamnesis-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 14px;border-bottom:1px solid var(--line)}
+.cv-anamnesis-kicker{display:block;margin-bottom:4px;color:var(--brand);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.cv-anamnesis-head h3{font-size:21px}.cv-anamnesis-head p{margin-top:3px;color:var(--ink-soft);font-size:12px}
+.cv-anamnesis-tabs{display:flex;gap:6px;padding:12px 18px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}.cv-anamnesis-tabs::-webkit-scrollbar{display:none}
+.cv-anamnesis-tabs button{flex:none;padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink-soft);background:var(--surface);font:700 11px var(--fb)}
+.cv-anamnesis-tabs button.on{color:#fff;border-color:var(--brand);background:var(--brand)}
+.cv-anamnesis-body{flex:1;min-height:0;padding:20px 24px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.cv-anamnesis-panel{display:none}.cv-anamnesis-panel.on{display:block}
+.cv-anamnesis-panel .field textarea{min-height:105px;resize:vertical}
+.cv-anamnesis-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 24px;border-top:1px solid var(--line);background:var(--surface)}
+.cv-anamnesis-foot>span{color:var(--ink-faint);font-size:10.5px}.cv-anamnesis-foot>div{display:flex;gap:8px}
+
+.cv-ia-context{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding:9px 12px;border:1px solid var(--glass-line);border-radius:13px;background:var(--glass);box-shadow:var(--glass-shadow)}
+.cv-ia-context>div{display:flex;align-items:center;gap:8px;min-width:0}.cv-ia-context span{color:var(--ink-faint);font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.cv-ia-context b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cv-ia-context button{flex:none;border:0;color:var(--brand);background:none;font:700 10.5px var(--fb)}
+
+/* Android / mobile: scroll nativo y contenido nunca bloqueado */
+@media(max-width:820px){
+  html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+  body{touch-action:pan-y;-webkit-overflow-scrolling:touch}
+  #appView,#patientView{height:auto!important;min-height:100dvh!important;overflow:visible!important}
+  .main{height:auto!important;min-height:100dvh!important;overflow:visible!important;padding-bottom:calc(126px + env(safe-area-inset-bottom,0px))!important}
+  #view-inicio,#view-pacientes,#view-ficha,#view-agenda,#view-servicios,#view-balance,#view-ia{height:auto!important;max-height:none!important;overflow:visible!important}
+  .cv-anamnesis-modal{width:100%;max-width:none;height:100dvh;max-height:100dvh;border-radius:0}
+  .cv-anamnesis-head{padding:18px 16px 12px}.cv-anamnesis-tabs{padding:10px 12px}.cv-anamnesis-body{padding:16px 14px 150px}
+  .cv-anamnesis-panel .form-grid{grid-template-columns:1fr}.cv-anamnesis-panel .field textarea{min-height:120px}
+  .cv-anamnesis-foot{position:sticky;bottom:0;align-items:stretch;flex-direction:column;padding:11px 14px calc(11px + env(safe-area-inset-bottom,0px))}
+  .cv-anamnesis-foot>div{display:grid;grid-template-columns:1fr 1fr}.cv-anamnesis-foot .btn{width:100%}
+  .bottom-nav,.mobile-bottom-nav{touch-action:manipulation}
+}
+</style>
+
+
+<style id="candela-global-history-plans-help">
+.cv-section-head{align-items:flex-end;margin-bottom:22px}
+.cv-section-head>div>p{margin-top:5px;color:var(--ink-soft);font-size:13.5px}
+.cv-section-kicker{display:inline-block;margin-bottom:5px;color:var(--brand);font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+
+.cv-history-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.cv-search-wrap{position:relative;flex:1;min-width:230px}
+.cv-search-wrap svg{position:absolute;left:13px;top:50%;width:17px;height:17px;transform:translateY(-50%);fill:none;stroke:var(--ink-faint);stroke-width:2}
+.cv-search-wrap input{width:100%;height:45px;padding:0 15px 0 40px;border:1px solid var(--glass-line);border-radius:14px;color:var(--ink);background:var(--glass);box-shadow:var(--glass-shadow);outline:none}
+
+.cv-history-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:13px}
+.cv-history-card{padding:17px;border:1px solid var(--glass-line);border-radius:18px;background:var(--glass);box-shadow:var(--glass-shadow);cursor:pointer;transition:transform .15s ease,border-color .15s ease}
+.cv-history-card:hover{transform:translateY(-2px);border-color:var(--brand)}
+.cv-history-top{display:flex;align-items:center;gap:11px}
+.cv-history-avatar{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--brand-strong);background:var(--brand-tint);font-weight:800}
+.cv-history-top b{display:block;font-size:14px}.cv-history-top small{color:var(--ink-soft)}
+.cv-history-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+.cv-history-meta span{padding:9px;border-radius:11px;background:var(--surface-2);font-size:10.5px;color:var(--ink-soft)}
+.cv-history-meta strong{display:block;margin-top:2px;color:var(--ink);font-size:13px}
+.cv-history-note{margin-top:11px;color:var(--ink-soft);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cv-history-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.cv-history-actions button{border:0;border-radius:10px;padding:8px 10px;color:var(--brand-strong);background:var(--brand-tint);font:700 10.5px var(--fb)}
+.cv-history-actions span{color:var(--brand);font-size:10.5px;font-weight:700}
+
+.cv-plans-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-bottom:16px}
+.cv-mini-stat{padding:14px 16px;border:1px solid var(--glass-line);border-radius:16px;background:var(--glass);box-shadow:var(--glass-shadow)}
+.cv-mini-stat span{display:block;color:var(--ink-faint);font-size:10.5px;font-weight:700;text-transform:uppercase}
+.cv-mini-stat b{display:block;margin-top:5px;font-size:24px}
+.cv-plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:13px}
+.cv-plan-card{position:relative;min-height:190px;padding:18px;border:1px solid var(--glass-line);border-radius:19px;background:var(--glass);box-shadow:var(--glass-shadow);overflow:hidden}
+.cv-plan-accent{position:absolute;inset:0 auto 0 0;width:5px;background:var(--plan-color,var(--brand))}
+.cv-plan-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--surface-2);font-size:20px}
+.cv-plan-card h3{margin-top:13px;font-size:16px}
+.cv-plan-card p{margin-top:5px;color:var(--ink-soft);font-size:12px;line-height:1.45}
+.cv-plan-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:13px}
+.cv-plan-tags span{padding:5px 8px;border-radius:999px;background:var(--surface-2);font-size:9.5px;font-weight:700}
+.cv-plan-card footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.cv-plan-card footer button{border:0;color:var(--brand);background:none;font-weight:700;font-size:11px}
+
+.cv-help-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px;margin-bottom:15px;border:1px solid rgba(116,162,75,.26);border-radius:20px;background:linear-gradient(135deg,rgba(234,244,218,.9),rgba(255,255,255,.55));box-shadow:var(--glass-shadow)}
+.cv-help-hero>div{display:grid;grid-template-columns:auto 1fr;column-gap:13px}
+.cv-help-icon{grid-row:1/3;width:45px;height:45px;display:grid;place-items:center;border-radius:14px;color:#fff;background:var(--brand);font-size:22px;font-weight:800}
+.cv-help-hero h2{font-size:18px}.cv-help-hero p{margin-top:3px;color:var(--ink-soft);font-size:12px}
+.cv-help-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:15px}
+.cv-help-card{padding:17px;text-align:left;border:1px solid var(--glass-line);border-radius:17px;color:var(--ink);background:var(--glass);box-shadow:var(--glass-shadow)}
+.cv-help-card span{display:block;font-size:21px}.cv-help-card b{display:block;margin-top:9px}.cv-help-card small{display:block;margin-top:3px;color:var(--ink-soft)}
+.cv-faq-card details{padding:13px 0;border-bottom:1px solid var(--line)}
+.cv-faq-card details:last-child{border-bottom:0}
+.cv-faq-card summary{cursor:pointer;font-weight:700;font-size:13px}
+.cv-faq-card details p{padding-top:9px;color:var(--ink-soft);font-size:12px;line-height:1.55}
+
+body.dark .cv-help-hero{background:linear-gradient(135deg,rgba(63,85,43,.75),rgba(38,48,31,.75))}
+
+@media(max-width:820px){
+  .cv-section-head{align-items:flex-start}
+  .cv-section-head .btn{width:100%;margin-top:10px}
+  .cv-plans-summary{grid-template-columns:1fr 1fr}
+  .cv-mini-stat:last-child{grid-column:1/-1}
+  .cv-help-grid{grid-template-columns:1fr 1fr}
+  .cv-help-hero{align-items:flex-start;flex-direction:column}
+  .cv-help-hero .btn{width:100%}
+}
+@media(max-width:420px){
+  .cv-history-grid,.cv-plan-grid{grid-template-columns:1fr}
+  .cv-history-meta{grid-template-columns:1fr 1fr}
+  .cv-history-meta span:last-child{grid-column:1/-1}
+}
+</style>
+
 </head>
 <body>
 <div aria-live="polite" class="cloud-save-status is-hidden" id="cloudSaveStatus" role="status" title="Los cambios se guardan automáticamente en la nube">
@@ -2161,6 +2266,17 @@ html,body{
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><circle cx="9" cy="7" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 11l2 2 4-4"></path></svg><span>Pacientes</span></button>
 <button class="sb-item" id="nav-age" onclick="goView('agenda')">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><rect height="16" rx="2.5" width="18" x="3" y="4.5"></rect><path d="M3 9h18M8 2.5v4M16 2.5v4"></path></svg><span>Agenda</span></button>
+<button class="sb-item" id="nav-historia" onclick="goView('historia')">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" width="18">
+  <path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3V3Z"/>
+  <path d="M8 3v18M11 8h5M11 12h5M11 16h3"/>
+</svg><span>Historia clínica</span></button>
+<button class="sb-item" id="nav-planes" onclick="goView('planes')">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" width="18">
+  <rect x="4" y="3" width="16" height="18" rx="3"/>
+  <path d="M8 8h8M8 12h8M8 16h5"/>
+  <path d="m16 16 1.5 1.5L21 14"/>
+</svg><span>Planes</span></button>
 <button class="sb-item" id="nav-bal" onclick="goView('balance')">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M3 3v18h18"></path><path d="M7 14l4-4 3 3 5-6"></path></svg><span>Balance</span></button>
 <button class="sb-item" id="nav-ia" onclick="goView('ia')">
@@ -2168,6 +2284,12 @@ html,body{
 <div class="sb-sect">Configuración</div>
 <button class="sb-item" id="nav-serv" onclick="goView('servicios')">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Configuración</span></button>
+<button class="sb-item" id="nav-ayuda" onclick="goView('ayuda')">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" width="18">
+  <circle cx="12" cy="12" r="9"/>
+  <path d="M9.8 9a2.4 2.4 0 1 1 3.7 2c-1 .7-1.5 1.2-1.5 2.4"/>
+  <path d="M12 17h.01"/>
+</svg><span>Ayuda</span></button>
 <button class="sb-item sb-logout-mobile" onclick="logout()" style="display:none;margin-left:auto;color:var(--bad)" title="Cerrar sesión">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg></button>
 <div class="sb-bottom">
@@ -2266,12 +2388,14 @@ html,body{
 <button class="btn p sm" onclick="openConsultaModal()">＋ Nueva consulta</button>
 <button class="btn g sm" onclick="generarInforme()">Informe</button>
 <button class="btn g sm" onclick="openHistoriaModal()">Historia</button>
+<button class="btn g sm" onclick="openAnamnesis(currentPat&&currentPat.id)">Anamnesis</button>
 <button aria-label="Abrir WhatsApp" class="btn sm ficha-wa hidden" id="fWaBtn" onclick="openPatientWhatsApp(currentPat,event)"><svg fill="currentColor" height="15" viewbox="0 0 24 24" width="15"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.08 0C5.57 0 .27 5.3.27 11.82c0 2.08.54 4.11 1.57 5.9L.17 23.83l6.25-1.64a11.76 11.76 0 0 0 5.65 1.44h.01c6.51 0 11.81-5.3 11.81-11.82 0-3.15-1.22-6.11-3.37-8.33Zm-8.44 18.16h-.01a9.8 9.8 0 0 1-4.99-1.37l-.36-.21-3.71.97.99-3.62-.23-.37a9.79 9.79 0 1 1 8.31 4.6Zm5.37-7.34c-.29-.15-1.74-.86-2.01-.96-.27-.1-.47-.15-.67.15-.2.29-.77.96-.94 1.16-.17.2-.35.22-.64.07-.29-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.03-.17-.29-.02-.45.13-.6.13-.13.29-.35.44-.52.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.91-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.29-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.21 5.09 4.5.71.31 1.27.49 1.7.63.71.23 1.36.19 1.87.12.57-.08 1.74-.71 1.98-1.39.25-.69.25-1.28.17-1.4-.07-.12-.27-.2-.57-.34Z"></path></svg> WhatsApp</button>
 </div>
 <div class="menu-wrap">
 <button aria-label="Más acciones" class="btn g sm menu-toggle" onclick="togglePatMenu(event)">⋯</button>
 <div class="menu-drop" id="patMenu">
 <button onclick="generarInforme();closePatMenu()"><svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M9 13h6M9 17h6"></path></svg> Informe</button>
+<button onclick="openAnamnesis(currentPat&&currentPat.id);closePatMenu()"><svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="16"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3V3Z"/><path d="M8 3v18M11 8h5M11 12h5M11 16h3"/></svg> Anamnesis clínica</button>
 <button onclick="openPlanModal();closePatMenu()"><svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="16"><path d="M3 2v7c0 1.1.9 2 2 2h1v11M8 2v20M18 2c-2 0-3 2-3 5s1 5 3 5v10"></path></svg> Plan alimentario</button>
 <button onclick="openAccesoModal();closePatMenu()"><svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="16"><circle cx="8" cy="15" r="4"></circle><path d="M10.8 12.2 20 3M17 6l3 3M15 8l2 2"></path></svg> Dar acceso</button>
 <button onclick="editPatient();closePatMenu()"><svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="16"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg> Editar datos</button>
@@ -2338,6 +2462,104 @@ html,body{
 <div class="empty hidden" id="aEmpty"><div class="big">📅</div><p><b>No hay turnos.</b><br/>Tocá «Nuevo turno» para agendar.</p></div>
 </div>
 <!-- VISTA BALANCE -->
+
+<!-- VISTA HISTORIA CLÍNICA -->
+<div class="hidden" id="view-historia">
+  <div class="head cv-section-head">
+    <div>
+      <span class="cv-section-kicker">Seguimiento integral</span>
+      <h1>Historia clínica</h1>
+      <p>Antecedentes, anamnesis, consultas y evolución de cada paciente.</p>
+    </div>
+    <span class="sp"></span>
+    <button class="btn p" onclick="openPatModal()">＋ Nuevo paciente</button>
+  </div>
+
+  <div class="cv-history-toolbar">
+    <div class="cv-search-wrap">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m20 20-4-4"></path>
+      </svg>
+      <input id="historiaSearch" type="search" placeholder="Buscar paciente, objetivo o antecedente…" oninput="renderHistoriaGlobal()">
+    </div>
+  </div>
+
+  <div class="cv-history-grid" id="historiaGlobalList"></div>
+</div>
+
+<!-- VISTA PLANES -->
+<div class="hidden" id="view-planes">
+  <div class="head cv-section-head">
+    <div>
+      <span class="cv-section-kicker">Biblioteca reutilizable</span>
+      <h1>Planes alimentarios</h1>
+      <p>Plantillas para trabajar más rápido y mantener consistencia.</p>
+    </div>
+    <span class="sp"></span>
+    <button class="btn p" onclick="crearPlantillaPlan()">＋ Nueva plantilla</button>
+  </div>
+
+  <div class="cv-plans-summary">
+    <div class="cv-mini-stat"><span>Plantillas</span><b id="planesCount">0</b></div>
+    <div class="cv-mini-stat"><span>Listas para usar</span><b id="planesReady">0</b></div>
+    <div class="cv-mini-stat"><span>Última edición</span><b id="planesLast">Hoy</b></div>
+  </div>
+
+  <div class="cv-plan-grid" id="planesGrid"></div>
+</div>
+
+<!-- VISTA AYUDA -->
+<div class="hidden" id="view-ayuda">
+  <div class="head cv-section-head">
+    <div>
+      <span class="cv-section-kicker">Soporte</span>
+      <h1>Ayuda</h1>
+      <p>Guías rápidas, respuestas frecuentes y reporte de inconvenientes.</p>
+    </div>
+  </div>
+
+  <div class="cv-help-hero">
+    <div>
+      <span class="cv-help-icon">?</span>
+      <h2>¿Tuviste algún problema con la app?</h2>
+      <p>Prepará un reporte con la información necesaria para resolverlo más rápido.</p>
+    </div>
+    <button class="btn p" onclick="openSupportComposer()">Reportar un problema</button>
+  </div>
+
+  <div class="cv-help-grid">
+    <button class="cv-help-card" onclick="goView('pacientes')">
+      <span>👥</span><b>Pacientes</b><small>Fichas, consultas y evolución</small>
+    </button>
+    <button class="cv-help-card" onclick="goView('agenda')">
+      <span>📅</span><b>Agenda</b><small>Turnos y calendario</small>
+    </button>
+    <button class="cv-help-card" onclick="goView('planes')">
+      <span>📋</span><b>Planes</b><small>Plantillas alimentarias</small>
+    </button>
+    <button class="cv-help-card" onclick="goView('servicios')">
+      <span>🔗</span><b>Integraciones</b><small>Calendar, Sheets y pagos</small>
+    </button>
+  </div>
+
+  <div class="card cv-faq-card">
+    <div class="block-t">Preguntas frecuentes</div>
+    <details>
+      <summary>¿Los datos se guardan automáticamente?</summary>
+      <p>Sí. Los cambios conectados a Supabase se guardan en la nube. El indicador superior confirma el estado.</p>
+    </details>
+    <details>
+      <summary>¿Puedo usar la app desde el celular?</summary>
+      <p>Sí. La interfaz está preparada para teléfono y computadora.</p>
+    </details>
+    <details>
+      <summary>¿Qué conviene enviar al reportar un error?</summary>
+      <p>La sección, los pasos realizados, el dispositivo, el navegador y una captura.</p>
+    </details>
+  </div>
+</div>
+
 <div class="hidden" id="view-balance">
 <div class="head"><h1>Pagos y balance</h1><div class="balance-toolbar" id="balancePeriods">
 <button class="period-btn on" onclick="setBalancePeriod(1)">1 mes</button><button class="period-btn" onclick="setBalancePeriod(2)">2 meses</button><button class="period-btn" onclick="setBalancePeriod(3)">3 meses</button><button class="period-btn" onclick="setBalancePeriod(6)">6 meses</button>
@@ -2448,6 +2670,10 @@ html,body{
 </div>
 <!-- VISTA NUTRI IA -->
 <div class="hidden" id="view-ia">
+<div class="cv-ia-context" id="iaClinicalContext">
+  <div><span>Contexto clínico</span><b id="iaClinicalContextName">Sin paciente seleccionado</b></div>
+  <button type="button" onclick="goView('pacientes')">Elegir paciente</button>
+</div>
 <div class="ia-head">
 <div class="ia-badge">
 <svg fill="none" height="26" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24" width="26"><circle cx="8" cy="7" r="1.7"></circle><circle cx="16" cy="7" r="1.7"></circle><path d="M4.8 12.4C4.8 8.6 8 6.2 12 6.2s7.2 2.4 7.2 6.2c0 3.7-3.2 6.4-7.2 6.4s-7.2-2.7-7.2-6.4Z"></path><circle cx="9.6" cy="11.4" fill="currentColor" r=".7" stroke="none"></circle><circle cx="14.4" cy="11.4" fill="currentColor" r=".7" stroke="none"></circle><path d="M10.4 14.3a1.6 1.6 0 0 0 3.2 0"></path><path d="M12 14v1.6"></path><path d="M11.2 15.6v1.3M12.8 15.6v1.3"></path><path d="M9.8 13.8 6.9 13M9.8 14.7 7 15.4M14.2 13.8 17.1 13M14.2 14.7 17 15.4"></path></svg>
@@ -2576,6 +2802,107 @@ html,body{
 </div>
 </div>
 </div>
+
+<!-- MODAL ANAMNESIS CLÍNICA -->
+<div class="modal-bg" id="anamnesisModal">
+  <div class="modal cv-anamnesis-modal">
+    <div class="cv-anamnesis-head">
+      <div>
+        <span class="cv-anamnesis-kicker">Ficha clínica estructurada</span>
+        <h3>Historia clínica y anamnesis</h3>
+        <p id="anamnesisPatient">Paciente</p>
+      </div>
+      <button class="notif-close" type="button" aria-label="Cerrar" onclick="closeModal('anamnesisModal')">×</button>
+    </div>
+
+    <div class="cv-anamnesis-tabs">
+      <button class="on" type="button" onclick="showAnamnesisTab('general',this)">General</button>
+      <button type="button" onclick="showAnamnesisTab('clinica',this)">Clínica</button>
+      <button type="button" onclick="showAnamnesisTab('alimentaria',this)">Alimentaria</button>
+      <button type="button" onclick="showAnamnesisTab('habitos',this)">Hábitos</button>
+      <button type="button" onclick="showAnamnesisTab('objetivos',this)">Objetivos</button>
+    </div>
+
+    <div class="cv-anamnesis-body">
+      <section class="cv-anamnesis-panel on" data-anamnesis-tab="general">
+        <div class="form-grid">
+          <div class="field"><label>Motivo de consulta</label><textarea id="anMotivo" placeholder="Motivo principal y expectativas"></textarea></div>
+          <div class="field"><label>Ocupación y rutina</label><textarea id="anRutina" placeholder="Trabajo, horarios y dinámica diaria"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Convivencia y contexto familiar</label><textarea id="anConvivencia" placeholder="Con quién vive, quién cocina y apoyo familiar"></textarea></div>
+          <div class="field"><label>Antecedentes familiares</label><textarea id="anFamiliares" placeholder="Diabetes, hipertensión, dislipemias, obesidad, etc."></textarea></div>
+        </div>
+      </section>
+
+      <section class="cv-anamnesis-panel" data-anamnesis-tab="clinica">
+        <div class="form-grid">
+          <div class="field"><label>Antecedentes personales</label><textarea id="anAntecedentes" placeholder="Diagnósticos, cirugías e internaciones"></textarea></div>
+          <div class="field"><label>Medicación y suplementos</label><textarea id="anMedicacion" placeholder="Nombre, dosis y frecuencia"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Alergias e intolerancias</label><textarea id="anAlergias" placeholder="Alimentos, fármacos u otras"></textarea></div>
+          <div class="field"><label>Estudios y laboratorio</label><textarea id="anLaboratorio" placeholder="Resultados relevantes y fechas"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Síntomas gastrointestinales</label><textarea id="anDigestivo" placeholder="Digestión, tránsito, distensión, reflujo"></textarea></div>
+          <div class="field"><label>Salud menstrual / hormonal</label><textarea id="anHormonal" placeholder="Ciclo, menopausia, anticoncepción y diagnósticos"></textarea></div>
+        </div>
+      </section>
+
+      <section class="cv-anamnesis-panel" data-anamnesis-tab="alimentaria">
+        <div class="form-grid">
+          <div class="field"><label>Recordatorio de 24 horas</label><textarea id="anR24" placeholder="Desayuno, almuerzo, merienda, cena y colaciones"></textarea></div>
+          <div class="field"><label>Frecuencia de consumo</label><textarea id="anFrecuencia" placeholder="Frutas, verduras, lácteos, carnes, legumbres y ultraprocesados"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Preferencias y rechazos</label><textarea id="anPreferencias" placeholder="Alimentos preferidos, evitados y motivos"></textarea></div>
+          <div class="field"><label>Organización de comidas</label><textarea id="anOrganizacion" placeholder="Horarios, compras, cocina, viandas y delivery"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Relación con la comida</label><textarea id="anRelacion" placeholder="Hambre, saciedad, picoteo, atracones y restricciones"></textarea></div>
+          <div class="field"><label>Historia de dietas</label><textarea id="anDietas" placeholder="Planes previos, resultados y dificultades"></textarea></div>
+        </div>
+      </section>
+
+      <section class="cv-anamnesis-panel" data-anamnesis-tab="habitos">
+        <div class="form-grid">
+          <div class="field"><label>Actividad física</label><textarea id="anActividad" placeholder="Tipo, frecuencia, intensidad y horarios"></textarea></div>
+          <div class="field"><label>Sueño y descanso</label><textarea id="anSueno" placeholder="Horas, calidad, horarios y despertares"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Hidratación</label><textarea id="anHidratacion" placeholder="Agua y otras bebidas por día"></textarea></div>
+          <div class="field"><label>Alcohol, tabaco y otras sustancias</label><textarea id="anConsumos" placeholder="Tipo, cantidad y frecuencia"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Estrés y estado emocional</label><textarea id="anEstres" placeholder="Nivel de estrés y vínculo con la alimentación"></textarea></div>
+          <div class="field"><label>Barreras y recursos</label><textarea id="anBarreras" placeholder="Tiempo, dinero, apoyo y habilidades culinarias"></textarea></div>
+        </div>
+      </section>
+
+      <section class="cv-anamnesis-panel" data-anamnesis-tab="objetivos">
+        <div class="form-grid">
+          <div class="field"><label>Objetivo principal</label><textarea id="anObjetivo" placeholder="Meta clínica o conductual principal"></textarea></div>
+          <div class="field"><label>Objetivos secundarios</label><textarea id="anObjetivosSec" placeholder="Metas complementarias"></textarea></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Acuerdos de la consulta</label><textarea id="anAcuerdos" placeholder="Cambios acordados y prioridades"></textarea></div>
+          <div class="field"><label>Indicadores a monitorear</label><textarea id="anIndicadores" placeholder="Peso, síntomas, adherencia, energía y laboratorio"></textarea></div>
+        </div>
+        <div class="field"><label>Observaciones profesionales</label><textarea id="anObservaciones" placeholder="Hipótesis de trabajo, alertas y próximos pasos"></textarea></div>
+      </section>
+    </div>
+
+    <div class="cv-anamnesis-foot">
+      <span id="anamnesisSaveState">Los datos se guardan por paciente.</span>
+      <div>
+        <button class="btn g" type="button" onclick="closeModal('anamnesisModal')">Cancelar</button>
+        <button class="btn p" id="anamnesisSaveBtn" type="button" onclick="saveAnamnesis()">Guardar anamnesis</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CONSULTA -->
 <div class="modal-bg" id="consModal">
 <div class="modal">
@@ -3000,7 +3327,7 @@ sb.auth.onAuthStateChange(async (e,session)=>{
 /* ===== NAV ===== */
 function goView(v){
   try{localStorage.setItem("nutrisuite_current_view",v);}catch(e){}
-  ["inicio","pacientes","ficha","agenda","servicios","balance","ia"].forEach(x=>$("view-"+x).classList.add("hidden"));
+  ["inicio","pacientes","ficha","agenda","historia","planes","ayuda","servicios","balance","ia"].forEach(x=>{const el=$("view-"+x);if(el)el.classList.add("hidden");});
   $("view-"+v).classList.remove("hidden");
   const ni=$("nav-inicio");if(ni)ni.classList.toggle("on",v==="inicio");
   $("nav-pac").classList.toggle("on",v==="pacientes"||v==="ficha");
@@ -3008,11 +3335,16 @@ function goView(v){
   const nb=$("nav-bal");if(nb)nb.classList.toggle("on",v==="balance");
   const ns=$("nav-serv");if(ns)ns.classList.toggle("on",v==="servicios");
   const nia=$("nav-ia");if(nia)nia.classList.toggle("on",v==="ia");
+  const nh=$("nav-historia");if(nh)nh.classList.toggle("on",v==="historia");
+  const np=$("nav-planes");if(np)np.classList.toggle("on",v==="planes");
+  const nay=$("nav-ayuda");if(nay)nay.classList.toggle("on",v==="ayuda");
   if(v==="inicio")loadInicio();
   if(v==="agenda")renderTurnos();
   if(v==="balance")loadBalance();
   if(v==="servicios"){loadServicios();loadDisponibilidad();checkGoogleStatus();checkMpStatus();applyProfilePhoto();}
   if(v==="ia")initIA();
+  if(v==="historia")renderHistoriaGlobal();
+  if(v==="planes")renderPlanesCandela();
 }
 
 /* ===== NUTRI IA (chat solo para la nutricionista) ===== */
@@ -3109,7 +3441,14 @@ async function sendIA(){
     const resp=await fetch(`${SUPABASE_URL}/functions/v1/nutri-ia`,{
       method:"POST",
       headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
-      body:JSON.stringify({messages:iaMessages,message:text})
+      body:JSON.stringify({
+        messages:[
+          {role:"system",content:"Usá la información clínica solo como apoyo profesional. No inventes datos faltantes, marcá incertidumbres y no reemplaces el criterio de la nutricionista."},
+          ...iaMessages
+        ],
+        message:text,
+        clinical_context:await buildIAClinicalContext()
+      })
     });
     let data;
     try{data=await resp.json();}catch(_){data=await resp.text();}
@@ -3376,6 +3715,7 @@ function openPatientWhatsAppById(id,event){
 async function openFicha(id){
   currentPat=pacientes.find(p=>p.id===id);
   if(!currentPat)return;
+  updateIAClinicalContext();
   goView("ficha");
   const p=currentPat;
   $("fAv").textContent=initials(p.nombre);
@@ -5533,6 +5873,278 @@ document.addEventListener("DOMContentLoaded",function(){
     input.focus({preventScroll:true});
   });
 });
+</script>
+
+
+<script id="candela-anamnesis-clinical-context">
+let _anamnesisPatientId=null;
+const ANAMNESIS_FIELDS=[
+  "Motivo","Rutina","Convivencia","Familiares","Antecedentes","Medicacion","Alergias","Laboratorio",
+  "Digestivo","Hormonal","R24","Frecuencia","Preferencias","Organizacion","Relacion","Dietas",
+  "Actividad","Sueno","Hidratacion","Consumos","Estres","Barreras","Objetivo","ObjetivosSec",
+  "Acuerdos","Indicadores","Observaciones"
+];
+
+function anamnesisStorageKey(id){
+  const uid=(typeof me!=="undefined"&&me&&me.id)?me.id:"anon";
+  return "candela_anamnesis_"+uid+"_"+id;
+}
+function getAnamnesisLocal(id){
+  try{return JSON.parse(localStorage.getItem(anamnesisStorageKey(id))||"{}")}catch(e){return {}}
+}
+function setAnamnesisLocal(id,data){
+  localStorage.setItem(anamnesisStorageKey(id),JSON.stringify(data));
+}
+async function getAnamnesis(id){
+  const local=getAnamnesisLocal(id);
+  try{
+    if(typeof sb!=="undefined"&&me&&me.id){
+      const result=await sb.from("historias_clinicas").select("datos,updated_at").eq("nutri_id",me.id).eq("paciente_id",id).maybeSingle();
+      if(!result.error&&result.data&&result.data.datos){
+        const cloud=typeof result.data.datos==="string"?JSON.parse(result.data.datos):result.data.datos;
+        setAnamnesisLocal(id,cloud);
+        return cloud;
+      }
+    }
+  }catch(e){}
+  return local;
+}
+async function persistAnamnesis(id,data){
+  setAnamnesisLocal(id,data);
+  try{
+    if(typeof sb!=="undefined"&&me&&me.id){
+      const payload={nutri_id:me.id,paciente_id:id,datos:data,updated_at:new Date().toISOString()};
+      const result=await sb.from("historias_clinicas").upsert(payload,{onConflict:"nutri_id,paciente_id"});
+      if(!result.error)return {cloud:true};
+    }
+  }catch(e){}
+  return {cloud:false};
+}
+function showAnamnesisTab(name,button){
+  document.querySelectorAll(".cv-anamnesis-panel").forEach(function(panel){
+    panel.classList.toggle("on",panel.dataset.anamnesisTab===name);
+  });
+  document.querySelectorAll(".cv-anamnesis-tabs button").forEach(function(btn){btn.classList.remove("on")});
+  if(button)button.classList.add("on");
+  const body=document.querySelector(".cv-anamnesis-body");if(body)body.scrollTop=0;
+}
+async function openAnamnesis(id){
+  if(!id)return;
+  const patient=(pacientes||[]).find(function(p){return String(p.id)===String(id)});
+  if(!patient)return;
+  _anamnesisPatientId=id;
+  document.getElementById("anamnesisPatient").textContent=patient.nombre||"Paciente";
+  document.getElementById("anamnesisSaveState").textContent="Cargando información…";
+  ANAMNESIS_FIELDS.forEach(function(field){
+    const input=document.getElementById("an"+field);if(input)input.value="";
+  });
+  document.getElementById("anamnesisModal").classList.add("open");
+  showAnamnesisTab("general",document.querySelector(".cv-anamnesis-tabs button"));
+  const data=await getAnamnesis(id);
+  ANAMNESIS_FIELDS.forEach(function(field){
+    const input=document.getElementById("an"+field);if(input)input.value=data[field]||"";
+  });
+  document.getElementById("anamnesisSaveState").textContent="Información lista para editar.";
+}
+async function saveAnamnesis(){
+  if(!_anamnesisPatientId)return;
+  const button=document.getElementById("anamnesisSaveBtn");
+  const state=document.getElementById("anamnesisSaveState");
+  const data={};
+  ANAMNESIS_FIELDS.forEach(function(field){
+    const input=document.getElementById("an"+field);
+    data[field]=input?input.value.trim():"";
+  });
+  data.updated_at=new Date().toISOString();
+  button.disabled=true;state.textContent="Guardando…";
+  try{
+    const result=await persistAnamnesis(_anamnesisPatientId,data);
+    state.textContent=result.cloud?"Guardado en la nube.":"Guardado en este dispositivo. Falta crear la tabla historias_clinicas en Supabase.";
+    updateIAClinicalContext();
+    setTimeout(function(){closeModal("anamnesisModal")},700);
+  }catch(e){
+    state.textContent="No se pudo guardar: "+(e.message||e);
+  }finally{button.disabled=false}
+}
+function compactAnamnesis(data){
+  const labels={
+    Motivo:"Motivo",Antecedentes:"Antecedentes",Medicacion:"Medicación",Alergias:"Alergias",
+    Laboratorio:"Laboratorio",Digestivo:"Síntomas digestivos",Hormonal:"Salud hormonal",
+    R24:"Recordatorio 24 h",Frecuencia:"Frecuencia de consumo",Preferencias:"Preferencias",
+    Relacion:"Relación con la comida",Dietas:"Dietas previas",Actividad:"Actividad física",
+    Sueno:"Sueño",Hidratacion:"Hidratación",Estres:"Estrés",Barreras:"Barreras",
+    Objetivo:"Objetivo",Acuerdos:"Acuerdos",Indicadores:"Indicadores",Observaciones:"Observaciones"
+  };
+  return Object.keys(labels).filter(function(k){return data&&data[k]}).map(function(k){
+    return labels[k]+": "+String(data[k]).slice(0,700);
+  }).join("\n");
+}
+async function buildIAClinicalContext(){
+  if(typeof currentPat!=="undefined"&&currentPat){
+    const anamnesis=await getAnamnesis(currentPat.id);
+    let recent=[];
+    try{
+      const result=await sb.from("consultas").select("*").eq("paciente_id",currentPat.id).order("fecha",{ascending:false}).limit(8);
+      if(!result.error)recent=result.data||[];
+    }catch(e){}
+    return {
+      patient_id:currentPat.id,
+      patient_name:currentPat.nombre||"",
+      profile:{
+        altura:currentPat.altura||null,nacimiento:currentPat.nacimiento||null,sexo:currentPat.sexo||null,
+        objetivo:currentPat.objetivo||null,notas:currentPat.notas||null
+      },
+      anamnesis:anamnesis,
+      anamnesis_text:compactAnamnesis(anamnesis),
+      recent_consultations:recent
+    };
+  }
+  return {patient_id:null,note:"No hay un paciente seleccionado. Abrí una ficha antes de pedir un plan personalizado."};
+}
+function updateIAClinicalContext(){
+  const name=document.getElementById("iaClinicalContextName");if(!name)return;
+  name.textContent=(typeof currentPat!=="undefined"&&currentPat&&currentPat.nombre)?currentPat.nombre:"Sin paciente seleccionado";
+}
+document.addEventListener("DOMContentLoaded",updateIAClinicalContext);
+</script>
+
+
+<script id="candela-global-history-plans-help">
+function cvConsultasPaciente(id){
+  if(typeof pacientesConsultas!=="undefined"&&pacientesConsultas[id]){
+    return Array.isArray(pacientesConsultas[id])?pacientesConsultas[id]:[];
+  }
+  return [];
+}
+
+function renderHistoriaGlobal(){
+  const box=document.getElementById("historiaGlobalList");
+  if(!box)return;
+
+  const input=document.getElementById("historiaSearch");
+  const q=(input?input.value:"").trim().toLowerCase();
+
+  const list=(pacientes||[]).filter(function(p){
+    const text=[p.nombre,p.objetivo,p.antecedentes,p.observaciones,p.notas]
+      .filter(Boolean).join(" ").toLowerCase();
+    return !q||text.includes(q);
+  });
+
+  if(!list.length){
+    box.innerHTML='<div class="empty"><div class="big">📖</div><p>No encontramos historias clínicas.</p></div>';
+    return;
+  }
+
+  box.innerHTML=list.map(function(p){
+    const initials=(p.nombre||"P").split(/\s+/).slice(0,2)
+      .map(function(x){return x[0]}).join("").toUpperCase();
+
+    const consultas=cvConsultasPaciente(p.id);
+    const fechas=consultas.map(function(x){return x.fecha}).filter(Boolean).sort();
+    const last=fechas.length?fechas[fechas.length-1]:"Sin consultas";
+    const note=p.antecedentes||p.observaciones||p.notas||p.objetivo||"Sin antecedentes destacados cargados.";
+
+    return '<article class="cv-history-card" onclick="openFicha(\''+p.id+'\')">'+
+      '<div class="cv-history-top"><span class="cv-history-avatar">'+esc(initials)+'</span>'+
+      '<div><b>'+esc(p.nombre||"Paciente")+'</b><small>'+esc(p.objetivo||"Seguimiento nutricional")+'</small></div></div>'+
+      '<div class="cv-history-meta">'+
+      '<span>Consultas<strong>'+consultas.length+'</strong></span>'+
+      '<span>Última<strong>'+esc(last)+'</strong></span>'+
+      '<span>Estado<strong>'+(p.activo===false?"Inactivo":"Activo")+'</strong></span></div>'+
+      '<div class="cv-history-note">'+esc(note)+'</div>'+
+      '<div class="cv-history-actions">'+
+      '<button type="button" onclick="event.stopPropagation();openAnamnesis(\''+p.id+'\')">Completar anamnesis</button>'+
+      '<span>Ver ficha →</span></div></article>';
+  }).join("");
+}
+
+const CV_PLAN_DEFAULTS=[
+  {id:"equilibrado",name:"Plan equilibrado",icon:"🥗",desc:"Estructura general para educación alimentaria y organización semanal.",tags:["4 comidas","Flexible"],color:"#78A94B"},
+  {id:"deportivo",name:"Rendimiento deportivo",icon:"⚡",desc:"Plantilla orientativa para ordenar ingestas alrededor del entrenamiento.",tags:["Pre y post","Hidratación"],color:"#E7A938"},
+  {id:"vegetariano",name:"Vegetariano completo",icon:"🌱",desc:"Organización con fuentes vegetales y variedad de nutrientes.",tags:["Vegetariano","Proteínas"],color:"#57A9A0"}
+];
+
+function getCustomPlansCandela(){
+  try{return JSON.parse(localStorage.getItem("candela_custom_plans")||"[]")}
+  catch(e){return []}
+}
+
+function renderPlanesCandela(){
+  const box=document.getElementById("planesGrid");
+  if(!box)return;
+
+  const plans=CV_PLAN_DEFAULTS.concat(getCustomPlansCandela());
+  document.getElementById("planesCount").textContent=plans.length;
+  document.getElementById("planesReady").textContent=plans.length;
+  document.getElementById("planesLast").textContent=plans.length?"Hoy":"—";
+
+  box.innerHTML=plans.map(function(p){
+    return '<article class="cv-plan-card" style="--plan-color:'+esc(p.color||"#78A94B")+'">'+
+      '<span class="cv-plan-accent"></span>'+
+      '<span class="cv-plan-icon">'+esc(p.icon||"📋")+'</span>'+
+      '<h3>'+esc(p.name)+'</h3>'+
+      '<p>'+esc(p.desc||"Plantilla personalizable.")+'</p>'+
+      '<div class="cv-plan-tags">'+(p.tags||[]).map(function(t){return "<span>"+esc(t)+"</span>"}).join("")+'</div>'+
+      '<footer><small>Plantilla reutilizable</small>'+
+      '<button onclick="event.stopPropagation();usarPlantillaPlanCandela(\''+esc(p.id)+'\')">Usar →</button></footer></article>';
+  }).join("");
+}
+
+function crearPlantillaPlan(){
+  const name=prompt("Nombre de la nueva plantilla:");
+  if(!name||!name.trim())return;
+
+  const desc=prompt("Descripción breve:")||"Plantilla personalizada.";
+  const plans=getCustomPlansCandela();
+
+  plans.push({
+    id:"custom_"+Date.now(),
+    name:name.trim(),
+    desc:desc.trim(),
+    icon:"📋",
+    tags:["Personalizada"],
+    color:"#8B6CC7"
+  });
+
+  localStorage.setItem("candela_custom_plans",JSON.stringify(plans));
+  renderPlanesCandela();
+}
+
+function usarPlantillaPlanCandela(id){
+  const plan=CV_PLAN_DEFAULTS.concat(getCustomPlansCandela())
+    .find(function(x){return x.id===id});
+
+  if(!plan)return;
+
+  if(typeof currentPat!=="undefined"&&currentPat){
+    alert('La plantilla "'+plan.name+'" quedó seleccionada para '+(currentPat.nombre||"la paciente")+'. En la próxima tanda se conecta al editor del plan.');
+  }else{
+    alert('La plantilla "'+plan.name+'" quedó seleccionada. Abrí una paciente para aplicarla.');
+  }
+}
+
+function openSupportComposer(){
+  const active=document.querySelector(".sb-item.on span");
+  const section=active?active.textContent:"Sin identificar";
+  const subject=prompt("¿Qué problema tuviste?");
+  if(!subject)return;
+
+  const details=prompt("Contanos qué estabas haciendo y qué ocurrió:")||"";
+  const report=
+    "Candela Viola Nutrición - Reporte de soporte\n"+
+    "Sección: "+section+"\n"+
+    "Problema: "+subject+"\n"+
+    "Detalle: "+details+"\n"+
+    "Dispositivo: "+navigator.userAgent;
+
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(report)
+      .then(function(){alert("Reporte copiado. Pegalo en el canal de soporte.")})
+      .catch(function(){prompt("Copiá este reporte:",report)});
+  }else{
+    prompt("Copiá este reporte:",report);
+  }
+}
 </script>
 
 </body>
