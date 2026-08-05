@@ -2464,6 +2464,231 @@ html,body{min-height:100%;overscroll-behavior-y:auto}
 }
 </style>
 
+
+<style id="candela-performance-and-finance-v2">
+.caldia-patient-link{
+  appearance:none;
+  border:0;
+  padding:4px 5px;
+  margin:-4px -5px;
+  background:transparent;
+  text-align:left;
+  cursor:pointer;
+  border-radius:8px;
+}
+.caldia-patient-link:hover{
+  color:var(--brand);
+  background:var(--brand-tint);
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.turno-finance-notice{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:10000;
+  max-width:min(430px,calc(100vw - 28px));
+  padding:12px 15px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  color:var(--brand-strong);
+  background:rgba(255,255,255,.94);
+  box-shadow:0 16px 42px rgba(44,74,27,.18);
+  font-size:12px;
+  font-weight:650;
+  opacity:0;
+  transform:translateY(12px);
+  pointer-events:none;
+  transition:.2s ease;
+}
+.turno-finance-notice.on{opacity:1;transform:none}
+.payment-paid-btn{white-space:nowrap}
+
+/* Optimización general: menos capas de desenfoque y pintura. */
+body{
+  background-attachment:scroll!important;
+}
+.view{
+  content-visibility:auto;
+  contain-intrinsic-size:900px;
+}
+.card,.pcard,.stat,.qa,.cal-wrap,.auth-card,.sidebar,.modal{
+  backdrop-filter:blur(14px) saturate(1.22)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.22)!important;
+}
+.deco-layer{
+  contain:strict;
+}
+.deco-food{
+  will-change:auto!important;
+}
+.cal-cell,.turno-item,.caldia-item,.pcard,.dash-prow{
+  contain:layout paint style;
+}
+@media(max-width:820px),(prefers-reduced-motion:reduce){
+  .card,.pcard,.stat,.qa,.cal-wrap,.auth-card,.sidebar,.modal{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    background:color-mix(in srgb,var(--surface) 92%,transparent)!important;
+  }
+  .deco-layer{display:none!important}
+  .turno-finance-notice{
+    left:14px;right:14px;
+    bottom:calc(92px + env(safe-area-inset-bottom,0px));
+    max-width:none;
+  }
+}
+@media(max-width:600px){
+  .payment-row{flex-wrap:wrap}
+  .payment-paid-btn{width:100%}
+}
+</style>
+
+
+<style id="attended-equals-paid-hint">
+.attended-paid-hint{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 14px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--ink-soft);
+  background:var(--brand-tint);
+  font-size:11.5px;
+}
+.attended-paid-hint b{color:var(--brand-strong)}
+</style>
+
+
+<style id="bulk-services-responsive-styles">
+.agenda-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+}
+.bulk-service-modal{
+  width:min(590px,calc(100vw - 28px));
+}
+.bulk-service-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:17px;
+}
+.bulk-service-head h3{margin:3px 0 5px!important}
+.bulk-service-head p{
+  color:var(--ink-soft);
+  font-size:12px;
+  line-height:1.45;
+}
+.bulk-default-box{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(190px,260px);
+  gap:16px;
+  align-items:center;
+  padding:13px 14px;
+  margin-bottom:15px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--brand-tint);
+}
+.bulk-default-box b,.bulk-default-box small{display:block}
+.bulk-default-box b{font-size:12.5px;color:var(--brand-strong)}
+.bulk-default-box small{margin-top:3px;color:var(--ink-soft);font-size:10.5px}
+.bulk-default-box select{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:8px 10px;
+  color:var(--ink);
+  background:var(--surface);
+}
+.bulk-check{
+  display:flex;
+  gap:11px;
+  align-items:flex-start;
+  padding:11px 12px;
+  margin:8px 0;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--surface);
+  cursor:pointer;
+}
+.bulk-check input{
+  width:18px;height:18px;
+  margin-top:1px;
+  accent-color:var(--brand);
+  flex:none;
+}
+.bulk-check b,.bulk-check small{display:block}
+.bulk-check b{font-size:12px}
+.bulk-check small{margin-top:2px;color:var(--ink-soft);font-size:10.5px;line-height:1.4}
+.bulk-preview{
+  min-height:61px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+  margin:14px 0 12px;
+  padding:12px 14px;
+  border:1px dashed var(--line);
+  border-radius:13px;
+  color:var(--ink-soft);
+  background:var(--surface-2);
+  font-size:11.5px;
+}
+.bulk-preview.ready{
+  border-style:solid;
+  border-color:var(--brand);
+  background:var(--brand-tint);
+}
+.bulk-preview.error{
+  border-style:solid;
+  border-color:var(--bad);
+  background:var(--bad-bg);
+}
+.bulk-preview b{color:var(--brand-strong);font-size:13px}
+.bulk-preview.error b{color:var(--bad)}
+.bulk-preview span{line-height:1.45}
+@media(max-width:720px){
+  .agenda-main-head{
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+  .agenda-main-head h1{width:100%}
+  .agenda-head-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .agenda-head-actions .btn{
+    width:100%;
+    padding-left:10px;
+    padding-right:10px;
+  }
+  .bulk-service-modal{
+    width:100%;
+    max-height:92svh;
+    overflow:auto;
+    align-self:flex-end;
+    border-radius:22px 22px 0 0;
+    padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  }
+  .bulk-default-box{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+}
+@media(max-width:390px){
+  .agenda-head-actions{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <!-- ===== LOGIN ===== -->
@@ -2753,9 +2978,12 @@ html,body{min-height:100%;overscroll-behavior-y:auto}
 </div>
 <!-- VISTA AGENDA -->
 <div class="hidden" id="view-agenda">
-<div class="head">
+<div class="head agenda-main-head">
 <h1>Agenda de turnos</h1><span class="sp"></span>
-<button class="btn p" onclick="openTurnoModal()">＋ Nuevo turno</button>
+<div class="agenda-head-actions">
+  <button class="btn g" onclick="openBulkServiceModal()">⚙ Asignar servicios</button>
+  <button class="btn p" onclick="openTurnoModal()">＋ Nuevo turno</button>
+</div>
 </div>
 <input class="search" id="aSearch" oninput="renderAgenda()" placeholder="Buscar paciente en la agenda..." style="margin-bottom:14px" type="text"/>
 <div class="ag-toggle">
@@ -2867,7 +3095,8 @@ html,body{min-height:100%;overscroll-behavior-y:auto}
 </div>
 
 <div class="hidden" id="view-balance">
-<div class="head"><h1>Pagos y balance</h1><div class="balance-toolbar" id="balancePeriods">
+<div class="head"><h1>Pagos y balance</h1>
+<div class="attended-paid-hint"><b>Atendido = pagado:</b> al marcar un turno como atendido, se registra automáticamente el valor del servicio.</div><div class="balance-toolbar" id="balancePeriods">
 <button class="period-btn on" onclick="setBalancePeriod(1)">1 mes</button><button class="period-btn" onclick="setBalancePeriod(2)">2 meses</button><button class="period-btn" onclick="setBalancePeriod(3)">3 meses</button><button class="period-btn" onclick="setBalancePeriod(6)">6 meses</button>
 </div></div>
 <div class="loading" id="balLoading"><span class="spin"></span> Cargando...</div>
@@ -3455,6 +3684,74 @@ html,body{min-height:100%;overscroll-behavior-y:auto}
 </div>
 </div>
 </div>
+
+<!-- MODAL ASIGNACIÓN MASIVA DE SERVICIOS -->
+<div class="modal-bg" id="bulkServiceModal">
+  <div class="modal bulk-service-modal">
+    <div class="bulk-service-head">
+      <div>
+        <span class="cv-section-kicker">Agenda inteligente</span>
+        <h3>Asignar servicio a varios turnos</h3>
+        <p>Elegí un período y aplicá el mismo servicio sin editar turno por turno.</p>
+      </div>
+      <button class="notif-close" type="button" aria-label="Cerrar" onclick="closeModal('bulkServiceModal')">×</button>
+    </div>
+
+    <div class="bulk-default-box">
+      <div>
+        <b>Servicio predeterminado</b>
+        <small>Se seleccionará automáticamente al crear los próximos turnos.</small>
+      </div>
+      <select id="defaultServiceSelect" onchange="saveDefaultService(this.value)"></select>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Desde</label>
+        <input id="bulkServiceFrom" type="date" onchange="updateBulkServicePreview()"/>
+      </div>
+      <div class="field">
+        <label>Hasta</label>
+        <input id="bulkServiceTo" type="date" onchange="updateBulkServicePreview()"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Servicio que querés asignar</label>
+      <select id="bulkServiceSelect" onchange="updateBulkServicePreview()"></select>
+    </div>
+
+    <label class="bulk-check">
+      <input id="bulkOnlyEmpty" type="checkbox" checked onchange="updateBulkServicePreview()"/>
+      <span>
+        <b>Solo turnos sin servicio</b>
+        <small>Recomendado para no reemplazar servicios que ya configuraste.</small>
+      </span>
+    </label>
+
+    <label class="bulk-check">
+      <input id="bulkIncludeAttended" type="checkbox" checked onchange="updateBulkServicePreview()"/>
+      <span>
+        <b>Incluir turnos ya atendidos</b>
+        <small>También generará su pago automáticamente usando el precio del servicio.</small>
+      </span>
+    </label>
+
+    <div class="bulk-preview" id="bulkServicePreview">
+      Seleccioná un servicio para calcular los turnos afectados.
+    </div>
+
+    <div class="msg" id="bulkServiceMsg"></div>
+
+    <div class="form-actions">
+      <button class="btn p" id="bulkServiceApplyBtn" type="button" onclick="applyBulkService()" disabled>
+        Aplicar servicio
+      </button>
+      <button class="btn g" type="button" onclick="closeModal('bulkServiceModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TURNO -->
 <div class="modal-bg" id="turnoModal">
 <div class="modal">
@@ -3542,19 +3839,98 @@ function initials(n){return(n||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).
 function fmtDate(iso){if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y.slice(2)}`;}
 function todayISO(){return new Date().toISOString().slice(0,10);}
 
-/* ===== BLOC DEL DÍA ===== */
+/* ===== BLOC DEL DÍA · SINCRONIZADO EN LA NUBE ===== */
+let _dailyNotesCache=[];
+let _dailyNotesLoaded=false;
+let _dailyNotesSyncTimer=null;
+let _dailyNotesSyncing=false;
+
+function normalizeDailyNotes(value){
+  if(!Array.isArray(value))return [];
+  return value
+    .filter(function(n){return n&&typeof n.text==="string"&&n.text.trim()})
+    .map(function(n){
+      return {
+        id:String(n.id||("note_"+Date.now()+"_"+Math.random().toString(36).slice(2,6))),
+        text:n.text.trim().slice(0,180),
+        priority:n.priority==="alta"?"alta":"normal",
+        done:!!n.done,
+        created:n.created||new Date().toISOString(),
+        updated:n.updated||n.created||new Date().toISOString()
+      };
+    });
+}
 function dailyNotesStorageKey(){
   const uid=(me&&me.id)?me.id:"local";
   return "nutrisuite_daily_notes_"+uid;
 }
+function getLocalDailyNotes(){
+  try{return normalizeDailyNotes(JSON.parse(localStorage.getItem(dailyNotesStorageKey())||"[]"))}
+  catch(e){return []}
+}
+function saveLocalDailyNotes(notes){
+  try{localStorage.setItem(dailyNotesStorageKey(),JSON.stringify(notes))}catch(e){}
+}
 function getDailyNotes(){
-  try{
-    const value=JSON.parse(localStorage.getItem(dailyNotesStorageKey())||"[]");
-    return Array.isArray(value)?value:[];
-  }catch(e){return []}
+  return _dailyNotesLoaded?_dailyNotesCache:getLocalDailyNotes();
+}
+function mergeDailyNotes(cloud,local){
+  const map=new Map();
+  normalizeDailyNotes([].concat(cloud||[],local||[])).forEach(function(note){
+    const old=map.get(note.id);
+    const oldTime=old?new Date(old.updated||old.created||0).getTime():0;
+    const newTime=new Date(note.updated||note.created||0).getTime();
+    if(!old||newTime>=oldTime)map.set(note.id,note);
+  });
+  return Array.from(map.values()).sort(function(a,b){
+    return new Date(b.created||0)-new Date(a.created||0);
+  }).slice(0,150);
+}
+async function loadDailyNotesFromCloud(){
+  const local=getLocalDailyNotes();
+  const cloud=normalizeDailyNotes(
+    me&&me.user_metadata&&me.user_metadata.daily_notes
+      ?me.user_metadata.daily_notes:[]
+  );
+  _dailyNotesCache=mergeDailyNotes(cloud,local);
+  _dailyNotesLoaded=true;
+  saveLocalDailyNotes(_dailyNotesCache);
+  renderDailyNotes();
+
+  /* Si había notas locales de una versión anterior, se suben una vez. */
+  if(local.length&&JSON.stringify(_dailyNotesCache)!==JSON.stringify(cloud)){
+    scheduleDailyNotesCloudSync(250);
+  }
 }
 function saveDailyNotes(notes){
-  try{localStorage.setItem(dailyNotesStorageKey(),JSON.stringify(notes))}catch(e){}
+  _dailyNotesCache=normalizeDailyNotes(notes);
+  _dailyNotesLoaded=true;
+  saveLocalDailyNotes(_dailyNotesCache);
+  renderDailyNotes();
+  scheduleDailyNotesCloudSync();
+}
+function scheduleDailyNotesCloudSync(delay){
+  clearTimeout(_dailyNotesSyncTimer);
+  _dailyNotesSyncTimer=setTimeout(syncDailyNotesToCloud,delay||650);
+}
+async function syncDailyNotesToCloud(){
+  if(!me||_dailyNotesSyncing)return;
+  _dailyNotesSyncing=true;
+  try{
+    const metadata=Object.assign({},me.user_metadata||{},{
+      daily_notes:_dailyNotesCache,
+      daily_notes_updated_at:new Date().toISOString()
+    });
+    const{data,error}=await sb.auth.updateUser({data:metadata});
+    if(error)throw error;
+    if(data&&data.user)me=data.user;
+    saveLocalDailyNotes(_dailyNotesCache);
+  }catch(e){
+    console.warn("No se pudieron sincronizar las notas:",e);
+    /* La copia local permanece disponible y se reintenta en el próximo cambio. */
+  }finally{
+    _dailyNotesSyncing=false;
+  }
 }
 function renderDailyNotes(){
   const box=document.getElementById("dailyNotesList");
@@ -3587,42 +3963,36 @@ function addDailyNote(event){
   event.preventDefault();
   const input=document.getElementById("dailyNoteInput");
   const priority=document.getElementById("dailyNotePriority");
-  const value=(input.value||"").trim();
+  const value=(input&&input.value||"").trim();
   if(!value)return;
-  const notes=getDailyNotes();
+  const now=new Date().toISOString();
+  const notes=getDailyNotes().slice();
   notes.unshift({
     id:"note_"+Date.now()+"_"+Math.random().toString(36).slice(2,6),
     text:value,
     priority:priority?priority.value:"normal",
     done:false,
-    created:new Date().toISOString()
+    created:now,
+    updated:now
   });
   saveDailyNotes(notes);
   input.value="";
   if(priority)priority.value="normal";
-  renderDailyNotes();
   input.focus();
 }
 function toggleDailyNote(id){
-  const notes=getDailyNotes().map(function(n){
-    return n.id===id?Object.assign({},n,{done:!n.done}):n;
-  });
-  saveDailyNotes(notes);
-  renderDailyNotes();
+  const now=new Date().toISOString();
+  saveDailyNotes(getDailyNotes().map(function(n){
+    return n.id===id?Object.assign({},n,{done:!n.done,updated:now}):n;
+  }));
 }
 function deleteDailyNote(id){
   saveDailyNotes(getDailyNotes().filter(function(n){return n.id!==id}));
-  renderDailyNotes();
 }
 function clearCompletedDailyNotes(){
-  const notes=getDailyNotes();
-  if(!notes.some(function(n){return n.done}))return;
-  saveDailyNotes(notes.filter(function(n){return !n.done}));
-  renderDailyNotes();
+  if(!getDailyNotes().some(function(n){return n.done}))return;
+  saveDailyNotes(getDailyNotes().filter(function(n){return !n.done}));
 }
-
-
-
 /* ===== SIDEBAR COLAPSABLE ===== */
 function applySidebarCollapse(){
   let collapsed=false;
@@ -4234,6 +4604,36 @@ function renderDashPacientes(){
 
 /* ===== CARGA ===== */
 
+
+/* ===== RECUPERAR ATENDIDOS HISTÓRICOS AL BALANCE ===== */
+async function backfillAttendedTurnosToBalance(){
+  if(!me||!Array.isArray(turnos)||!turnos.length)return;
+  let created=0,updated=0,skipped=0;
+
+  for(const turno of turnos){
+    if(!turno.atendido){skipped++;continue;}
+    if(!turno.servicio_id){skipped++;continue;}
+
+    try{
+      const result=await ensureAutoChargeForTurno(turno);
+      if(result.created)created++;
+      else if(result.updated)updated++;
+      else skipped++;
+    }catch(e){
+      console.warn("No se pudo recuperar un turno atendido al balance:",turno&&turno.id,e);
+    }
+  }
+
+  if(created||updated){
+    await loadDashCobros();
+    showTurnoFinanceNotice(
+      "Balance actualizado: "+
+      created+" pagos anteriores agregados"+
+      (updated?", "+updated+" cobros pendientes marcados como pagados":"")+"."
+    );
+  }
+}
+
 /* ===== MIGRACIÓN SEGURA CANDELA · COPIA 2026-08-05 ===== */
 const CANDELA_BACKUP_20260805_B64="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";
 let _candelaMigrationRunning=false;
@@ -4523,6 +4923,7 @@ function retryCandelaBackupMigration(){
 
 async function loadAll(){
   await Promise.all([loadPatients(),loadTurnos(),loadServiciosSilent(),loadDashCobros()]);
+  await loadDailyNotesFromCloud();
   renderPatients();
   let savedView="inicio";
   try{savedView=localStorage.getItem("nutrisuite_current_view")||"inicio";}catch(e){}
@@ -4531,10 +4932,231 @@ async function loadAll(){
   if(savedView==="ficha"&&!currentPat)savedView="pacientes";
   goView(savedView);
   setTimeout(function(){migrateCandelaBackup20260805(false)},500);
+  setTimeout(function(){backfillAttendedTurnosToBalance()},1200);
 }
 async function loadDashCobros(){
   try{const{data}=await sb.from("cobros").select("*").eq("nutri_id",me.id);_dashCobros=data||[];}catch(e){_dashCobros=[];}
 }
+
+/* ===== SERVICIO PREDETERMINADO Y ASIGNACIÓN MASIVA ===== */
+let _bulkServiceCandidates=[];
+
+function defaultServiceStorageKey(){
+  return "nutrisuite_default_service_"+(me&&me.id?me.id:"local");
+}
+function getDefaultServiceId(){
+  const cloud=me&&me.user_metadata&&me.user_metadata.default_service_id;
+  if(cloud)return String(cloud);
+  try{return localStorage.getItem(defaultServiceStorageKey())||""}catch(e){return ""}
+}
+async function saveDefaultService(value){
+  const serviceId=value||"";
+  try{localStorage.setItem(defaultServiceStorageKey(),serviceId)}catch(e){}
+  if(!me)return;
+  try{
+    const metadata=Object.assign({},me.user_metadata||{},{
+      default_service_id:serviceId||null,
+      default_service_updated_at:new Date().toISOString()
+    });
+    const{data,error}=await sb.auth.updateUser({data:metadata});
+    if(error)throw error;
+    if(data&&data.user)me=data.user;
+    showTurnoFinanceNotice(
+      serviceId
+        ?"Servicio predeterminado guardado."
+        :"Se quitó el servicio predeterminado."
+    );
+  }catch(e){
+    console.warn("No se pudo sincronizar el servicio predeterminado:",e);
+    showTurnoFinanceNotice("Se guardó en este dispositivo, pero no pudo sincronizarse.");
+  }
+}
+function fmtMontoTexto(value){
+  const amount=Number(value)||0;
+  return amount.toLocaleString("es-AR",{
+    style:"currency",
+    currency:"ARS",
+    maximumFractionDigits:0
+  });
+}
+function serviceOptionLabel(service){
+  const price=Number(service.precio)||0;
+  return String(service.nombre||"Servicio")+" · "+fmtMontoTexto(price)+(service.modalidad?" · "+String(service.modalidad):"");
+}
+function fillBulkServiceSelectors(){
+  const options='<option value="">Elegí un servicio</option>'+
+    (servicios||[]).map(function(service){
+      return '<option value="'+service.id+'">'+esc(serviceOptionLabel(service))+'</option>';
+    }).join("");
+  const bulk=document.getElementById("bulkServiceSelect");
+  const defaultSelect=document.getElementById("defaultServiceSelect");
+  if(bulk)bulk.innerHTML=options;
+  if(defaultSelect){
+    defaultSelect.innerHTML='<option value="">Sin servicio predeterminado</option>'+
+      (servicios||[]).map(function(service){
+        return '<option value="'+service.id+'">'+esc(serviceOptionLabel(service))+'</option>';
+      }).join("");
+    defaultSelect.value=getDefaultServiceId();
+  }
+}
+function monthBoundsISO(){
+  const now=new Date();
+  const first=new Date(now.getFullYear(),now.getMonth(),1);
+  const last=new Date(now.getFullYear(),now.getMonth()+1,0);
+  const iso=function(d){
+    const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
+    return y+"-"+m+"-"+day;
+  };
+  return {from:iso(first),to:iso(last)};
+}
+function openBulkServiceModal(){
+  if(!servicios||!servicios.length){
+    alert("Primero creá al menos un servicio con su precio desde la sección Servicios.");
+    goView("servicios");
+    return;
+  }
+  fillBulkServiceSelectors();
+  const bounds=monthBoundsISO();
+  document.getElementById("bulkServiceFrom").value=bounds.from;
+  document.getElementById("bulkServiceTo").value=bounds.to;
+  document.getElementById("bulkServiceSelect").value=getDefaultServiceId()||"";
+  document.getElementById("bulkOnlyEmpty").checked=true;
+  document.getElementById("bulkIncludeAttended").checked=true;
+  clearMsg(document.getElementById("bulkServiceMsg"));
+  updateBulkServicePreview();
+  document.getElementById("bulkServiceModal").classList.add("open");
+}
+function getBulkServiceCandidates(){
+  const from=document.getElementById("bulkServiceFrom").value;
+  const to=document.getElementById("bulkServiceTo").value;
+  const onlyEmpty=document.getElementById("bulkOnlyEmpty").checked;
+  const includeAttended=document.getElementById("bulkIncludeAttended").checked;
+  if(!from||!to||from>to)return [];
+  return (turnos||[]).filter(function(turno){
+    if(!turno.fecha||turno.fecha<from||turno.fecha>to)return false;
+    if(onlyEmpty&&turno.servicio_id)return false;
+    if(!includeAttended&&turno.atendido)return false;
+    return true;
+  });
+}
+function updateBulkServicePreview(){
+  const box=document.getElementById("bulkServicePreview");
+  const button=document.getElementById("bulkServiceApplyBtn");
+  if(!box||!button)return;
+  const serviceId=document.getElementById("bulkServiceSelect").value;
+  const service=servicios.find(function(s){return String(s.id)===String(serviceId)});
+  const from=document.getElementById("bulkServiceFrom").value;
+  const to=document.getElementById("bulkServiceTo").value;
+
+  if(from&&to&&from>to){
+    _bulkServiceCandidates=[];
+    box.className="bulk-preview error";
+    box.innerHTML="<b>Revisá las fechas.</b><span>La fecha inicial no puede ser posterior a la final.</span>";
+    button.disabled=true;
+    return;
+  }
+  if(!service){
+    _bulkServiceCandidates=[];
+    box.className="bulk-preview";
+    box.textContent="Seleccioná un servicio para calcular los turnos afectados.";
+    button.disabled=true;
+    return;
+  }
+
+  _bulkServiceCandidates=getBulkServiceCandidates();
+  const attended=_bulkServiceCandidates.filter(function(t){return t.atendido}).length;
+  const price=Number(service.precio)||0;
+  box.className="bulk-preview "+(_bulkServiceCandidates.length?"ready":"");
+  box.innerHTML=
+    '<b>'+_bulkServiceCandidates.length+' turno'+(_bulkServiceCandidates.length===1?"":"s")+' para actualizar</b>'+
+    '<span>Servicio: '+esc(service.nombre)+' · '+esc(fmtMontoTexto(price))+
+    (attended?' · '+attended+' ya atendido'+(attended===1?"":"s")+' pasarán al balance':'')+
+    '</span>';
+  button.disabled=!_bulkServiceCandidates.length;
+  button.textContent=_bulkServiceCandidates.length
+    ?"Aplicar a "+_bulkServiceCandidates.length+" turno"+(_bulkServiceCandidates.length===1?"":"s")
+    :"No hay turnos para actualizar";
+}
+async function applyBulkService(){
+  const serviceId=document.getElementById("bulkServiceSelect").value;
+  const service=servicios.find(function(s){return String(s.id)===String(serviceId)});
+  const candidates=getBulkServiceCandidates();
+  if(!service||!candidates.length)return;
+
+  const message=
+    "Se asignará “"+service.nombre+"” a "+candidates.length+" turno"+
+    (candidates.length===1?"":"s")+". ¿Continuar?";
+  if(!confirm(message))return;
+
+  const button=document.getElementById("bulkServiceApplyBtn");
+  const msg=document.getElementById("bulkServiceMsg");
+  button.disabled=true;
+  button.textContent="Actualizando…";
+  clearMsg(msg);
+
+  let updated=0,paid=0,failed=0;
+  const chunks=[];
+  for(let i=0;i<candidates.length;i+=60)chunks.push(candidates.slice(i,i+60));
+
+  try{
+    for(const chunk of chunks){
+      const ids=chunk.map(function(t){return t.id});
+      const patch={
+        servicio_id:service.id,
+        modalidad:service.modalidad||"presencial"
+      };
+      const{error}=await sb.from("turnos")
+        .update(patch)
+        .eq("nutri_id",me.id)
+        .in("id",ids);
+      if(error)throw error;
+
+      chunk.forEach(function(turno){
+        turno.servicio_id=service.id;
+        turno.modalidad=service.modalidad||"presencial";
+      });
+      updated+=chunk.length;
+
+      /* Los ya atendidos deben quedar registrados como pagados. */
+      for(const turno of chunk){
+        if(!turno.atendido)continue;
+        try{
+          const result=await ensureAutoChargeForTurno(turno);
+          if(result.created||result.updated)paid++;
+        }catch(e){
+          failed++;
+          console.warn("No se pudo crear el pago para el turno",turno.id,e);
+        }
+      }
+
+      /* Cede tiempo al navegador para mantener la interfaz fluida. */
+      await new Promise(function(resolve){setTimeout(resolve,0)});
+    }
+
+    await Promise.all([loadTurnos(),loadDashCobros()]);
+    renderAgenda();
+    if(document.getElementById("view-balance")&&!document.getElementById("view-balance").classList.contains("hidden")){
+      await loadBalance();
+    }
+    saveDefaultService(service.id);
+    showMsg(
+      msg,
+      updated+" turnos actualizados"+
+      (paid?" y "+paid+" pagos incorporados al balance":"")+
+      (failed?". "+failed+" pagos no pudieron registrarse.":"")+
+      ".",
+      failed?"err":"ok"
+    );
+    updateBulkServicePreview();
+  }catch(e){
+    showMsg(msg,"No se pudieron actualizar los turnos: "+(e.message||e),"err");
+  }finally{
+    button.disabled=false;
+    button.textContent="Aplicar servicio";
+    updateBulkServicePreview();
+  }
+}
+
 async function loadServiciosSilent(){
   try{const{data}=await sb.from("servicios").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});servicios=data||[];}catch(e){}
 }
@@ -4671,8 +5293,11 @@ function openPatientWhatsAppById(id,event){
 }
 
 /* ===== FICHA ===== */
+function openFichaById(id){
+  return openFicha(id);
+}
 async function openFicha(id){
-  currentPat=pacientes.find(p=>p.id===id);
+  currentPat=pacientes.find(function(p){return String(p.id)===String(id)});
   if(!currentPat)return;
   updateIAClinicalContext();
   goView("ficha");
@@ -4987,7 +5612,7 @@ function renderDiaSeleccionado(iso){
       const meet=t.meet_link?`<a href="${esc(t.meet_link)}" target="_blank" class="caldia-meet">📹 Videollamada</a>`:"";
       return `<div class="caldia-item ${virt?'virt':''} ${t.atendido?'atendido':''}">
         <span class="caldia-hora">${t.hora||"--:--"}</span>
-        <span class="caldia-nom">${nom}${virt?' <span class="caldia-tag">virtual</span>':''}${t.atendido?' <span class="tag-atendido">✓ Atendido</span>':''}</span>
+        <button class="caldia-nom caldia-patient-link" type="button" onclick="openFichaById('${t.paciente_id}')" title="Abrir ficha de ${nom}">${nom}${virt?' <span class="caldia-tag">virtual</span>':''}${t.atendido?' <span class="tag-atendido">✓ Atendido</span>':''}</button>
         ${meet}
         <div class="turno-acciones caldia-actions">
           <button class="ta-btn" onclick="openFicha('${t.paciente_id}')" title="Abrir paciente" aria-label="Abrir paciente">
@@ -5031,7 +5656,14 @@ function openTurnoModal(){
   $("tServicio").innerHTML=`<option value="">Sin especificar (presencial)</option>`+
     (servicios||[]).map(s=>`<option value="${s.id}" data-mod="${s.modalidad}">${esc(s.nombre)} (${s.modalidad})</option>`).join("");
   $("tFecha").value=todayISO();$("tHora").value="";$("tNota").value="";
-  $("tVirtualHint").style.display="none";
+  const defaultServiceId=getDefaultServiceId();
+  if(defaultServiceId&&servicios.some(function(s){return String(s.id)===String(defaultServiceId)})){
+    $("tServicio").value=defaultServiceId;
+    onTurnoServChange();
+  }else{
+    $("tServicio").value="";
+    $("tVirtualHint").style.display="none";
+  }
   $("turnoModal").classList.add("open");
 }
 function openTurnoForCurrent(){
@@ -5048,7 +5680,7 @@ async function saveTurno(){
   const fecha=$("tFecha").value,pid=$("tPac").value;
   if(!fecha||!pid){showMsg($("turnoMsg"),"Elegí paciente y fecha","err");return;}
   const servId=$("tServicio").value||null;
-  const serv=servId?servicios.find(s=>s.id===servId):null;
+  const serv=servId?servicios.find(function(s){return String(s.id)===String(servId)}):null;
   const btn=document.querySelector("#turnoModal .btn.p");
   // MODO EDICIÓN
   if(_editTurnoId){
@@ -5883,17 +6515,46 @@ function renderBalance(){
   meses.forEach((m,i)=>{const h=(m.val/max)*(H-padT-padB),x=padL+i*gap+gap*.21,y=H-padB-h;bars+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="6" fill="var(--sky)"/>`;if(m.val>0)bars+=`<text x="${x+bw/2}" y="${y-6}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">${_montosOcultos?"＊":(m.val/1000).toFixed(0)+"k"}</text>`;bars+=`<text x="${x+bw/2}" y="${H-14}" text-anchor="middle" font-size="11" fill="var(--ink-faint)">${m.label}</text>`;});
   $("balChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${bars}</svg>`;renderPaymentList();aplicarOcultarMontos();
 }
-function renderPaymentList(){let lista=_balanceCobros.map(c=>({...c,_estado:estadoCobro(c)}));if(_paymentFilter!=="todos")lista=lista.filter(c=>c._estado===_paymentFilter);if(!lista.length){$("balList").innerHTML=`<p style="color:var(--ink-faint);font-size:13px;padding:14px 0">No hay movimientos en esta categoría.</p>`;return;}$("balList").innerHTML=lista.map(c=>`<div class="payment-row"><div style="width:38px;height:38px;border-radius:12px;background:var(--brand-tint);display:flex;align-items:center;justify-content:center">${c._estado==="pagado"?"✓":c._estado==="vencido"?"!":"$"}</div><div style="flex:1"><b style="font-family:var(--fd);font-size:14px">${esc(c.concepto||"Consulta")}</b><br><span style="font-size:12px;color:var(--ink-soft)">${fmtDate((c.pagado_en||c.creado).slice(0,10))}</span></div><span class="pay-status ${c._estado}">${c._estado}</span><b>${fmtMonto(Number(c.monto)||0)}</b></div>`).join("");aplicarOcultarMontos();}
-
-
-
-/* ===== GOOGLE SHEETS: SINCRONIZACIÓN POR APPS SCRIPT ===== */
-const SHEETS_URL_KEY="cv_sheets_webhook",SHEETS_AUTO_KEY="cv_sheets_auto";
-function initSheetsSettings(){
-  const input=$("sheetsWebhook"),auto=$("sheetsAuto");
-  if(input)input.value=localStorage.getItem(SHEETS_URL_KEY)||"";
-  if(auto)auto.checked=localStorage.getItem(SHEETS_AUTO_KEY)==="1";
-  updateSheetsStatus();
+function renderPaymentList(){
+  let lista=_balanceCobros.map(function(c){return Object.assign({},c,{_estado:estadoCobro(c)})});
+  if(_paymentFilter!=="todos")lista=lista.filter(function(c){return c._estado===_paymentFilter});
+  if(!lista.length){
+    $("balList").innerHTML='<p style="color:var(--ink-faint);font-size:13px;padding:14px 0">No hay movimientos en esta categoría.</p>';
+    return;
+  }
+  $("balList").innerHTML=lista.map(function(c){
+    return '<div class="payment-row">'+
+      '<div style="width:38px;height:38px;border-radius:12px;background:var(--brand-tint);display:flex;align-items:center;justify-content:center">'+
+      (c._estado==="pagado"?"✓":c._estado==="vencido"?"!":"$")+'</div>'+
+      '<div style="flex:1"><b style="font-family:var(--fd);font-size:14px">'+esc(c.concepto||"Consulta")+
+      '</b><br><span style="font-size:12px;color:var(--ink-soft)">'+fmtDate((c.pagado_en||c.creado).slice(0,10))+'</span></div>'+
+      '<span class="pay-status '+c._estado+'">'+c._estado+'</span>'+
+      '<b>'+fmtMonto(Number(c.monto)||0)+'</b>'+
+      (c._estado!=="pagado"?'<button class="btn g sm payment-paid-btn" onclick="marcarCobroPagado(\''+c.id+'\')">Registrar pago</button>':'')+
+      '</div>';
+  }).join("");
+  aplicarOcultarMontos();
+}
+async function marcarCobroPagado(id){
+  const cobro=_balanceCobros.find(function(c){return String(c.id)===String(id)});
+  if(!cobro)return;
+  if(!confirm("¿Registrar este cobro como pagado?"))return;
+  try{
+    const now=new Date().toISOString();
+    const{error}=await sb.from("cobros")
+      .update({estado:"pagado",pagado_en:now})
+      .eq("id",id)
+      .eq("nutri_id",me.id);
+    if(error)throw error;
+    cobro.estado="pagado";
+    cobro.pagado_en=now;
+    await loadDashCobros();
+    renderBalance();
+    if(currentPat&&String(currentPat.id)===String(cobro.paciente_id))renderCobros();
+    syncBalanceToSheets(false);
+  }catch(e){
+    alert("No se pudo registrar el pago: "+(e.message||e));
+  }
 }
 function validSheetsUrl(u){return /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(u||"");}
 function saveSheetsWebhook(){
@@ -6018,12 +6679,116 @@ function enviarWa(){
   window.open(url,"_blank");
   closeModal("waModal");
 }
-function marcarAtendido(id,valor){
-  sb.from("turnos").update({atendido:valor}).eq("id",id).then(()=>{
-    const t=turnos.find(x=>x.id===id);if(t)t.atendido=valor;
-    renderAgenda();
-  });
+function turnoAutoCobroConcepto(turno,servicio){
+  const paciente=pacDeTurno(turno);
+  const nombreServicio=(servicio&&servicio.nombre)||turno.nota||"Consulta";
+  const fecha=fmtDate(turno.fecha);
+  const hora=turno.hora?" "+turno.hora:"";
+  return nombreServicio+" · "+(paciente?paciente.nombre:"Paciente")+" · "+fecha+hora;
 }
+async function ensureAutoChargeForTurno(turno){
+  if(!turno||!turno.servicio_id)return {created:false,reason:"sin-servicio"};
+  const servicio=servicios.find(function(s){return String(s.id)===String(turno.servicio_id)});
+  const precio=servicio?Number(servicio.precio):0;
+  if(!servicio||!Number.isFinite(precio)||precio<=0)return {created:false,reason:"sin-precio"};
+
+  const concepto=turnoAutoCobroConcepto(turno,servicio);
+  const{data:existing,error:findError}=await sb.from("cobros")
+    .select("id,estado,monto,concepto")
+    .eq("nutri_id",me.id)
+    .eq("paciente_id",turno.paciente_id)
+    .eq("concepto",concepto)
+    .limit(1);
+  if(findError)throw findError;
+  if(existing&&existing.length){
+    const found=existing[0];
+    if(found.estado!=="pagado"){
+      const now=new Date().toISOString();
+      const{data:updated,error:updateError}=await sb.from("cobros")
+        .update({estado:"pagado",pagado_en:now})
+        .eq("id",found.id)
+        .eq("nutri_id",me.id)
+        .select("*")
+        .single();
+      if(updateError)throw updateError;
+      const index=_dashCobros.findIndex(function(c){return String(c.id)===String(found.id)});
+      if(index>=0)_dashCobros[index]=updated;
+      return {created:false,updated:true,existing:updated};
+    }
+    return {created:false,existing:found};
+  }
+
+  const row={
+    nutri_id:me.id,
+    paciente_id:turno.paciente_id,
+    concepto:concepto,
+    monto:precio,
+    estado:"pagado",
+    pagado_en:new Date().toISOString()
+  };
+  const{data,error}=await sb.from("cobros").insert(row).select("*").single();
+  if(error)throw error;
+  _dashCobros.unshift(data);
+  return {created:true,cobro:data};
+}
+async function removePendingAutoChargeForTurno(turno){
+  /* Un pago confirmado no se borra automáticamente al desmarcar un turno.
+     Si hace falta corregirlo, se hace desde Balance para evitar perder movimientos reales. */
+  return;
+}
+async function marcarAtendido(id,valor){
+  const turno=turnos.find(function(x){return String(x.id)===String(id)});
+  if(!turno)return;
+  const previous=!!turno.atendido;
+  turno.atendido=valor;
+  renderAgenda();
+
+  try{
+    const{error}=await sb.from("turnos").update({atendido:valor}).eq("id",id).eq("nutri_id",me.id);
+    if(error)throw error;
+
+    if(valor){
+      const result=await ensureAutoChargeForTurno(turno);
+      if(result.reason==="sin-servicio"){
+        showTurnoFinanceNotice("Atendido guardado. Elegí un servicio en el turno para generar el cobro automáticamente.");
+      }else if(result.reason==="sin-precio"){
+        showTurnoFinanceNotice("Atendido guardado. El servicio no tiene precio, por eso no se creó un cobro.");
+      }else if(result.created){
+        showTurnoFinanceNotice("Atendido guardado y pago registrado automáticamente en el balance.");
+      }else{
+        showTurnoFinanceNotice(result.updated?"Atendido guardado. El cobro pendiente se marcó como pagado.":"Atendido guardado. El pago ya estaba registrado.");
+      }
+    }else{
+      await removePendingAutoChargeForTurno(turno);
+      showTurnoFinanceNotice("Se desmarcó el turno. Los pagos ya registrados no se eliminan automáticamente.");
+    }
+
+    await loadDashCobros();
+    if(document.getElementById("view-balance")&&!document.getElementById("view-balance").classList.contains("hidden")){
+      await loadBalance();
+    }
+    if(currentPat&&String(currentPat.id)===String(turno.paciente_id))renderCobros();
+    renderAgenda();
+  }catch(e){
+    turno.atendido=previous;
+    renderAgenda();
+    alert("No se pudo actualizar el turno o el balance: "+(e.message||e));
+  }
+}
+function showTurnoFinanceNotice(message){
+  let box=document.getElementById("turnoFinanceNotice");
+  if(!box){
+    box=document.createElement("div");
+    box.id="turnoFinanceNotice";
+    box.className="turno-finance-notice";
+    document.body.appendChild(box);
+  }
+  box.textContent=message;
+  box.classList.add("on");
+  clearTimeout(showTurnoFinanceNotice._timer);
+  showTurnoFinanceNotice._timer=setTimeout(function(){box.classList.remove("on")},4200);
+}
+
 function reprogramarTurno(id){
   const t=turnos.find(x=>x.id===id);if(!t)return;
   _reprogId=id;
