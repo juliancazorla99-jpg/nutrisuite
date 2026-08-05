@@ -49,6 +49,86 @@ input,select,textarea{font-family:inherit;font-size:16px}
 .cp-btn.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .cp-btn:hover:not(.on){border-color:var(--brand);color:var(--brand)}
 .hidden{display:none!important}
+
+/* ===== BLOC DEL DÍA ===== */
+function dailyNotesStorageKey(){
+  const uid=(me&&me.id)?me.id:"local";
+  return "nutrisuite_daily_notes_"+uid;
+}
+function getDailyNotes(){
+  try{
+    const value=JSON.parse(localStorage.getItem(dailyNotesStorageKey())||"[]");
+    return Array.isArray(value)?value:[];
+  }catch(e){return []}
+}
+function saveDailyNotes(notes){
+  try{localStorage.setItem(dailyNotesStorageKey(),JSON.stringify(notes))}catch(e){}
+}
+function renderDailyNotes(){
+  const box=document.getElementById("dailyNotesList");
+  if(!box)return;
+  const notes=getDailyNotes();
+  const done=notes.filter(function(n){return !!n.done}).length;
+  const progress=document.getElementById("dailyNotesDone");
+  if(progress)progress.textContent=done+"/"+notes.length;
+  const date=document.getElementById("dailyNotesDate");
+  if(date){
+    date.textContent=new Date().toLocaleDateString("es-AR",{
+      weekday:"long",day:"numeric",month:"long"
+    });
+  }
+  if(!notes.length){
+    box.innerHTML='<div class="ns-notes-empty">No tenés pendientes cargados. Anotá los planes que necesitás preparar hoy.</div>';
+    return;
+  }
+  box.innerHTML=notes.map(function(note){
+    return '<div class="ns-note-item '+(note.done?"done":"")+'">'+
+      '<button class="ns-note-check" type="button" aria-label="'+(note.done?"Marcar pendiente":"Marcar completada")+
+      '" onclick="toggleDailyNote(\''+note.id+'\')">'+(note.done?"✓":"")+'</button>'+
+      '<span class="ns-note-text">'+esc(note.text)+'</span>'+
+      (note.priority==="alta"?'<span class="ns-note-priority">ALTA</span>':'')+
+      '<button class="ns-note-delete" type="button" aria-label="Eliminar" onclick="deleteDailyNote(\''+note.id+'\')">×</button>'+
+      '</div>';
+  }).join("");
+}
+function addDailyNote(event){
+  event.preventDefault();
+  const input=document.getElementById("dailyNoteInput");
+  const priority=document.getElementById("dailyNotePriority");
+  const value=(input.value||"").trim();
+  if(!value)return;
+  const notes=getDailyNotes();
+  notes.unshift({
+    id:"note_"+Date.now()+"_"+Math.random().toString(36).slice(2,6),
+    text:value,
+    priority:priority?priority.value:"normal",
+    done:false,
+    created:new Date().toISOString()
+  });
+  saveDailyNotes(notes);
+  input.value="";
+  if(priority)priority.value="normal";
+  renderDailyNotes();
+  input.focus();
+}
+function toggleDailyNote(id){
+  const notes=getDailyNotes().map(function(n){
+    return n.id===id?Object.assign({},n,{done:!n.done}):n;
+  });
+  saveDailyNotes(notes);
+  renderDailyNotes();
+}
+function deleteDailyNote(id){
+  saveDailyNotes(getDailyNotes().filter(function(n){return n.id!==id}));
+  renderDailyNotes();
+}
+function clearCompletedDailyNotes(){
+  const notes=getDailyNotes();
+  if(!notes.some(function(n){return n.done}))return;
+  saveDailyNotes(notes.filter(function(n){return !n.done}));
+  renderDailyNotes();
+}
+
 /* ===== DASHBOARD INICIO ===== */
 .dash-hello{margin-bottom:20px}
 .dash-hello h1{font-family:var(--fd);font-weight:800;font-size:29px;letter-spacing:-.02em}
@@ -2082,7 +2162,168 @@ body.dark .cv-help-hero{background:linear-gradient(135deg,rgba(63,85,43,.75),rgb
 </style>
 
 
-<style id="candela-functional-plan-templates">
+<style id="nutrisuite-daily-notes-styles">
+.ns-notes-card{
+  margin:14px 0;
+  overflow:hidden;
+  position:relative;
+}
+.ns-notes-card::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:4px;
+  background:linear-gradient(180deg,var(--sky),var(--brand));
+}
+.ns-notes-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:14px;
+}
+.ns-notes-title{display:flex;align-items:center;gap:11px;min-width:0}
+.ns-notes-title .block-t{margin:0}
+.ns-notes-title small{
+  display:block;
+  margin-top:2px;
+  color:var(--ink-soft);
+  font-size:11.5px;
+}
+.ns-notes-icon{
+  width:43px;height:43px;flex:none;
+  display:grid;place-items:center;
+  border-radius:14px;
+  color:var(--brand);
+  background:var(--brand-tint);
+  border:1px solid var(--line);
+}
+.ns-notes-progress{
+  min-width:80px;
+  text-align:right;
+}
+.ns-notes-progress b{
+  display:block;
+  color:var(--brand-strong);
+  font:800 18px var(--fd);
+}
+.ns-notes-progress span{font-size:10px;color:var(--ink-faint)}
+.ns-notes-compose{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 150px auto;
+  gap:8px;
+  margin-bottom:13px;
+}
+.ns-notes-compose input,
+.ns-notes-compose select{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:9px 12px;
+  color:var(--ink);
+  background:var(--surface);
+  outline:none;
+}
+.ns-notes-compose input:focus,
+.ns-notes-compose select:focus{
+  border-color:var(--brand);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 13%,transparent);
+}
+.ns-notes-list{display:flex;flex-direction:column;gap:7px}
+.ns-note-item{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto auto;
+  gap:10px;
+  align-items:center;
+  min-height:44px;
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  transition:.14s ease;
+}
+.ns-note-item:hover{border-color:var(--teal);transform:translateX(2px)}
+.ns-note-check{
+  width:22px;height:22px;
+  display:grid;place-items:center;
+  border:1.5px solid var(--line);
+  border-radius:7px;
+  background:var(--surface);
+  color:#fff;
+  cursor:pointer;
+  padding:0;
+}
+.ns-note-item.done .ns-note-check{
+  border-color:var(--brand);
+  background:var(--brand);
+}
+.ns-note-text{
+  min-width:0;
+  color:var(--ink);
+  font-size:13.5px;
+  line-height:1.35;
+  word-break:break-word;
+}
+.ns-note-item.done .ns-note-text{
+  color:var(--ink-faint);
+  text-decoration:line-through;
+}
+.ns-note-priority{
+  padding:4px 8px;
+  border-radius:999px;
+  color:#9B6821;
+  background:#FFF0D3;
+  font-size:9.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+body.dark .ns-note-priority{background:#47371D;color:#F2C976}
+.ns-note-delete{
+  width:29px;height:29px;
+  border:0;border-radius:9px;
+  background:transparent;
+  color:var(--ink-faint);
+  font-size:17px;
+  cursor:pointer;
+}
+.ns-note-delete:hover{background:var(--bad-bg);color:var(--bad)}
+.ns-notes-empty{
+  padding:22px 12px;
+  text-align:center;
+  border:1px dashed var(--line);
+  border-radius:13px;
+  color:var(--ink-faint);
+  font-size:12.5px;
+}
+.ns-notes-footer{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:11px;
+  color:var(--ink-faint);
+  font-size:10.5px;
+}
+.ns-notes-footer button{
+  border:0;
+  background:transparent;
+  color:var(--brand);
+  font-weight:700;
+  cursor:pointer;
+}
+@media(max-width:680px){
+  .ns-notes-compose{grid-template-columns:1fr auto}
+  .ns-notes-compose select{grid-column:1/-1;grid-row:2}
+  .ns-notes-head{align-items:flex-start}
+  .ns-note-item{grid-template-columns:auto minmax(0,1fr) auto}
+  .ns-note-priority{grid-column:2;justify-self:start}
+  .ns-note-delete{grid-column:3;grid-row:1/3}
+  .ns-notes-footer{flex-direction:column}
+}
+</style>
+
+
+<style id="nutrisuite-functional-plans">
 .cv-plan-card{
   cursor:pointer;
   transition:transform .16s ease,box-shadow .18s ease,border-color .16s ease;
@@ -2092,152 +2333,41 @@ body.dark .cv-help-hero{background:linear-gradient(135deg,rgba(63,85,43,.75),rgb
   border-color:var(--brand);
   box-shadow:0 18px 44px rgba(62,114,29,.16);
 }
+.cv-plan-card:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
 .cv-plan-card footer button{
-  cursor:pointer;
-  padding:7px 10px;
-  border-radius:10px;
+  cursor:pointer;padding:7px 10px;border-radius:10px;
   transition:background .14s ease,color .14s ease;
 }
-.cv-plan-card footer button:hover{
-  background:var(--brand-tint);
-  color:var(--brand-strong);
-}
-.cv-template-modal{
-  width:min(560px,calc(100vw - 28px));
-  padding:0!important;
-  overflow:hidden;
-}
-.cv-template-head{
-  display:flex;
-  align-items:flex-start;
-  gap:13px;
-  padding:22px 22px 15px;
-  border-bottom:1px solid var(--line);
-}
+.cv-plan-card footer button:hover{background:var(--brand-tint);color:var(--brand-strong)}
+.cv-template-modal{width:min(560px,calc(100vw - 28px));padding:0!important;overflow:hidden}
+.cv-template-head{display:flex;align-items:flex-start;gap:13px;padding:22px 22px 15px;border-bottom:1px solid var(--line)}
 .cv-template-head>div:nth-child(2){flex:1;min-width:0}
-.cv-template-icon{
-  width:47px;height:47px;border-radius:15px;
-  display:grid;place-items:center;
-  background:var(--brand-tint);
-  font-size:22px;
-}
-.cv-template-kicker{
-  display:block;
-  margin-bottom:4px;
-  color:var(--brand);
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
+.cv-template-icon{width:47px;height:47px;border-radius:15px;display:grid;place-items:center;background:var(--brand-tint);font-size:22px}
+.cv-template-kicker{display:block;margin-bottom:4px;color:var(--brand);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .cv-template-head h3{margin:0!important;font-size:19px}
 .cv-template-head p{margin-top:4px;color:var(--ink-soft);font-size:12px}
-.cv-template-note{
-  margin:15px 22px 0;
-  padding:12px 14px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:var(--surface-2);
-  color:var(--ink-soft);
-  font-size:11.5px;
-  line-height:1.5;
-}
+.cv-template-note{margin:15px 22px 0;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--surface-2);color:var(--ink-soft);font-size:11.5px;line-height:1.5}
 .cv-template-search{margin:15px 22px 10px}
-.cv-template-patients{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  max-height:360px;
-  overflow:auto;
-  padding:0 22px 22px;
-}
-.cv-template-patient{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:11px 12px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:var(--surface);
-  color:var(--ink);
-  text-align:left;
-  cursor:pointer;
-  transition:.14s ease;
-}
-.cv-template-patient:hover{
-  border-color:var(--brand);
-  background:var(--brand-tint);
-  transform:translateX(2px);
-}
-.cv-template-patient .av{
-  width:39px;height:39px;border-radius:11px;
-  display:grid;place-items:center;
-  flex:none;
-  background:var(--surface-2);
-  color:var(--brand);
-  font-weight:800;
-}
+.cv-template-patients{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;padding:0 22px 22px}
+.cv-template-patient{width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;transition:.14s ease}
+.cv-template-patient:hover{border-color:var(--brand);background:var(--brand-tint);transform:translateX(2px)}
+.cv-template-patient .av{width:39px;height:39px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--surface-2);color:var(--brand);font-weight:800}
 .cv-template-patient div{flex:1;min-width:0}
 .cv-template-patient b{display:block;font-size:13.5px}
-.cv-template-patient small{
-  display:block;
-  margin-top:2px;
-  color:var(--ink-soft);
-  font-size:10.5px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+.cv-template-patient small{display:block;margin-top:2px;color:var(--ink-soft);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cv-template-patient>span{color:var(--brand);font-size:17px;font-weight:700}
-.cv-template-empty{
-  padding:26px 10px;
-  text-align:center;
-  color:var(--ink-faint);
-  font-size:12px;
-}
-.cv-plan-template-banner{
-  display:none;
-  align-items:flex-start;
-  gap:10px;
-  margin-bottom:14px;
-  padding:11px 13px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:var(--brand-tint);
-  color:var(--ink-soft);
-  font-size:11px;
-}
+.cv-template-empty{padding:26px 10px;text-align:center;color:var(--ink-faint);font-size:12px}
+.cv-plan-template-banner{display:none;align-items:flex-start;gap:10px;margin-bottom:14px;padding:11px 13px;border:1px solid var(--line);border-radius:13px;background:var(--brand-tint);color:var(--ink-soft)}
 .cv-plan-template-banner.on{display:flex}
-.cv-plan-template-banner>span{
-  width:24px;height:24px;border-radius:50%;
-  display:grid;place-items:center;
-  flex:none;
-  background:var(--brand);
-  color:#fff;
-  font-weight:900;
-}
-.cv-plan-template-banner b{
-  display:block;
-  margin-bottom:2px;
-  color:var(--brand-strong);
-  font-size:12px;
-}
-.cv-plan-template-banner div span{font-size:10.5px}
+.cv-plan-template-banner>span{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--brand);color:#fff;font-weight:900}
+.cv-plan-template-banner b{display:block;margin-bottom:2px;color:var(--brand-strong);font-size:12px}
+.cv-plan-template-banner small{font-size:10.5px}
 @media(max-width:520px){
-  .cv-template-modal{
-    width:100%;
-    max-height:92svh;
-    border-radius:22px 22px 0 0;
-    align-self:flex-end;
-  }
+  .cv-template-modal{width:100%;max-height:92svh;border-radius:22px 22px 0 0;align-self:flex-end}
   .cv-template-head{padding:18px 16px 13px}
   .cv-template-note{margin:12px 16px 0}
   .cv-template-search{margin:13px 16px 8px}
-  .cv-template-patients{
-    padding:0 16px calc(20px + env(safe-area-inset-bottom,0px));
-    max-height:46svh;
-  }
+  .cv-template-patients{padding:0 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:46svh}
 }
 </style>
 
@@ -2396,6 +2526,44 @@ body.dark .cv-help-hero{background:linear-gradient(135deg,rgba(63,85,43,.75),rgb
 <div id="dashIngresos"></div>
 </div>
 </div>
+
+<div class="card ns-notes-card">
+  <div class="ns-notes-head">
+    <div class="ns-notes-title">
+      <span class="ns-notes-icon">
+        <svg fill="none" height="21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewBox="0 0 24 24" width="21">
+          <path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3V3Z"></path>
+          <path d="M8 3v18M11 8h5M11 12h5M11 16h3"></path>
+        </svg>
+      </span>
+      <div>
+        <div class="block-t">Bloc del día</div>
+        <small id="dailyNotesDate">Planes y pendientes de hoy</small>
+      </div>
+    </div>
+    <div class="ns-notes-progress">
+      <b id="dailyNotesDone">0/0</b>
+      <span>completadas</span>
+    </div>
+  </div>
+
+  <form class="ns-notes-compose" onsubmit="addDailyNote(event)">
+    <input id="dailyNoteInput" maxlength="180" placeholder="Ej.: Preparar el plan de Sofía..." autocomplete="off">
+    <select id="dailyNotePriority" aria-label="Prioridad">
+      <option value="normal">Normal</option>
+      <option value="alta">Prioridad alta</option>
+    </select>
+    <button class="btn p sm" type="submit">Agregar</button>
+  </form>
+
+  <div class="ns-notes-list" id="dailyNotesList"></div>
+
+  <div class="ns-notes-footer">
+    <span>Se guarda automáticamente en este dispositivo.</span>
+    <button type="button" onclick="clearCompletedDailyNotes()">Limpiar completadas</button>
+  </div>
+</div>
+
 <div class="card">
 <div class="block-t">👥 Mis pacientes <span style="flex:1"></span><a class="dash-link" onclick="goView('pacientes')">Ver todos →</a></div>
 <div id="dashPacientes"></div>
@@ -3053,7 +3221,7 @@ body.dark .cv-help-hero{background:linear-gradient(135deg,rgba(63,85,43,.75),rgb
       <button class="notif-close" type="button" aria-label="Cerrar" onclick="closeModal('planTemplateModal')">×</button>
     </div>
     <div class="cv-template-note">
-      La plantilla se abre dentro del editor. Podés revisar y personalizar todo antes de guardarla.
+      La plantilla se abrirá en el editor. Podés modificar todas las comidas y notas antes de guardarla.
     </div>
     <div class="field cv-template-search">
       <label>Buscar paciente</label>
@@ -3072,7 +3240,7 @@ body.dark .cv-help-hero{background:linear-gradient(135deg,rgba(63,85,43,.75),rgb
   <span>✓</span>
   <div>
     <b id="planTemplateBannerTitle">Plantilla cargada</b>
-    <span>Revisá y personalizá las comidas antes de guardar.</span>
+    <small>Revisá y personalizá el contenido antes de guardar.</small>
   </div>
 </div>
 
@@ -3563,6 +3731,7 @@ function loadInicio(){
   renderDashCitas();
   renderDashIngresos();
   renderDashPacientes();
+  renderDailyNotes();
 }
 function renderDashKpis(){
   const hoyISO=todayISO();
@@ -6173,7 +6342,7 @@ const CV_PLAN_DEFAULTS=[
   }
 ];
 
-function normalizeTemplateMenuCandela(menu){
+function normalizeTemplateMenu(menu){
   const normalized=emptyMenu();
   PLAN_COMIDAS.forEach(function(comida){
     const source=menu&&Array.isArray(menu[comida])?menu[comida]:[];
@@ -6187,21 +6356,20 @@ function getCustomPlansCandela(){
   catch(e){return []}
 }
 
-function getAllPlanTemplatesCandela(){
+function getAllPlanTemplates(){
   return CV_PLAN_DEFAULTS.concat(getCustomPlansCandela());
 }
 
 function renderPlanesCandela(){
   const box=document.getElementById("planesGrid");
   if(!box)return;
-
-  const plans=getAllPlanTemplatesCandela();
+  const plans=getAllPlanTemplates();
   document.getElementById("planesCount").textContent=plans.length;
   document.getElementById("planesReady").textContent=plans.filter(function(p){return p.menu||p.note}).length;
   document.getElementById("planesLast").textContent=plans.length?"Hoy":"—";
 
   box.innerHTML=plans.map(function(p){
-    const ready=p.menu||p.note;
+    const ready=!!(p.menu||p.note);
     return '<article class="cv-plan-card" role="button" tabindex="0" '+
       'onclick="usarPlantillaPlanCandela(\''+esc(p.id)+'\')" '+
       'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();usarPlantillaPlanCandela(\''+esc(p.id)+'\')}" '+
@@ -6219,11 +6387,10 @@ function renderPlanesCandela(){
 
 function crearPlantillaPlan(){
   if(!currentPat){
-    alert("Para crear una plantilla propia, primero abrí una paciente y cargá o editá su plan alimentario.");
+    alert("Para crear una plantilla propia, primero abrí un paciente y cargá o editá su plan alimentario.");
     goView("pacientes");
     return;
   }
-
   openPlanModal().then(function(){
     const banner=document.getElementById("planTemplateBanner");
     if(banner){
@@ -6234,82 +6401,62 @@ function crearPlantillaPlan(){
   });
 }
 
-let _selectedCandelaPlanTemplateId=null;
+let selectedPlanTemplateId=null;
 
 function usarPlantillaPlanCandela(id){
-  const plan=getAllPlanTemplatesCandela().find(function(x){return x.id===id});
+  const plan=getAllPlanTemplates().find(function(x){return x.id===id});
   if(!plan)return;
-
   if(!plan.menu&&!plan.note){
-    alert("Esta plantilla todavía está vacía. Abrí una paciente, completá un plan y guardalo como plantilla.");
+    alert("Esta plantilla todavía está vacía.");
     return;
   }
-
-  _selectedCandelaPlanTemplateId=id;
+  selectedPlanTemplateId=id;
   document.getElementById("templateModalIcon").textContent=plan.icon||"📋";
   document.getElementById("templateModalTitle").textContent=plan.name;
-  document.getElementById("templateModalDesc").textContent=plan.desc||"Elegí una paciente.";
+  document.getElementById("templateModalDesc").textContent=plan.desc||"Elegí un paciente.";
   document.getElementById("templatePatientSearch").value="";
-  renderTemplatePatientListCandela();
+  renderTemplatePatientList();
   document.getElementById("planTemplateModal").classList.add("open");
 }
 
 function renderTemplatePatientList(){
-  renderTemplatePatientListCandela();
-}
-
-function renderTemplatePatientListCandela(){
   const box=document.getElementById("templatePatientList");
   if(!box)return;
-
   const q=(document.getElementById("templatePatientSearch").value||"").trim().toLowerCase();
   const list=(pacientes||[]).filter(function(p){
     return !q||(p.nombre||"").toLowerCase().includes(q);
   });
-
   if(!list.length){
     box.innerHTML='<div class="cv-template-empty">No encontramos pacientes con ese nombre.</div>';
     return;
   }
-
   box.innerHTML=list.map(function(p){
-    const initials=(p.nombre||"P").split(/\s+/).slice(0,2)
-      .map(function(x){return x[0]}).join("").toUpperCase();
-
-    return '<button class="cv-template-patient" type="button" '+
-      'onclick="applyPlanTemplateToPatientCandela(\''+p.id+'\')">'+
-      '<span class="av">'+esc(initials)+'</span>'+
-      '<div><b>'+esc(p.nombre||"Paciente")+'</b>'+
-      '<small>'+esc(p.objetivo||"Sin objetivo cargado")+'</small></div>'+
+    const ini=(p.nombre||"P").split(/\s+/).slice(0,2).map(function(x){return x[0]}).join("").toUpperCase();
+    return '<button class="cv-template-patient" type="button" onclick="applyPlanTemplateToPatient(\''+p.id+'\')">'+
+      '<span class="av">'+esc(ini)+'</span>'+
+      '<div><b>'+esc(p.nombre||"Paciente")+'</b><small>'+esc(p.objetivo||"Sin objetivo cargado")+'</small></div>'+
       '<span>›</span></button>';
   }).join("");
 }
 
-async function applyPlanTemplateToPatientCandela(patientId){
-  const template=getAllPlanTemplatesCandela().find(function(x){
-    return x.id===_selectedCandelaPlanTemplateId;
-  });
-
-  const patient=(pacientes||[]).find(function(p){
-    return String(p.id)===String(patientId);
-  });
-
+async function applyPlanTemplateToPatient(patientId){
+  const template=getAllPlanTemplates().find(function(x){return x.id===selectedPlanTemplateId});
+  const patient=(pacientes||[]).find(function(p){return String(p.id)===String(patientId)});
   if(!template||!patient)return;
 
   currentPat=patient;
   updateIAClinicalContext();
   closeModal("planTemplateModal");
-
   await openPlanModal();
 
   if(_planActual){
-    const continueApply=window.confirm(
-      patient.nombre+" ya tiene un plan activo. La plantilla reemplazará el contenido visible en el editor, pero no se guardará hasta que toques Guardar. ¿Continuar?"
+    const proceed=window.confirm(
+      patient.nombre+" ya tiene un plan activo. La plantilla reemplazará el contenido del editor, pero no se guardará hasta que toques Guardar. ¿Continuar?"
     );
-    if(!continueApply)return;
+    if(!proceed)return;
   }
 
-  _menu=normalizeTemplateMenuCandela(template.menu);
+  _menu=normalizeTemplateMenu(template.menu);
   document.getElementById("planNota").value=template.note||"";
   renderPlanGrid();
   planTab("menu");
