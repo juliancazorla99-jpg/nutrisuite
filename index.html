@@ -2370,6 +2370,30 @@ body.dark .ns-note-priority{background:#47371D;color:#F2C976}
   .cv-template-patients{padding:0 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:46svh}
 }
 </style>
+<style id="cuenta-styles">
+.cuenta-loading{display:flex;align-items:center;gap:8px;color:var(--muted);padding:24px 4px;font-size:14px}
+.cuenta-status{border-radius:18px;padding:26px 24px;margin-bottom:18px;border:1px solid var(--line);background:linear-gradient(135deg,var(--brand-tint),transparent 120%);position:relative;overflow:hidden}
+.cuenta-status h2{margin:10px 0 4px;font-size:23px;line-height:1.2}
+.cuenta-status p{margin:0;color:var(--muted);font-size:14.5px;max-width:60ch}
+.cuenta-badge{display:inline-flex;align-items:center;font-size:12px;font-weight:700;letter-spacing:.02em;padding:5px 12px;border-radius:999px;background:var(--brand);color:#fff}
+.cuenta-status.st-activa{background:linear-gradient(135deg,var(--good-bg),transparent 120%)}
+.cuenta-status.st-activa .cuenta-badge{background:var(--good)}
+.cuenta-status.st-ilim{background:linear-gradient(135deg,#F3EAC6,transparent 120%)}
+.cuenta-status.st-ilim .cuenta-badge{background:var(--gold);color:#3a2f06}
+.cuenta-status.st-vencida{background:linear-gradient(135deg,var(--bad-bg),transparent 120%)}
+.cuenta-status.st-vencida .cuenta-badge{background:var(--bad)}
+.cuenta-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.cuenta-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.cuenta-row:last-child{border-bottom:none}
+.cuenta-row span{color:var(--muted)}
+.cuenta-row b{font-weight:650}
+.cuenta-actions{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.cuenta-pay{width:100%;justify-content:center}
+.cuenta-hint{margin:0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.cuenta-cancel{margin-top:6px;color:var(--muted);font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.cuenta-cancel:hover{color:var(--bad)}
+@media(max-width:760px){.cuenta-grid{grid-template-columns:1fr}}
+</style>
 
 </head>
 <body>
@@ -2449,6 +2473,8 @@ body.dark .ns-note-priority{background:#47371D;color:#F2C976}
 <div class="sb-sect">Configuración</div>
 <button class="sb-item" id="nav-serv" onclick="goView('servicios')">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Configuración</span></button>
+<button class="sb-item" id="nav-cuenta" onclick="goView('cuenta')">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" width="18"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 9.5h18M7 14.5h4M15.5 14.5h1.5"/></svg><span>Mi cuenta</span></button>
 <button class="sb-item" id="nav-ayuda" onclick="goView('ayuda')">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" width="18">
   <circle cx="12" cy="12" r="9"/>
@@ -2904,6 +2930,34 @@ body.dark .ns-note-priority{background:#47371D;color:#F2C976}
 <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
 </button>
 </div>
+</div>
+<div class="hidden" id="view-cuenta">
+  <div class="head ns-section-head">
+    <div><span class="ns-eyebrow">Tu suscripción</span><h1>Mi cuenta</h1><p>El estado de tu plan y tu suscripción.</p></div>
+  </div>
+  <div class="cuenta-loading" id="cuentaLoading"><span class="spin"></span> Cargando tu cuenta…</div>
+  <div class="hidden" id="cuentaContent">
+    <div class="cuenta-status" id="cuentaStatusCard">
+      <div class="cuenta-badge" id="cuentaBadge">—</div>
+      <h2 id="cuentaTitulo">—</h2>
+      <p id="cuentaSub">—</p>
+    </div>
+    <div class="cuenta-grid">
+      <div class="card cuenta-info">
+        <div class="block-t">Detalle del plan</div>
+        <div class="cuenta-row"><span>Plan</span><b id="cuentaPlan">—</b></div>
+        <div class="cuenta-row"><span>Estado</span><b id="cuentaEstado">—</b></div>
+        <div class="cuenta-row" id="cuentaCicloRow"><span>Facturación</span><b id="cuentaCiclo">—</b></div>
+        <div class="cuenta-row" id="cuentaVenceRow"><span>Próximo vencimiento</span><b id="cuentaVence">—</b></div>
+      </div>
+      <div class="card cuenta-actions" id="cuentaActions">
+        <div class="block-t">Gestioná tu plan</div>
+        <button class="btn p cuenta-pay" id="cuentaPayBtn" onclick="pagarSuscripcion()">Renovar / Pagar</button>
+        <p class="cuenta-hint" id="cuentaPayHint">Coordinamos el pago por WhatsApp y activamos tu plan.</p>
+        <a class="cuenta-cancel" id="cuentaCancelLink" onclick="cancelarSuscripcion()">Cancelar suscripción</a>
+      </div>
+    </div>
+  </div>
 </div>
 </main>
 </div>
@@ -3562,7 +3616,7 @@ sb.auth.onAuthStateChange(async (e,session)=>{
 /* ===== NAV ===== */
 function goView(v){
   try{localStorage.setItem("nutrisuite_current_view",v);}catch(e){}
-  ["inicio","pacientes","ficha","agenda","historia","planes","ayuda","servicios","balance","ia"].forEach(x=>{const el=$("view-"+x);if(el)el.classList.add("hidden");});
+  ["inicio","pacientes","ficha","agenda","historia","planes","ayuda","servicios","balance","ia","cuenta"].forEach(x=>{const el=$("view-"+x);if(el)el.classList.add("hidden");});
   $("view-"+v).classList.remove("hidden");
   const ni=$("nav-inicio");if(ni)ni.classList.toggle("on",v==="inicio");
   $("nav-pac").classList.toggle("on",v==="pacientes"||v==="ficha");
@@ -3573,6 +3627,8 @@ function goView(v){
   const nh=$("nav-historia");if(nh)nh.classList.toggle("on",v==="historia");
   const np=$("nav-planes");if(np)np.classList.toggle("on",v==="planes");
   const nay=$("nav-ayuda");if(nay)nay.classList.toggle("on",v==="ayuda");
+  const nc=$("nav-cuenta");if(nc)nc.classList.toggle("on",v==="cuenta");
+  if(v==="cuenta")loadCuenta();
   if(v==="inicio")loadInicio();
   if(v==="agenda")renderTurnos();
   if(v==="balance")loadBalance();
@@ -3580,6 +3636,133 @@ function goView(v){
   if(v==="ia")initIA();
   if(v==="historia")renderHistoriaGlobal();
   if(v==="planes")renderPlanesCandela();
+}
+
+/* ===== MI CUENTA (suscripción de la nutri) ===== */
+const WA_SOPORTE = "5492216547814";
+const PLAN_NOMBRE = { starter:"Starter", basico:"Básico", personalizado:"Personalizado", canvi:"CANVI" };
+const CICLO_NOMBRE = { mensual:"Mensual", anual:"Anual" };
+let _cuentaNombre = "";
+let _cuentaEstado = null;
+
+function waLink(msg){ return "https://wa.me/"+WA_SOPORTE+"?text="+encodeURIComponent(msg); }
+function fmtFecha(iso){ if(!iso) return "—"; try{ return new Date(iso).toLocaleDateString("es-AR",{day:"numeric",month:"long",year:"numeric"}); }catch(e){ return "—"; } }
+function diasRestantes(iso){ if(!iso) return null; const d=Math.ceil((new Date(iso)-new Date())/86400000); return d; }
+
+async function loadCuenta(){
+  const loading=$("cuentaLoading"), content=$("cuentaContent");
+  if(loading)loading.classList.remove("hidden");
+  if(content)content.classList.add("hidden");
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){ renderCuentaError("Iniciá sesión para ver tu cuenta."); return; }
+    const uid=session.user.id;
+    try{ const{data:perf}=await sb.from("perfiles").select("nombre").eq("id",uid).single(); _cuentaNombre=(perf&&perf.nombre)||""; }catch(e){ _cuentaNombre=""; }
+    const{data:sus,error}=await sb.from("suscripciones").select("*").eq("nutri_id",uid).maybeSingle();
+    if(error) throw error;
+    if(!sus){ renderCuentaVacia(); return; }
+    renderCuenta(sus);
+  }catch(e){
+    renderCuentaError("No pudimos cargar tu suscripción. Probá de nuevo en un momento.");
+  }
+}
+
+function renderCuenta(sus){
+  _cuentaEstado=sus.estado;
+  const badge=$("cuentaBadge"), titulo=$("cuentaTitulo"), sub=$("cuentaSub"), card=$("cuentaStatusCard");
+  const planTxt=PLAN_NOMBRE[sus.plan]||sus.plan||"—";
+  $("cuentaPlan").textContent=planTxt;
+  $("cuentaEstado").textContent=({prueba:"En prueba",activa:"Activa",vencida:"Vencida",cancelada:"Cancelada",ilimitado:"Ilimitado"})[sus.estado]||sus.estado;
+  $("cuentaCiclo").textContent=CICLO_NOMBRE[sus.ciclo]||"—";
+
+  const cicloRow=$("cuentaCicloRow"), venceRow=$("cuentaVenceRow"), actions=$("cuentaActions"), payBtn=$("cuentaPayBtn"), payHint=$("cuentaPayHint");
+  card.className="cuenta-status";
+  cicloRow.style.display=""; venceRow.style.display=""; actions.style.display="";
+
+  if(sus.estado==="ilimitado"){
+    card.classList.add("st-ilim");
+    badge.textContent="Ilimitado ✨";
+    titulo.textContent="Plan "+planTxt;
+    sub.textContent="Acceso completo, sin vencimiento.";
+    cicloRow.style.display="none"; venceRow.style.display="none"; actions.style.display="none";
+  }else if(sus.estado==="prueba"){
+    const d=diasRestantes(sus.prueba_fin);
+    card.classList.add("st-prueba");
+    badge.textContent="En prueba";
+    titulo.textContent="Prueba gratuita";
+    sub.textContent = d>1 ? ("Te quedan "+d+" días de prueba.") : (d===1 ? "Te queda 1 día de prueba." : "Tu prueba terminó. Activá tu plan para seguir.");
+    $("cuentaVence").textContent=fmtFecha(sus.prueba_fin);
+    payBtn.textContent="Activar mi plan";
+    payHint.textContent="Coordinamos el pago por WhatsApp y activamos tu plan.";
+  }else if(sus.estado==="activa"){
+    card.classList.add("st-activa");
+    badge.textContent="Activa";
+    titulo.textContent="Plan "+planTxt+" activo";
+    sub.textContent="Tu suscripción está al día. ¡Gracias por acompañarnos!";
+    $("cuentaVence").textContent=fmtFecha(sus.vence_en);
+    payBtn.textContent="Renovar plan";
+    payHint.textContent="Renová tu plan antes del vencimiento para no perder acceso.";
+  }else if(sus.estado==="vencida"){
+    card.classList.add("st-vencida");
+    badge.textContent="Vencida";
+    titulo.textContent="Tu plan venció";
+    sub.textContent="Reactivá tu suscripción para seguir usándola.";
+    $("cuentaVence").textContent=fmtFecha(sus.vence_en);
+    payBtn.textContent="Reactivar plan";
+    payHint.textContent="Coordinamos el pago por WhatsApp y reactivamos tu plan.";
+  }else if(sus.estado==="cancelada"){
+    card.classList.add("st-vencida");
+    badge.textContent="Cancelada";
+    titulo.textContent="Suscripción cancelada";
+    sub.textContent="Podés reactivarla cuando quieras.";
+    venceRow.style.display="none";
+    payBtn.textContent="Reactivar plan";
+    payHint.textContent="Escribinos y volvemos a activar tu cuenta.";
+  }
+  $("cuentaLoading").classList.add("hidden");
+  $("cuentaContent").classList.remove("hidden");
+}
+
+function renderCuentaVacia(){
+  const card=$("cuentaStatusCard");
+  card.className="cuenta-status";
+  $("cuentaBadge").textContent="Sin suscripción";
+  $("cuentaTitulo").textContent="No encontramos una suscripción";
+  $("cuentaSub").textContent="Tu cuenta todavía no tiene una suscripción asociada. Escribinos y la configuramos.";
+  $("cuentaPlan").textContent="—"; $("cuentaEstado").textContent="—";
+  $("cuentaCicloRow").style.display="none"; $("cuentaVenceRow").style.display="none";
+  $("cuentaPayBtn").textContent="Escribinos por WhatsApp";
+  $("cuentaPayHint").textContent="Coordinamos el alta de tu cuenta.";
+  $("cuentaCancelLink").style.display="none";
+  $("cuentaLoading").classList.add("hidden");
+  $("cuentaContent").classList.remove("hidden");
+}
+
+function renderCuentaError(msg){
+  const card=$("cuentaStatusCard");
+  card.className="cuenta-status st-vencida";
+  $("cuentaBadge").textContent="Error";
+  $("cuentaTitulo").textContent="No se pudo cargar";
+  $("cuentaSub").textContent=msg;
+  $("cuentaActions").style.display="none";
+  $("cuentaCicloRow").style.display="none"; $("cuentaVenceRow").style.display="none";
+  $("cuentaPlan").textContent="—"; $("cuentaEstado").textContent="—";
+  $("cuentaLoading").classList.add("hidden");
+  $("cuentaContent").classList.remove("hidden");
+}
+
+// FASE 3: reemplazar por checkout real de Mercado Pago (edge function mp-crear-suscripcion).
+function pagarSuscripcion(){
+  const quien=_cuentaNombre?(" Soy "+_cuentaNombre+"."):"";
+  const accion=(_cuentaEstado==="vencida"||_cuentaEstado==="cancelada")?"reactivar":"activar/renovar";
+  const msg="¡Hola! Quiero "+accion+" mi plan."+quien;
+  window.open(waLink(msg),"_blank");
+}
+
+function cancelarSuscripcion(){
+  const quien=_cuentaNombre?(" Soy "+_cuentaNombre+".") :"";
+  const msg="¡Hola! Quería consultar sobre mi suscripción."+quien;
+  window.open(waLink(msg),"_blank");
 }
 
 /* ===== NUTRI IA (chat solo para la nutricionista) ===== */
@@ -3804,7 +3987,7 @@ async function loadAll(){
   renderPatients();
   let savedView="inicio";
   try{savedView=localStorage.getItem("nutrisuite_current_view")||"inicio";}catch(e){}
-  const allowed=["inicio","pacientes","agenda","servicios","balance","ficha","ia"];
+  const allowed=["inicio","pacientes","agenda","servicios","balance","ficha","ia","cuenta"];
   if(!allowed.includes(savedView))savedView="inicio";
   if(savedView==="ficha"&&!currentPat)savedView="pacientes";
   goView(savedView);
