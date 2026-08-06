@@ -2832,6 +2832,206 @@ html.perf-lite-safe .caldia-item,html.perf-lite-safe .btn{transition:none!import
 }
 </style>
 
+
+<style id="patient-charges-bottom-ipad-performance">
+.ficha-cobros-bottom{
+  margin-top:14px;
+}
+.ficha-cobros-bottom>.card{
+  margin-bottom:0;
+}
+.charge-placeholder-card{
+  min-height:84px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.charge-placeholder-card p{
+  color:var(--ink-soft);
+  font-size:12px;
+  margin-top:3px;
+}
+.ficha-cobros-bottom .charge-card{
+  min-height:0!important;
+  padding:10px 0!important;
+  gap:10px!important;
+}
+.ficha-cobros-bottom .charge-title{
+  font-size:13px!important;
+}
+.ficha-cobros-bottom .charge-meta{
+  margin-top:2px!important;
+  gap:4px 8px!important;
+  font-size:10.5px!important;
+}
+.ficha-cobros-bottom .charge-amount{
+  font-size:15px!important;
+}
+.ficha-cobros-bottom .charge-actions{
+  margin-top:5px!important;
+}
+.ficha-cobros-bottom .charge-actions .btn{
+  padding:6px 10px!important;
+  min-height:30px!important;
+  font-size:11px!important;
+}
+
+/* iPad y tablets táctiles: menos trabajo de GPU, mismo contenido */
+html.ipad-performance body{
+  background-image:none!important;
+  background-attachment:scroll!important;
+}
+html.ipad-performance .deco-layer,
+html.ipad-performance .deco-food,
+html.ipad-performance .deco-gingham{
+  display:none!important;
+}
+html.ipad-performance .qa,
+html.ipad-performance .kpi,
+html.ipad-performance .card,
+html.ipad-performance .auth-card,
+html.ipad-performance .cal-wrap,
+html.ipad-performance .ag-toggle,
+html.ipad-performance .sidebar,
+html.ipad-performance .modal,
+html.ipad-performance .topbar,
+html.ipad-performance .bottom-nav{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+html.ipad-performance .qa,
+html.ipad-performance .kpi,
+html.ipad-performance .card,
+html.ipad-performance .auth-card,
+html.ipad-performance .cal-wrap,
+html.ipad-performance .modal{
+  background:var(--surface)!important;
+  box-shadow:0 3px 12px rgba(45,70,28,.055)!important;
+}
+html.ipad-performance *,
+html.ipad-performance *::before,
+html.ipad-performance *::after{
+  animation-duration:.001ms!important;
+  animation-iteration-count:1!important;
+  scroll-behavior:auto!important;
+}
+html.ipad-performance .qa,
+html.ipad-performance .pcard,
+html.ipad-performance .caldia-item,
+html.ipad-performance .ta-btn,
+html.ipad-performance .btn,
+html.ipad-performance .cal-cell{
+  transition:none!important;
+}
+html.ipad-performance .qa:hover,
+html.ipad-performance .pcard:hover,
+html.ipad-performance .caldia-item:hover,
+html.ipad-performance .ta-btn:hover{
+  transform:none!important;
+}
+html.ipad-performance #view-ficha .card{
+  contain:layout paint style;
+}
+html.ipad-performance #view-ficha .chart-box,
+html.ipad-performance #view-ficha .all-charts,
+html.ipad-performance #view-ficha .stats-torre,
+html.ipad-performance #view-ficha #fHist,
+html.ipad-performance #view-ficha #fArchivos,
+html.ipad-performance #view-ficha #fCobros{
+  content-visibility:auto;
+  contain-intrinsic-size:260px;
+}
+html.ipad-performance #view-ficha .ficha-grafico{
+  box-shadow:none!important;
+}
+
+/* Evitar una tarjeta excesivamente alta en tablet y móvil */
+@media(max-width:1024px){
+  .ficha-cobros-bottom .card{
+    padding:14px 16px!important;
+    border-radius:16px!important;
+  }
+  .ficha-cobros-bottom .charge-card{
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+}
+@media(max-width:600px){
+  .ficha-cobros-bottom{
+    margin-top:10px;
+  }
+  .ficha-cobros-bottom .charge-card{
+    grid-template-columns:1fr!important;
+    padding:11px 0!important;
+  }
+  .ficha-cobros-bottom .charge-side{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+}
+</style>
+
+
+<script id="ipad-performance-controller">
+(function(){
+  const ua=navigator.userAgent||"";
+  const isiPad=/iPad/i.test(ua)||
+    (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const touchTablet=
+    navigator.maxTouchPoints>1 &&
+    Math.min(screen.width,screen.height)>=600 &&
+    Math.max(screen.width,screen.height)<=1400;
+
+  if(isiPad||touchTablet){
+    document.documentElement.classList.add("ipad-performance");
+  }
+
+
+})();
+</script>
+
+
+<style id="unified-consultation-charge-final">
+/* En la ficha existe un solo historial: consultas + cobro asociado. */
+.ficha-cobros-bottom,#fCobros{display:none!important}
+.consult-charge-cell{min-width:220px!important}
+.consult-charge-box{
+  display:grid!important;
+  grid-template-columns:auto auto!important;
+  align-items:center!important;
+  justify-content:start!important;
+  gap:5px 8px!important;
+}
+.consult-charge-amount{font-size:13px!important;line-height:1.1!important}
+.consult-charge-box small{font-size:10px;color:var(--ink-soft)}
+.consult-charge-links{grid-column:1/-1;display:flex;gap:5px!important}
+.consult-charge-links .btn{padding:5px 9px!important;min-height:28px!important;font-size:10.5px!important}
+.consult-no-charge{font-size:10.5px!important}
+.consult-add-charge{font-size:10.5px!important}
+
+html.ipad-performance #view-ficha #fHist{
+  contain:layout paint style;
+  content-visibility:auto;
+  contain-intrinsic-size:360px;
+}
+html.ipad-performance #view-ficha .hist-scroll{
+  -webkit-overflow-scrolling:touch;
+}
+html.ipad-performance #view-ficha .hist tr{
+  contain:layout paint;
+}
+@media(max-width:900px){
+  .consult-charge-cell{min-width:180px!important}
+  .consult-charge-box{grid-template-columns:1fr!important}
+  .consult-charge-links{grid-column:auto!important}
+}
+@media(max-width:600px){
+  .consult-charge-cell{min-width:150px!important}
+  .consult-charge-links{flex-direction:column}
+  .consult-charge-links .btn{width:100%}
+}
+</style>
+
 </head>
 <body>
 <!-- ===== LOGIN ===== -->
@@ -3081,7 +3281,6 @@ html.perf-lite-safe .caldia-item,html.perf-lite-safe .btn{transition:none!import
 </div>
 </div>
 </div>
-<div id="fCobros"></div>
 <div id="fPlanCard"></div>
 <div class="ficha-cols">
 <div class="card ficha-grafico">
@@ -3118,6 +3317,7 @@ html.perf-lite-safe .caldia-item,html.perf-lite-safe .btn{transition:none!import
 <div class="msg" id="fUploadMsg"></div>
 <div id="fArchivos"></div>
 </div>
+
 </div>
 <!-- VISTA AGENDA -->
 <div class="hidden" id="view-agenda">
@@ -4087,17 +4287,31 @@ function saveLocalDailyNotes(notes){
 function getDailyNotes(){
   return _dailyNotesLoaded?_dailyNotesCache:getLocalDailyNotes();
 }
-function mergeDailyNotes(cloud,local){
-  const map=new Map();
-  normalizeDailyNotes([].concat(cloud||[],local||[])).forEach(function(note){
-    const old=map.get(note.id);
-    const oldTime=old?new Date(old.updated||old.created||0).getTime():0;
-    const newTime=new Date(note.updated||note.created||0).getTime();
-    if(!old||newTime>=oldTime)map.set(note.id,note);
+function dailyNoteContentKey(note){
+  return String(note&&note.text||"")
+    .normalize("NFD").replace(/[\\u0300-\\u036f]/g,"")
+    .toLocaleLowerCase("es")
+    .replace(/\\s+/g," ")
+    .trim();
+}
+function dedupeDailyNotes(notes){
+  const byContent=new Map();
+  normalizeDailyNotes(notes||[]).forEach(function(note){
+    const key=dailyNoteContentKey(note);
+    if(!key)return;
+    const previous=byContent.get(key);
+    const previousTime=previous?new Date(previous.updated||previous.created||0).getTime():0;
+    const currentTime=new Date(note.updated||note.created||0).getTime();
+    if(!previous||currentTime>=previousTime){
+      byContent.set(key,note);
+    }
   });
-  return Array.from(map.values()).sort(function(a,b){
+  return Array.from(byContent.values()).sort(function(a,b){
     return new Date(b.created||0)-new Date(a.created||0);
   }).slice(0,150);
+}
+function mergeDailyNotes(cloud,local){
+  return dedupeDailyNotes([].concat(cloud||[],local||[]));
 }
 async function loadDailyNotesFromCloud(){
   const local=getLocalDailyNotes();
@@ -4116,7 +4330,7 @@ async function loadDailyNotesFromCloud(){
   }
 }
 function saveDailyNotes(notes){
-  _dailyNotesCache=normalizeDailyNotes(notes);
+  _dailyNotesCache=dedupeDailyNotes(notes);
   _dailyNotesLoaded=true;
   saveLocalDailyNotes(_dailyNotesCache);
   renderDailyNotes();
@@ -4178,6 +4392,14 @@ function addDailyNote(event){
   const priority=document.getElementById("dailyNotePriority");
   const value=(input&&input.value||"").trim();
   if(!value)return;
+  const duplicate=getDailyNotes().some(function(note){
+    return dailyNoteContentKey(note)===dailyNoteContentKey({text:value});
+  });
+  if(duplicate){
+    input.value="";
+    input.focus();
+    return;
+  }
   const now=new Date().toISOString();
   const notes=getDailyNotes().slice();
   notes.unshift({
@@ -5534,7 +5756,7 @@ async function openFicha(id){
     renderFicha(p,data||[]);
     renderPlanCard();
     renderArchivos();
-    renderCobros();
+    schedulePatientChargesLoad();
   }catch(e){$("fStats").innerHTML=`<div class="stat"><div class="l">Error: ${esc(e.message)}</div></div>`;}
 }
 function edad(iso){const b=new Date(iso),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;return a;}
@@ -6760,47 +6982,51 @@ async function crearCobro(){
     $("coBtn").disabled=false;$("coBtn").textContent="Generar link de pago";
   }
 }
+
+/* ===== COBROS INTEGRADOS EN HISTORIAL DE CONSULTAS ===== */
+let _renderCobrosRequest=0;
+let _patientChargeCache=new Map();
+
+async function schedulePatientChargesLoad(){
+  if(!currentPat)return;
+  const patientId=String(currentPat.id);
+  const cached=_patientChargeCache.get(patientId);
+  if(cached){
+    renderConsultationChargeCells(cached);
+    return;
+  }
+  const run=function(){renderCobros()};
+  if("requestIdleCallback" in window){
+    requestIdleCallback(run,{timeout:500});
+  }else{
+    setTimeout(run,40);
+  }
+}
+function disconnectPatientChargesObserver(){}
+function ensurePatientChargesLoaded(){
+  if(!currentPat)return Promise.resolve();
+  const cached=_patientChargeCache.get(String(currentPat.id));
+  if(cached){renderConsultationChargeCells(cached);return Promise.resolve()}
+  return renderCobros();
+}
 async function renderCobros(){
-  const box=$("fCobros");if(!box||!currentPat)return;
+  if(!currentPat)return;
+  const requestId=++_renderCobrosRequest;
+  const patientId=String(currentPat.id);
   try{
     const{data,error}=await sb.from("cobros").select("*")
       .eq("paciente_id",currentPat.id)
       .order("pagado_en",{ascending:false});
     if(error)throw error;
+    if(requestId!==_renderCobrosRequest||!currentPat||String(currentPat.id)!==patientId)return;
     const cobros=data||[];
-
-    if(!cobros.length){
-      box.innerHTML="";
-    }else{
-      box.innerHTML='<div class="card"><div class="block-t">💳 Historial de cobros <span style="flex:1"></span>'+
-        '<button class="btn g sm" onclick="openManualChargeForPatient()">＋ Registrar</button></div>'+
-        cobros.map(function(c){
-          const meta=parseChargeRecord(c);
-          const state=estadoCobro(c);
-          const date=chargeDateISO(c);
-          return '<div class="charge-card">'+
-            '<div class="charge-main">'+
-              '<div class="charge-title">'+esc(meta.concept)+'</div>'+
-              '<div class="charge-meta">'+
-                '<span>📅 '+fmtDate(date)+'</span>'+
-                (meta.method?'<span>💳 '+esc(meta.method)+'</span>':'')+
-                '<span class="charge-status '+state+'">'+state+'</span>'+
-              '</div>'+
-              (meta.note?'<div class="charge-note">'+esc(meta.note)+'</div>':'')+
-              '<div class="charge-actions">'+
-                '<button class="btn g sm" onclick="openChargeEditor(\''+c.id+'\',\'ficha\')">Editar</button>'+
-                '<button class="btn g sm" onclick="goToBalanceCharge(\''+c.id+'\')">Ver en balance</button>'+
-              '</div>'+
-            '</div>'+
-            '<div class="charge-side"><div class="charge-amount">'+fmtMonto(Number(c.monto)||0)+'</div></div>'+
-          '</div>';
-        }).join("")+
-      '</div>';
-    }
-
+    _patientChargeCache.set(patientId,cobros);
     renderConsultationChargeCells(cobros);
   }catch(e){
-    box.innerHTML='<div class="card"><p style="color:var(--bad);font-size:12px">No se pudieron cargar los cobros.</p></div>';
+    console.warn("No se pudieron cargar los cobros del paciente:",e);
+    document.querySelectorAll(".consult-charge-cell").forEach(function(cell){
+      cell.innerHTML='<span class="consult-no-charge">No se pudo cargar el cobro</span>';
+    });
   }
 }
 function renderConsultationChargeCells(cobros){
@@ -7105,6 +7331,7 @@ async function deleteChargeEdit(){
   }catch(e){showMsg($("editChargeMsg"),"No se pudo eliminar: "+(e.message||e),"err")}
 }
 async function refreshConnectedCharges(){
+  if(currentPat)_patientChargeCache.delete(String(currentPat.id));
   await Promise.all([loadDashCobros(),loadBalance()]);
   if(currentPat)await renderCobros();
 }
