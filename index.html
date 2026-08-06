@@ -3032,6 +3032,19 @@ html.ipad-performance #view-ficha .hist tr{
 }
 </style>
 
+
+<style id="quick-patient-from-turno-styles">
+.turno-patient-picker{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}
+.turno-patient-picker select{min-width:0}
+.turno-new-patient-btn{white-space:nowrap;padding:10px 13px!important}
+.turno-patient-help{display:block;margin-top:5px;color:var(--ink-faint);font-size:10.5px;line-height:1.35}
+.turno-patient-field.no-patients .turno-patient-help{color:var(--brand);font-weight:650}
+@media(max-width:600px){
+  .turno-patient-picker{grid-template-columns:1fr}
+  .turno-new-patient-btn{width:100%;min-height:42px}
+}
+</style>
+
 </head>
 <body>
 <!-- ===== LOGIN ===== -->
@@ -3704,7 +3717,7 @@ html.ipad-performance #view-ficha .hist tr{
 <div class="field"><label>Notas</label><textarea id="pNotas" placeholder="Antecedentes, alergias, observaciones..."></textarea></div>
 <div class="form-actions">
 <button class="btn p" onclick="savePat()">Guardar</button>
-<button class="btn g" onclick="closeModal('patModal')">Cancelar</button>
+<button class="btn g" onclick="_quickPatientFromTurno?(closeModal('patModal'),cancelQuickPatientReturn()):closeModal('patModal')">Cancelar</button>
 </div>
 </div>
 </div>
@@ -4170,7 +4183,14 @@ html.ipad-performance #view-ficha .hist tr{
 <div class="modal">
 <h3>Nuevo turno</h3>
 <div class="msg" id="turnoMsg"></div>
-<div class="field"><label>Paciente *</label><select id="tPac"></select></div>
+<div class="field turno-patient-field">
+<label>Paciente *</label>
+<div class="turno-patient-picker">
+<select id="tPac"></select>
+<button class="btn g turno-new-patient-btn" type="button" onclick="openQuickPatientFromTurno()">＋ Crear paciente</button>
+</div>
+<small class="turno-patient-help" id="tPacHelp">Elegí un paciente existente o creá uno sin salir del turno.</small>
+</div>
 <div class="field"><label>Tipo de consulta</label><select id="tServicio" onchange="onTurnoServChange()"><option value="">Sin especificar (presencial)</option></select></div>
 <div class="form-grid">
 <div class="field"><label>Fecha *</label><input id="tFecha" type="date"/></div>
@@ -5672,19 +5692,41 @@ async function savePat(){
     objetivo:$("pObj").value.trim()||null,
     notas:$("pNotas").value.trim()||null
   };
+  const saveBtn=document.querySelector('#patModal .btn.p');
+  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Guardando…';}
   try{
+    let savedPatient=null;
     if(editingPatId){
-      const{error}=await sb.from("pacientes").update(datos).eq("id",editingPatId);
+      const{data,error}=await sb.from("pacientes").update(datos).eq("id",editingPatId).select("*").single();
       if(error)throw error;
+      savedPatient=data;
     }else{
       datos.nutri_id=me.id;
-      const{error}=await sb.from("pacientes").insert(datos);
+      const{data,error}=await sb.from("pacientes").insert(datos).select("*").single();
       if(error)throw error;
+      savedPatient=data;
     }
     closeModal("patModal");
     await loadPatients();
-    if(editingPatId){currentPat=pacientes.find(x=>x.id===editingPatId);openFicha(editingPatId);}
+
+    if(_quickPatientFromTurno&&!editingPatId){
+      const draft=_turnoDraftBeforePatient;
+      _quickPatientFromTurno=false;
+      _turnoDraftBeforePatient=null;
+      restoreTurnoDraft(draft,savedPatient&&savedPatient.id);
+      $("turnoModal").classList.add("open");
+      showMsg($("turnoMsg"),"Paciente creado y seleccionado. Ya podés guardar el turno.","ok");
+      return;
+    }
+
+    if(editingPatId){
+      currentPat=pacientes.find(x=>x.id===editingPatId);
+      openFicha(editingPatId);
+    }
   }catch(e){showMsg($("patMsg"),"Error: "+e.message,"err");}
+  finally{
+    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Guardar';}
+  }
 }
 async function delPatient(){
   if(!currentPat)return;
@@ -6100,12 +6142,71 @@ function clickNuevoTurnoDia(iso){
   $("tFecha").value=iso;
 }
 let _editTurnoId=null;
+let _quickPatientFromTurno=false;
+let _turnoDraftBeforePatient=null;
+
+function captureTurnoDraft(){
+  return {
+    paciente_id:$('tPac')?$('tPac').value:'',
+    servicio_id:$('tServicio')?$('tServicio').value:'',
+    fecha:$('tFecha')?$('tFecha').value:todayISO(),
+    hora:$('tHora')?$('tHora').value:'',
+    nota:$('tNota')?$('tNota').value:'',
+    editId:_editTurnoId||null,
+    title:document.querySelector('#turnoModal h3')?.textContent||'Nuevo turno'
+  };
+}
+function restoreTurnoDraft(draft,newPatientId){
+  if(!draft)return;
+  _editTurnoId=draft.editId||null;
+  document.querySelector('#turnoModal h3').textContent=draft.title||'Nuevo turno';
+  fillTurnoPatientOptions(newPatientId||draft.paciente_id);
+  $('tServicio').value=draft.servicio_id||'';
+  $('tFecha').value=draft.fecha||todayISO();
+  $('tHora').value=draft.hora||'';
+  $('tNota').value=draft.nota||'';
+  onTurnoServChange();
+}
+function fillTurnoPatientOptions(selectedId){
+  const select=$('tPac');
+  const field=select&&select.closest('.turno-patient-field');
+  if(!select)return;
+  if(!pacientes.length){
+    select.innerHTML='<option value="">Todavía no hay pacientes</option>';
+    select.disabled=true;
+    if(field)field.classList.add('no-patients');
+    if($('tPacHelp'))$('tPacHelp').textContent='Creá el primer paciente y volverás automáticamente a este turno.';
+    return;
+  }
+  select.disabled=false;
+  select.innerHTML=pacientes.map(function(p){return '<option value="'+p.id+'">'+esc(p.nombre)+'</option>';}).join('');
+  if(selectedId&&pacientes.some(function(p){return String(p.id)===String(selectedId)}))select.value=selectedId;
+  if(field)field.classList.remove('no-patients');
+  if($('tPacHelp'))$('tPacHelp').textContent='Elegí un paciente existente o creá uno sin salir del turno.';
+}
+function openQuickPatientFromTurno(){
+  _turnoDraftBeforePatient=captureTurnoDraft();
+  _quickPatientFromTurno=true;
+  closeModal('turnoModal');
+  openPatModal();
+  $('patModalTitle').textContent='Nuevo paciente para el turno';
+  setTimeout(function(){$('pNombre')?.focus();},120);
+}
+function cancelQuickPatientReturn(){
+  if(!_quickPatientFromTurno)return;
+  _quickPatientFromTurno=false;
+  const draft=_turnoDraftBeforePatient;
+  _turnoDraftBeforePatient=null;
+  setTimeout(function(){
+    restoreTurnoDraft(draft);
+    $('turnoModal').classList.add('open');
+  },80);
+}
 function openTurnoModal(){
-  if(!pacientes.length){alert("Primero cargá al menos un paciente.");return;}
   clearMsg($("turnoMsg"));
   _editTurnoId=null;
   document.querySelector("#turnoModal h3").textContent="Nuevo turno";
-  $("tPac").innerHTML=pacientes.map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join("");
+  fillTurnoPatientOptions();
   // cargar servicios en el selector
   $("tServicio").innerHTML=`<option value="">Sin especificar (presencial)</option>`+
     (servicios||[]).map(s=>`<option value="${s.id}" data-mod="${s.modalidad}">${esc(s.nombre)} (${s.modalidad})</option>`).join("");
@@ -6132,7 +6233,7 @@ function onTurnoServChange(){
 }
 async function saveTurno(){
   const fecha=$("tFecha").value,pid=$("tPac").value;
-  if(!fecha||!pid){showMsg($("turnoMsg"),"Elegí paciente y fecha","err");return;}
+  if(!fecha||!pid){showMsg($("turnoMsg"),!pacientes.length?"Creá un paciente para continuar.":"Elegí paciente y fecha","err");return;}
   const servId=$("tServicio").value||null;
   const serv=servId?servicios.find(function(s){return String(s.id)===String(servId)}):null;
   const btn=document.querySelector("#turnoModal .btn.p");
