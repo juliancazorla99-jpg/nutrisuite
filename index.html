@@ -2746,6 +2746,92 @@ html.perf-lite-safe .ag-tab,html.perf-lite-safe .cal-cell,html.perf-lite-safe .c
 html.perf-lite-safe .pref-btn,html.perf-lite-safe .turno-item,html.perf-lite-safe .ta-btn,
 html.perf-lite-safe .caldia-item,html.perf-lite-safe .btn{transition:none!important}
 </style>
+
+<style id="connected-charge-styles">
+.charge-edit-modal{width:min(590px,calc(100vw - 28px))}
+.charge-edit-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:15px}
+.charge-edit-head h3{margin:3px 0 0}
+.charge-edit-patient{font-size:12px;color:var(--ink-soft);margin-top:4px}
+.optional-label{font-size:10px;font-weight:600;color:var(--ink-faint);text-transform:none;letter-spacing:0}
+.charge-edit-info{
+  padding:10px 12px;margin:5px 0 14px;border:1px solid var(--line);border-radius:12px;
+  color:var(--ink-soft);background:var(--surface-2);font-size:11px;line-height:1.45
+}
+.charge-edit-actions{align-items:center}
+.charge-delete-btn{margin-left:auto!important;color:var(--bad)!important;border-color:color-mix(in srgb,var(--bad) 28%,var(--line))!important}
+
+.charge-card{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;
+  padding:13px 0;border-bottom:1px solid var(--line)
+}
+.charge-card:last-child{border-bottom:0}
+.charge-main{min-width:0}
+.charge-title{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--ink)}
+.charge-meta{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:4px;color:var(--ink-soft);font-size:11.5px}
+.charge-meta span{display:inline-flex;align-items:center;gap:4px}
+.charge-amount{font-family:var(--fd);font-weight:800;font-size:17px;color:var(--brand-strong);white-space:nowrap}
+.charge-actions{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin-top:8px}
+.charge-status{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:capitalize}
+.charge-status.pagado{background:var(--good-bg);color:var(--good)}
+.charge-status.pendiente,.charge-status.vencido{background:#FFF3E0;color:#A76300}
+.charge-note{margin-top:5px;color:var(--ink-faint);font-size:11px;font-style:italic}
+
+.payment-row.connected-payment{
+  display:grid!important;
+  grid-template-columns:42px minmax(180px,1.5fr) minmax(120px,.8fr) auto auto;
+  gap:12px;align-items:center
+}
+.payment-patient{
+  border:0;background:transparent;padding:0;text-align:left;color:var(--brand);
+  font-size:11.5px;font-weight:700;cursor:pointer
+}
+.payment-patient:hover{text-decoration:underline}
+.payment-actions{display:flex;gap:5px;justify-content:flex-end}
+.payment-extra{display:block;margin-top:3px;color:var(--ink-faint);font-size:10.5px}
+.payment-method{color:var(--ink-soft);font-size:11.5px}
+.payment-edit-btn{white-space:nowrap}
+
+.consult-charge-cell{min-width:170px}
+.consult-charge-box{display:flex;flex-direction:column;gap:4px}
+.consult-charge-amount{font-weight:800;color:var(--brand-strong);font-size:13px}
+.consult-charge-links{display:flex;gap:5px;flex-wrap:wrap}
+.consult-no-charge{color:var(--ink-faint);font-size:11px}
+.consult-add-charge{
+  border:0;background:transparent;color:var(--brand);font-size:11px;font-weight:700;cursor:pointer;padding:0
+}
+.consult-add-charge:hover{text-decoration:underline}
+
+.balance-history-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px
+}
+.balance-history-head small{color:var(--ink-soft);font-size:11px}
+
+@media(max-width:900px){
+  .payment-row.connected-payment{
+    grid-template-columns:38px minmax(0,1fr) auto;
+  }
+  .payment-row.connected-payment .payment-method-col{grid-column:2/4}
+  .payment-row.connected-payment .payment-actions{grid-column:2/4;justify-content:flex-start}
+}
+@media(max-width:600px){
+  .charge-edit-modal{
+    width:100%;max-height:92svh;overflow:auto;align-self:flex-end;
+    border-radius:22px 22px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))
+  }
+  .charge-edit-actions{display:grid!important;grid-template-columns:1fr 1fr}
+  .charge-delete-btn{grid-column:1/-1;margin-left:0!important}
+  .payment-row.connected-payment{grid-template-columns:34px minmax(0,1fr)}
+  .payment-row.connected-payment> .pay-status,
+  .payment-row.connected-payment> .payment-row-amount,
+  .payment-row.connected-payment .payment-method-col,
+  .payment-row.connected-payment .payment-actions{grid-column:2}
+  .payment-row.connected-payment .payment-actions{justify-content:flex-start}
+  .charge-card{grid-template-columns:1fr}
+  .charge-side{text-align:left}
+  .charge-actions{justify-content:flex-start}
+}
+</style>
+
 </head>
 <body>
 <!-- ===== LOGIN ===== -->
@@ -3562,6 +3648,76 @@ html.perf-lite-safe .caldia-item,html.perf-lite-safe .btn{transition:none!import
 </div>
 </div>
 </div>
+
+<!-- MODAL EDITAR MOVIMIENTO / COBRO -->
+<div class="modal-bg" id="editChargeModal">
+  <div class="modal charge-edit-modal">
+    <div class="charge-edit-head">
+      <div>
+        <span class="cv-section-kicker">Movimiento conectado</span>
+        <h3 id="editChargeTitle">Editar cobro</h3>
+        <p id="editChargePatient" class="charge-edit-patient"></p>
+      </div>
+      <button class="notif-close" type="button" aria-label="Cerrar" onclick="closeModal('editChargeModal')">×</button>
+    </div>
+
+    <div class="msg" id="editChargeMsg"></div>
+    <input id="editChargeId" type="hidden"/>
+
+    <div class="field">
+      <label>Concepto</label>
+      <input id="editChargeConcept" type="text" placeholder="Consulta nutricional"/>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Monto cobrado ($) *</label>
+        <input id="editChargeAmount" type="number" min="0" step="1" inputmode="decimal" placeholder="25000"/>
+      </div>
+      <div class="field">
+        <label>Fecha *</label>
+        <input id="editChargeDate" type="date"/>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Estado</label>
+        <select id="editChargeStatus">
+          <option value="pagado">Pagado</option>
+          <option value="pendiente">Pendiente</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Medio de pago <span class="optional-label">opcional</span></label>
+        <select id="editChargeMethod">
+          <option value="">Sin especificar</option>
+          <option value="Efectivo">Efectivo</option>
+          <option value="Transferencia">Transferencia</option>
+          <option value="Mercado Pago">Mercado Pago</option>
+          <option value="Tarjeta">Tarjeta</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Observación <span class="optional-label">opcional</span></label>
+      <textarea id="editChargeNote" placeholder="Ej.: precio promocional, seña, diferencia acordada..."></textarea>
+    </div>
+
+    <div class="charge-edit-info">
+      El mismo movimiento se actualiza en la ficha del paciente y en Balance. No se crea un cobro duplicado.
+    </div>
+
+    <div class="form-actions charge-edit-actions">
+      <button class="btn p" id="saveChargeBtn" type="button" onclick="saveChargeEdit()">Guardar cambios</button>
+      <button class="btn g" type="button" onclick="closeModal('editChargeModal')">Cancelar</button>
+      <button class="btn g charge-delete-btn" id="deleteChargeBtn" type="button" onclick="deleteChargeEdit()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL MERCADO PAGO -->
 <div class="modal-bg" id="mpModal">
 <div class="modal">
@@ -5400,10 +5556,11 @@ function renderFicha(p,regs){
   $("fStats").innerHTML=st.join("");
   _chartRegs=regs;
   renderChart();
-  $("fHist").innerHTML=`<div class="hist-scroll"><table class="hist"><thead><tr><th>Fecha</th><th>Peso</th><th>Músculo</th><th>Grasa</th><th>% Grasa</th><th>Nota</th><th></th></tr></thead><tbody>${
-    [...regs].reverse().map(r=>`<tr>
+  $("fHist").innerHTML=`<div class="hist-scroll"><table class="hist"><thead><tr><th>Fecha</th><th>Peso</th><th>Músculo</th><th>Grasa</th><th>% Grasa</th><th>Nota</th><th>Cobro</th><th></th></tr></thead><tbody>${
+    [...regs].reverse().map(r=>`<tr data-consultation-id="${r.id}" data-consultation-date="${r.fecha}">
       <td><b>${fmtDate(r.fecha)}</b></td><td>${r.peso??"—"}</td><td>${r.musculo??"—"}</td><td>${r.grasa??"—"}</td><td>${r.grasa_pct??"—"}</td>
       <td style="color:var(--ink-soft)">${esc(r.nota||"")}</td>
+      <td class="consult-charge-cell" id="consultCharge_${r.id}"><span class="consult-no-charge">Cargando…</span></td>
       <td><button class="mini-btn" onclick="delConsulta('${r.id}')">🗑</button></td></tr>`).join("")
   }</tbody></table></div>`;
 }
@@ -5508,10 +5665,28 @@ async function saveConsulta(){
     nota:$("cNota").value.trim()||null
   };
   try{
-    const{error}=await sb.from("consultas").insert(c);
+    const{data:created,error}=await sb.from("consultas").insert(c).select("*").single();
     if(error)throw error;
+
+    if(c.valor&&Number(c.valor)>0){
+      const concept=encodeChargeConcept("Consulta nutricional",{
+        consultationDate:fecha,
+        consultationId:created&&created.id,
+        source:"consulta"
+      });
+      const{error:chargeError}=await sb.from("cobros").insert({
+        nutri_id:me.id,
+        paciente_id:currentPat.id,
+        concepto:concept,
+        monto:Number(c.valor),
+        estado:"pagado",
+        pagado_en:isoToPaymentTimestamp(fecha)
+      });
+      if(chargeError)throw chargeError;
+    }
+
     closeModal("consModal");
-    openFicha(currentPat.id);
+    await Promise.all([loadDashCobros(),openFicha(currentPat.id)]);
   }catch(e){showMsg($("consMsg"),"Error: "+e.message,"err");}
 }
 async function delConsulta(id){
@@ -6495,6 +6670,65 @@ async function desconectarMp(){
   }catch(e){alert("Error: "+e.message);}
 }
 
+
+/* ===== COBROS CONECTADOS Y EDITABLES =====
+   Medio de pago, observación y vínculo se guardan como metadata invisible
+   dentro de concepto para funcionar con el esquema actual de Supabase. */
+const CHARGE_META_SEPARATOR="|||NSMETA:";
+
+function parseChargeRecord(c){
+  const raw=String((c&&c.concepto)||"Consulta");
+  const parts=raw.split(CHARGE_META_SEPARATOR);
+  let meta={};
+  if(parts.length>1){
+    try{meta=JSON.parse(decodeURIComponent(parts.slice(1).join(CHARGE_META_SEPARATOR)))}catch(e){meta={}}
+  }
+  return {
+    concept:(parts[0]||"Consulta").trim()||"Consulta",
+    method:String(meta.method||""),
+    note:String(meta.note||""),
+    consultationDate:String(meta.consultationDate||""),
+    consultationId:String(meta.consultationId||""),
+    turnoId:String(meta.turnoId||""),
+    source:String(meta.source||"manual")
+  };
+}
+function encodeChargeConcept(concept,meta){
+  const clean=String(concept||"Consulta").trim()||"Consulta";
+  const safeMeta={
+    method:String((meta&&meta.method)||""),
+    note:String((meta&&meta.note)||""),
+    consultationDate:String((meta&&meta.consultationDate)||""),
+    consultationId:String((meta&&meta.consultationId)||""),
+    turnoId:String((meta&&meta.turnoId)||""),
+    source:String((meta&&meta.source)||"manual")
+  };
+  return clean+CHARGE_META_SEPARATOR+encodeURIComponent(JSON.stringify(safeMeta));
+}
+function chargeDateISO(c){
+  const parsed=parseChargeRecord(c);
+  if(parsed.consultationDate)return parsed.consultationDate;
+  const raw=String(c&&c.pagado_en||c&&c.creado||"");
+  return raw?raw.slice(0,10):todayISO();
+}
+function chargePatient(c){
+  return pacientes.find(function(p){return String(p.id)===String(c&&c.paciente_id)});
+}
+function chargeForConsultation(consultation,cobros){
+  const date=String(consultation&&consultation.fecha||"");
+  const cid=String(consultation&&consultation.id||"");
+  const list=(cobros||[]).filter(function(c){
+    const meta=parseChargeRecord(c);
+    if(meta.consultationId&&cid&&meta.consultationId===cid)return true;
+    return chargeDateISO(c)===date;
+  });
+  return list[0]||null;
+}
+function isoToPaymentTimestamp(date){
+  const safe=date||todayISO();
+  return safe+"T12:00:00.000Z";
+}
+
 /* ===== COBROS ===== */
 function openCobroModal(){
   if(!currentPat)return;
@@ -6529,21 +6763,69 @@ async function crearCobro(){
 async function renderCobros(){
   const box=$("fCobros");if(!box||!currentPat)return;
   try{
-    const{data}=await sb.from("cobros").select("*").eq("paciente_id",currentPat.id).order("creado",{ascending:false});
-    if(!data||!data.length){box.innerHTML="";return;}
-    const badge=(e)=>{
-      if(e==="pagado")return `<span style="background:var(--good-bg);color:var(--good);font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px">✓ Pagado</span>`;
-      if(e==="rechazado")return `<span style="background:var(--bad-bg);color:var(--bad);font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px">Rechazado</span>`;
-      return `<span style="background:#FFF3E0;color:#B26A00;font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px">⏳ Pendiente</span>`;
-    };
-    box.innerHTML=`<div class="card"><div class="block-t">💳 Cobros</div>${
-      data.map(c=>`<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)">
-        <div style="flex:1"><b style="font-family:var(--fd);font-size:14px">${esc(c.concepto)}</b><br><span style="font-size:12px;color:var(--ink-soft)">${_montosOcultos?"＊＊＊＊":"$ "+Number(c.monto).toLocaleString('es-AR')} · ${fmtDate(c.creado.slice(0,10))}</span></div>
-        ${badge(c.estado)}
-        ${c.estado==="pendiente"&&c.init_point?`<a href="${esc(c.init_point)}" target="_blank" class="btn p sm" style="text-decoration:none">Pagar</a>`:""}
-      </div>`).join("")
-    }</div>`;
-  }catch(e){box.innerHTML="";}
+    const{data,error}=await sb.from("cobros").select("*")
+      .eq("paciente_id",currentPat.id)
+      .order("pagado_en",{ascending:false});
+    if(error)throw error;
+    const cobros=data||[];
+
+    if(!cobros.length){
+      box.innerHTML="";
+    }else{
+      box.innerHTML='<div class="card"><div class="block-t">💳 Historial de cobros <span style="flex:1"></span>'+
+        '<button class="btn g sm" onclick="openManualChargeForPatient()">＋ Registrar</button></div>'+
+        cobros.map(function(c){
+          const meta=parseChargeRecord(c);
+          const state=estadoCobro(c);
+          const date=chargeDateISO(c);
+          return '<div class="charge-card">'+
+            '<div class="charge-main">'+
+              '<div class="charge-title">'+esc(meta.concept)+'</div>'+
+              '<div class="charge-meta">'+
+                '<span>📅 '+fmtDate(date)+'</span>'+
+                (meta.method?'<span>💳 '+esc(meta.method)+'</span>':'')+
+                '<span class="charge-status '+state+'">'+state+'</span>'+
+              '</div>'+
+              (meta.note?'<div class="charge-note">'+esc(meta.note)+'</div>':'')+
+              '<div class="charge-actions">'+
+                '<button class="btn g sm" onclick="openChargeEditor(\''+c.id+'\',\'ficha\')">Editar</button>'+
+                '<button class="btn g sm" onclick="goToBalanceCharge(\''+c.id+'\')">Ver en balance</button>'+
+              '</div>'+
+            '</div>'+
+            '<div class="charge-side"><div class="charge-amount">'+fmtMonto(Number(c.monto)||0)+'</div></div>'+
+          '</div>';
+        }).join("")+
+      '</div>';
+    }
+
+    renderConsultationChargeCells(cobros);
+  }catch(e){
+    box.innerHTML='<div class="card"><p style="color:var(--bad);font-size:12px">No se pudieron cargar los cobros.</p></div>';
+  }
+}
+function renderConsultationChargeCells(cobros){
+  (_chartRegs||[]).forEach(function(reg){
+    const cell=document.getElementById("consultCharge_"+reg.id);
+    if(!cell)return;
+    const charge=chargeForConsultation(reg,cobros);
+    if(charge){
+      const meta=parseChargeRecord(charge);
+      cell.innerHTML='<div class="consult-charge-box">'+
+        '<span class="consult-charge-amount">'+fmtMonto(Number(charge.monto)||0)+'</span>'+
+        '<span class="charge-status '+estadoCobro(charge)+'">'+estadoCobro(charge)+'</span>'+
+        (meta.method?'<small>'+esc(meta.method)+'</small>':'')+
+        '<div class="consult-charge-links">'+
+          '<button class="btn g sm" onclick="openChargeEditor(\''+charge.id+'\',\'ficha\')">Editar</button>'+
+          '<button class="btn g sm" onclick="goToBalanceCharge(\''+charge.id+'\')">Balance</button>'+
+        '</div>'+
+      '</div>';
+    }else{
+      cell.innerHTML='<div class="consult-charge-box">'+
+        '<span class="consult-no-charge">Sin cobro registrado</span>'+
+        '<button class="consult-add-charge" onclick="openManualChargeForConsultation(\''+reg.id+'\',\''+reg.fecha+'\')">＋ Agregar cobro</button>'+
+      '</div>';
+    }
+  });
 }
 
 /* ===== BALANCE ===== */
@@ -6551,18 +6833,60 @@ let _balancePeriod=1,_paymentFilter="todos",_balanceCobros=[],_balanceCons=[];
 async function loadBalance(){
   $("balLoading").classList.remove("hidden");$("balContent").classList.add("hidden");
   try{
-    const{data:cobros}=await sb.from("cobros").select("*").eq("nutri_id",me.id).order("creado",{ascending:false});
-    const{data:cons}=await sb.from("consultas").select("valor,fecha,paciente_id").eq("nutri_id",me.id).not("valor","is",null);
-    _balanceCobros=cobros||[];_balanceCons=cons||[];
-    $("balLoading").classList.add("hidden");$("balContent").classList.remove("hidden");renderBalance();syncBalanceToSheets(false);
-  }catch(e){$("balLoading").classList.add("hidden");$("balContent").classList.remove("hidden");$("balKpis").innerHTML=`<div class="stat"><div class="l">Error al cargar</div></div>`;}
+    const[{data:cobros,error:cobrosError},{data:cons,error:consError}]=await Promise.all([
+      sb.from("cobros").select("*").eq("nutri_id",me.id).order("pagado_en",{ascending:false}),
+      sb.from("consultas").select("id,valor,fecha,paciente_id").eq("nutri_id",me.id).not("valor","is",null)
+    ]);
+    if(cobrosError)throw cobrosError;
+    if(consError)throw consError;
+
+    _balanceCobros=cobros||[];
+    _balanceCons=cons||[];
+    await backfillConsultationCharges();
+    $("balLoading").classList.add("hidden");
+    $("balContent").classList.remove("hidden");
+    renderBalance();
+    syncBalanceToSheets(false);
+  }catch(e){
+    $("balLoading").classList.add("hidden");$("balContent").classList.remove("hidden");
+    $("balKpis").innerHTML='<div class="stat"><div class="l">Error al cargar</div></div>';
+  }
+}
+async function backfillConsultationCharges(){
+  const inserts=[];
+  (_balanceCons||[]).forEach(function(cons){
+    const amount=Number(cons.valor)||0;
+    if(amount<=0)return;
+    const exists=(_balanceCobros||[]).some(function(c){
+      const meta=parseChargeRecord(c);
+      if(meta.consultationId&&String(meta.consultationId)===String(cons.id))return true;
+      return String(c.paciente_id)===String(cons.paciente_id)&&chargeDateISO(c)===String(cons.fecha);
+    });
+    if(exists)return;
+    inserts.push({
+      nutri_id:me.id,
+      paciente_id:cons.paciente_id,
+      concepto:encodeChargeConcept("Consulta nutricional",{
+        consultationDate:cons.fecha,
+        consultationId:cons.id,
+        source:"consulta-migrada"
+      }),
+      monto:amount,
+      estado:"pagado",
+      pagado_en:isoToPaymentTimestamp(cons.fecha)
+    });
+  });
+  if(!inserts.length)return;
+  const{data,error}=await sb.from("cobros").insert(inserts).select("*");
+  if(error)throw error;
+  _balanceCobros=(data||[]).concat(_balanceCobros||[]);
 }
 function setBalancePeriod(n){_balancePeriod=n;document.querySelectorAll(".period-btn").forEach((b,i)=>b.classList.toggle("on",[1,2,3,6][i]===n));renderBalance();}
 function setPaymentFilter(f){_paymentFilter=f;document.querySelectorAll(".pay-filter").forEach(b=>b.classList.toggle("on",b.textContent.toLowerCase().startsWith(f==="todos"?"todo":f.slice(0,5))));renderPaymentList();}
 function estadoCobro(c){if(c.estado==="pagado")return"pagado";const fecha=new Date(c.creado);fecha.setDate(fecha.getDate()+7);return fecha<new Date()?"vencido":"pendiente";}
 function renderBalance(){
   const cobros=_balanceCobros,cons=_balanceCons,hoy=new Date(),desde=new Date(hoy.getFullYear(),hoy.getMonth()-_balancePeriod+1,1);
-  const ingresos=[];cobros.filter(c=>c.estado==="pagado").forEach(c=>ingresos.push({monto:Number(c.monto)||0,fecha:new Date(c.pagado_en||c.creado)}));cons.forEach(c=>ingresos.push({monto:Number(c.valor)||0,fecha:new Date(c.fecha+"T00:00:00")}));
+  const ingresos=[];cobros.filter(c=>c.estado==="pagado").forEach(c=>ingresos.push({monto:Number(c.monto)||0,fecha:new Date(c.pagado_en||c.creado)}));
   const periodo=ingresos.filter(i=>i.fecha>=desde),total=periodo.reduce((a,i)=>a+i.monto,0),prom=periodo.length?Math.round(total/periodo.length):0;
   const pendientes=cobros.filter(c=>estadoCobro(c)==="pendiente").reduce((a,c)=>a+(Number(c.monto)||0),0);
   $("balKpis").innerHTML=`<div class="stat"><div class="l">Ingresos del período</div><div class="v" style="font-size:24px">${fmtMonto(total)}</div></div><div class="stat"><div class="l">Movimientos</div><div class="v">${periodo.length}</div></div><div class="stat"><div class="l">Promedio</div><div class="v" style="font-size:22px">${fmtMonto(prom)}</div></div><div class="stat"><div class="l">Pendiente de cobro</div><div class="v" style="font-size:22px">${fmtMonto(pendientes)}</div></div>`;
@@ -6575,20 +6899,34 @@ function renderBalance(){
 function renderPaymentList(){
   let lista=_balanceCobros.map(function(c){return Object.assign({},c,{_estado:estadoCobro(c)})});
   if(_paymentFilter!=="todos")lista=lista.filter(function(c){return c._estado===_paymentFilter});
+  lista.sort(function(a,b){return new Date(b.pagado_en||b.creado)-new Date(a.pagado_en||a.creado)});
+
   if(!lista.length){
     $("balList").innerHTML='<p style="color:var(--ink-faint);font-size:13px;padding:14px 0">No hay movimientos en esta categoría.</p>';
     return;
   }
+
   $("balList").innerHTML=lista.map(function(c){
-    return '<div class="payment-row">'+
+    const meta=parseChargeRecord(c);
+    const patient=chargePatient(c);
+    return '<div class="payment-row connected-payment" id="balanceCharge_'+c.id+'">'+
       '<div style="width:38px;height:38px;border-radius:12px;background:var(--brand-tint);display:flex;align-items:center;justify-content:center">'+
-      (c._estado==="pagado"?"✓":c._estado==="vencido"?"!":"$")+'</div>'+
-      '<div style="flex:1"><b style="font-family:var(--fd);font-size:14px">'+esc(c.concepto||"Consulta")+
-      '</b><br><span style="font-size:12px;color:var(--ink-soft)">'+fmtDate((c.pagado_en||c.creado).slice(0,10))+'</span></div>'+
-      '<span class="pay-status '+c._estado+'">'+c._estado+'</span>'+
-      '<b>'+fmtMonto(Number(c.monto)||0)+'</b>'+
-      (c._estado!=="pagado"?'<button class="btn g sm payment-paid-btn" onclick="marcarCobroPagado(\''+c.id+'\')">Registrar pago</button>':'')+
-      '</div>';
+        (c._estado==="pagado"?"✓":c._estado==="vencido"?"!":"$")+
+      '</div>'+
+      '<div style="min-width:0">'+
+        '<b style="font-family:var(--fd);font-size:14px">'+esc(meta.concept)+'</b>'+
+        '<span class="payment-extra">'+fmtDate(chargeDateISO(c))+(meta.note?' · '+esc(meta.note):'')+'</span>'+
+        (patient?'<button class="payment-patient" onclick="openFichaById(\''+patient.id+'\')">'+esc(patient.nombre)+' · Ir a la ficha</button>':'')+
+      '</div>'+
+      '<div class="payment-method-col">'+
+        '<span class="pay-status '+c._estado+'">'+c._estado+'</span>'+
+        '<div class="payment-method">'+(meta.method?esc(meta.method):'Medio sin especificar')+'</div>'+
+      '</div>'+
+      '<b class="payment-row-amount">'+fmtMonto(Number(c.monto)||0)+'</b>'+
+      '<div class="payment-actions">'+
+        '<button class="btn g sm payment-edit-btn" onclick="openChargeEditor(\''+c.id+'\',\'balance\')">Editar</button>'+
+      '</div>'+
+    '</div>';
   }).join("");
   aplicarOcultarMontos();
 }
@@ -6613,6 +6951,177 @@ async function marcarCobroPagado(id){
     alert("No se pudo registrar el pago: "+(e.message||e));
   }
 }
+
+let _chargeEditorOrigin="balance";
+let _chargeEditorConsultation=null;
+
+function findLoadedCharge(id){
+  return (_balanceCobros||[]).find(function(c){return String(c.id)===String(id)})
+    ||(_dashCobros||[]).find(function(c){return String(c.id)===String(id)})
+    ||null;
+}
+async function fetchCharge(id){
+  const loaded=findLoadedCharge(id);
+  if(loaded)return loaded;
+  const{data,error}=await sb.from("cobros").select("*").eq("id",id).eq("nutri_id",me.id).single();
+  if(error)throw error;
+  return data;
+}
+async function openChargeEditor(id,origin){
+  _chargeEditorOrigin=origin||"balance";
+  _chargeEditorConsultation=null;
+  clearMsg($("editChargeMsg"));
+  const charge=await fetchCharge(id);
+  const meta=parseChargeRecord(charge);
+  const patient=chargePatient(charge);
+
+  $("editChargeId").value=charge.id;
+  $("editChargeConcept").value=meta.concept;
+  $("editChargeAmount").value=Number(charge.monto)||0;
+  $("editChargeDate").value=chargeDateISO(charge);
+  $("editChargeStatus").value=charge.estado==="pagado"?"pagado":"pendiente";
+  $("editChargeMethod").value=meta.method||"";
+  $("editChargeNote").value=meta.note||"";
+  $("editChargePatient").textContent=patient?"Paciente: "+patient.nombre:"";
+  $("editChargeTitle").textContent="Editar cobro";
+  $("deleteChargeBtn").classList.remove("hidden");
+  $("editChargeModal").classList.add("open");
+}
+function openManualChargeForPatient(){
+  if(!currentPat)return;
+  openNewCharge({
+    patientId:currentPat.id,
+    concept:"Consulta nutricional",
+    date:todayISO(),
+    origin:"ficha"
+  });
+}
+function openManualChargeForConsultation(id,date){
+  if(!currentPat)return;
+  openNewCharge({
+    patientId:currentPat.id,
+    concept:"Consulta nutricional",
+    date:date,
+    consultationId:id,
+    origin:"ficha"
+  });
+}
+function openNewCharge(opts){
+  _chargeEditorOrigin=opts.origin||"ficha";
+  _chargeEditorConsultation={
+    patientId:String(opts.patientId||""),
+    consultationId:String(opts.consultationId||""),
+    date:String(opts.date||todayISO())
+  };
+  clearMsg($("editChargeMsg"));
+  $("editChargeId").value="";
+  $("editChargeConcept").value=opts.concept||"Consulta nutricional";
+  $("editChargeAmount").value="";
+  $("editChargeDate").value=opts.date||todayISO();
+  $("editChargeStatus").value="pagado";
+  $("editChargeMethod").value="";
+  $("editChargeNote").value="";
+  const patient=pacientes.find(function(p){return String(p.id)===String(opts.patientId)});
+  $("editChargePatient").textContent=patient?"Paciente: "+patient.nombre:"";
+  $("editChargeTitle").textContent="Registrar cobro";
+  $("deleteChargeBtn").classList.add("hidden");
+  $("editChargeModal").classList.add("open");
+}
+async function saveChargeEdit(){
+  const id=$("editChargeId").value;
+  const concept=$("editChargeConcept").value.trim()||"Consulta";
+  const amount=Number($("editChargeAmount").value);
+  const date=$("editChargeDate").value;
+  const status=$("editChargeStatus").value;
+  const method=$("editChargeMethod").value;
+  const note=$("editChargeNote").value.trim();
+
+  if(!Number.isFinite(amount)||amount<0){
+    showMsg($("editChargeMsg"),"Ingresá un monto válido.","err");return;
+  }
+  if(!date){
+    showMsg($("editChargeMsg"),"La fecha es obligatoria.","err");return;
+  }
+
+  const btn=$("saveChargeBtn");
+  btn.disabled=true;btn.textContent="Guardando…";
+  try{
+    if(id){
+      const current=await fetchCharge(id);
+      const oldMeta=parseChargeRecord(current);
+      const encoded=encodeChargeConcept(concept,{
+        method:method,
+        note:note,
+        consultationDate:date,
+        consultationId:oldMeta.consultationId,
+        turnoId:oldMeta.turnoId,
+        source:oldMeta.source
+      });
+      const patch={
+        concepto:encoded,
+        monto:amount,
+        estado:status,
+        pagado_en:isoToPaymentTimestamp(date)
+      };
+      const{error}=await sb.from("cobros").update(patch).eq("id",id).eq("nutri_id",me.id);
+      if(error)throw error;
+    }else{
+      const patientId=_chargeEditorConsultation&&_chargeEditorConsultation.patientId;
+      if(!patientId)throw new Error("No se encontró el paciente.");
+      const encoded=encodeChargeConcept(concept,{
+        method:method,
+        note:note,
+        consultationDate:date,
+        consultationId:_chargeEditorConsultation.consultationId,
+        source:"manual"
+      });
+      const{error}=await sb.from("cobros").insert({
+        nutri_id:me.id,
+        paciente_id:patientId,
+        concepto:encoded,
+        monto:amount,
+        estado:status,
+        pagado_en:isoToPaymentTimestamp(date)
+      });
+      if(error)throw error;
+    }
+
+    closeModal("editChargeModal");
+    await refreshConnectedCharges();
+  }catch(e){
+    showMsg($("editChargeMsg"),"No se pudo guardar: "+(e.message||e),"err");
+  }finally{
+    btn.disabled=false;btn.textContent="Guardar cambios";
+  }
+}
+async function deleteChargeEdit(){
+  const id=$("editChargeId").value;
+  if(!id||!confirm("¿Eliminar este movimiento? Se quitará de la ficha y del balance."))return;
+  try{
+    const{error}=await sb.from("cobros").delete().eq("id",id).eq("nutri_id",me.id);
+    if(error)throw error;
+    closeModal("editChargeModal");
+    await refreshConnectedCharges();
+  }catch(e){showMsg($("editChargeMsg"),"No se pudo eliminar: "+(e.message||e),"err")}
+}
+async function refreshConnectedCharges(){
+  await Promise.all([loadDashCobros(),loadBalance()]);
+  if(currentPat)await renderCobros();
+}
+async function goToBalanceCharge(id){
+  await goView("balance");
+  await loadBalance();
+  setTimeout(function(){
+    const row=document.getElementById("balanceCharge_"+id);
+    if(row){
+      row.scrollIntoView({behavior:"smooth",block:"center"});
+      row.style.outline="2px solid var(--brand)";
+      row.style.outlineOffset="3px";
+      setTimeout(function(){row.style.outline=""},2200);
+    }
+  },120);
+}
+
 function validSheetsUrl(u){return /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(u||"");}
 function saveSheetsWebhook(){
   const u=($("sheetsWebhook")?.value||"").trim();
@@ -6749,16 +7258,23 @@ async function ensureAutoChargeForTurno(turno){
   const precio=servicio?Number(servicio.precio):0;
   if(!servicio||!Number.isFinite(precio)||precio<=0)return {created:false,reason:"sin-precio"};
 
-  const concepto=turnoAutoCobroConcepto(turno,servicio);
+  const baseConcepto=turnoAutoCobroConcepto(turno,servicio);
+  const concepto=encodeChargeConcept(baseConcepto,{
+    consultationDate:turno.fecha,
+    turnoId:turno.id,
+    source:"turno"
+  });
   const{data:existing,error:findError}=await sb.from("cobros")
-    .select("id,estado,monto,concepto")
+    .select("*")
     .eq("nutri_id",me.id)
-    .eq("paciente_id",turno.paciente_id)
-    .eq("concepto",concepto)
-    .limit(1);
+    .eq("paciente_id",turno.paciente_id);
   if(findError)throw findError;
-  if(existing&&existing.length){
-    const found=existing[0];
+  const found=(existing||[]).find(function(c){
+    const meta=parseChargeRecord(c);
+    return (meta.turnoId&&String(meta.turnoId)===String(turno.id)) ||
+      (chargeDateISO(c)===String(turno.fecha)&&parseChargeRecord(c).source==="turno");
+  });
+  if(found){
     if(found.estado!=="pagado"){
       const now=new Date().toISOString();
       const{data:updated,error:updateError}=await sb.from("cobros")
@@ -6781,7 +7297,7 @@ async function ensureAutoChargeForTurno(turno){
     concepto:concepto,
     monto:precio,
     estado:"pagado",
-    pagado_en:new Date().toISOString()
+    pagado_en:isoToPaymentTimestamp(turno.fecha)
   };
   const{data,error}=await sb.from("cobros").insert(row).select("*").single();
   if(error)throw error;
