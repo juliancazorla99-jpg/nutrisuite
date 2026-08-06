@@ -11604,7 +11604,7 @@ function openSupportComposer(){
 })();
 </script>
 
-<div aria-hidden="true" id="nsMobileMoreSheet" onclick="mobileMoreBackdrop(event)">
+<div aria-hidden="true" hidden id="nsMobileMoreSheet" onclick="mobileMoreBackdrop(event)">
 <div aria-label="Más opciones" aria-modal="true" class="ns-mobile-more-panel" role="dialog">
 <div class="ns-mobile-more-head">
 <b>Más opciones</b>
@@ -11738,6 +11738,406 @@ function openSupportComposer(){
       setTimeout(openResetPasswordModal,300);
     }
   }catch(e){}
+})();
+</script>
+
+
+<style id="canvi-mobile-emergency-fix">
+/* Structural safety: hidden always means hidden */
+#nsMobileMoreSheet[hidden]{
+  display:none!important;
+}
+
+/* Outside phone/professional app, mobile controls cannot appear */
+body:not(.ns-canvi-phone) #nsMobileMoreBtn,
+body:not(.ns-canvi-phone) #nsMobileMoreSheet{
+  display:none!important;
+}
+
+@media(max-width:700px){
+  /* Mobile professional bottom navigation */
+  body.ns-canvi-phone #appView .sidebar{
+    position:fixed!important;
+    top:auto!important;
+    left:8px!important;
+    right:8px!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    height:auto!important;
+    min-height:68px!important;
+    margin:0!important;
+    padding:6px!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:4px!important;
+    align-items:stretch!important;
+    border-radius:22px!important;
+    border:1px solid rgba(210,222,190,.86)!important;
+    background:rgba(249,251,245,.97)!important;
+    box-shadow:0 14px 38px rgba(38,63,23,.17)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    overflow:visible!important;
+    z-index:500!important;
+  }
+
+  body.dark.ns-canvi-phone #appView .sidebar{
+    background:#2C3426!important;
+    border-color:#48543E!important;
+    box-shadow:0 15px 40px rgba(0,0,0,.35)!important;
+  }
+
+  /* Nothing except these five buttons is visible in phone nav */
+  body.ns-canvi-phone #appView .sidebar > *{
+    display:none!important;
+  }
+
+  body.ns-canvi-phone #nav-inicio,
+  body.ns-canvi-phone #nav-pac,
+  body.ns-canvi-phone #nav-age,
+  body.ns-canvi-phone #nav-planes,
+  body.ns-canvi-phone #nsMobileMoreBtn{
+    display:flex!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:55px!important;
+    min-height:55px!important;
+    margin:0!important;
+    padding:5px 2px!important;
+    border:0!important;
+    border-left:0!important;
+    border-radius:16px!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    background:transparent!important;
+    color:var(--ink-soft)!important;
+    box-shadow:none!important;
+    transform:none!important;
+    overflow:hidden!important;
+    touch-action:manipulation!important;
+    -webkit-tap-highlight-color:transparent!important;
+  }
+
+  body.ns-canvi-phone #nav-inicio svg,
+  body.ns-canvi-phone #nav-pac svg,
+  body.ns-canvi-phone #nav-age svg,
+  body.ns-canvi-phone #nav-planes svg,
+  body.ns-canvi-phone #nsMobileMoreBtn svg{
+    display:block!important;
+    width:21px!important;
+    height:21px!important;
+    min-width:21px!important;
+    flex:0 0 21px!important;
+  }
+
+  body.ns-canvi-phone #nav-inicio span,
+  body.ns-canvi-phone #nav-pac span,
+  body.ns-canvi-phone #nav-age span,
+  body.ns-canvi-phone #nav-planes span,
+  body.ns-canvi-phone #nsMobileMoreBtn span{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:10px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  body.ns-canvi-phone #nav-inicio.on,
+  body.ns-canvi-phone #nav-pac.on,
+  body.ns-canvi-phone #nav-age.on,
+  body.ns-canvi-phone #nav-planes.on,
+  body.ns-canvi-phone #nsMobileMoreBtn.on{
+    background:#E5F0CC!important;
+    color:#355A20!important;
+    border-left:0!important;
+    padding-left:2px!important;
+    box-shadow:inset 0 0 0 1px rgba(77,129,43,.16)!important;
+  }
+
+  body.dark.ns-canvi-phone #nav-inicio.on,
+  body.dark.ns-canvi-phone #nav-pac.on,
+  body.dark.ns-canvi-phone #nav-age.on,
+  body.dark.ns-canvi-phone #nav-planes.on,
+  body.dark.ns-canvi-phone #nsMobileMoreBtn.on{
+    background:#3D4933!important;
+    color:#DCE9C9!important;
+  }
+
+  body.ns-canvi-phone #appView .main{
+    margin-left:0!important;
+    width:100%!important;
+    padding-bottom:calc(102px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Actual More overlay */
+  body.ns-canvi-phone #nsMobileMoreSheet:not([hidden]){
+    position:fixed!important;
+    inset:0!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:center!important;
+    padding:12px 10px calc(88px + env(safe-area-inset-bottom))!important;
+    margin:0!important;
+    background:rgba(18,24,15,.34)!important;
+    z-index:10000!important;
+  }
+
+  body.ns-canvi-phone #nsMobileMoreSheet .ns-mobile-more-panel{
+    position:relative!important;
+    display:block!important;
+    width:100%!important;
+    max-width:520px!important;
+    max-height:min(64dvh,520px)!important;
+    margin:0!important;
+    padding:10px 10px 12px!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    border:1px solid rgba(210,222,190,.86)!important;
+    border-radius:24px!important;
+    background:#F9FBF5!important;
+    box-shadow:0 22px 58px rgba(25,46,14,.28)!important;
+  }
+
+  body.dark.ns-canvi-phone #nsMobileMoreSheet .ns-mobile-more-panel{
+    background:#2C3426!important;
+    border-color:#48543E!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-head{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    padding:5px 6px 10px!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-head b{
+    font-size:16px!important;
+    color:var(--ink)!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-close{
+    display:grid!important;
+    place-items:center!important;
+    width:36px!important;
+    height:36px!important;
+    padding:0!important;
+    border:1px solid var(--line)!important;
+    border-radius:12px!important;
+    background:var(--surface)!important;
+    color:var(--ink)!important;
+    font-size:20px!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-item{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:58px!important;
+    margin:0!important;
+    padding:9px 10px!important;
+    border:1px solid var(--line)!important;
+    border-radius:16px!important;
+    background:var(--surface)!important;
+    color:var(--ink)!important;
+    box-shadow:none!important;
+    font-size:12px!important;
+    font-weight:650!important;
+    text-align:left!important;
+    touch-action:manipulation!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-item svg{
+    display:block!important;
+    width:21px!important;
+    height:21px!important;
+    min-width:21px!important;
+    color:var(--brand)!important;
+  }
+
+  body.ns-canvi-phone .ns-mobile-more-item span{
+    display:block!important;
+    font-size:12px!important;
+    line-height:1.2!important;
+    white-space:normal!important;
+  }
+}
+
+/* Tiny phones */
+@media(max-width:360px){
+  body.ns-canvi-phone #appView .sidebar{
+    left:4px!important;
+    right:4px!important;
+    padding:5px!important;
+    gap:2px!important;
+  }
+  body.ns-canvi-phone #nav-inicio,
+  body.ns-canvi-phone #nav-pac,
+  body.ns-canvi-phone #nav-age,
+  body.ns-canvi-phone #nav-planes,
+  body.ns-canvi-phone #nsMobileMoreBtn{
+    height:52px!important;
+    min-height:52px!important;
+  }
+  body.ns-canvi-phone .ns-mobile-more-grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
+</style>
+
+
+<script id="canvi-mobile-emergency-fix-js">
+(function(){
+  function el(id){return document.getElementById(id)}
+
+  function phoneViewport(){
+    return (window.innerWidth||9999)<=700;
+  }
+
+  function professionalVisible(){
+    const app=el("appView");
+    const auth=el("authView");
+    const patient=el("patientView");
+    if(!app)return false;
+    return !app.classList.contains("hidden") &&
+           (!auth || auth.classList.contains("hidden")) &&
+           (!patient || patient.classList.contains("hidden"));
+  }
+
+  function forceSheetClosed(){
+    const sheet=el("nsMobileMoreSheet");
+    if(!sheet)return;
+    sheet.hidden=true;
+    sheet.classList.remove("open");
+    sheet.setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  }
+
+  function sync(){
+    const active=phoneViewport() && professionalVisible();
+    document.body.classList.toggle("ns-canvi-phone",active);
+
+    const more=el("nsMobileMoreBtn");
+    if(more){
+      if(active)more.style.setProperty("display","flex","important");
+      else more.style.setProperty("display","none","important");
+    }
+
+    /* Reorder More right after Planes */
+    if(active){
+      const plans=el("nav-planes");
+      if(plans&&more&&plans.nextElementSibling!==more){
+        plans.insertAdjacentElement("afterend",more);
+      }
+    }else{
+      forceSheetClosed();
+    }
+  }
+
+  window.openMobileMore=function(){
+    sync();
+    if(!document.body.classList.contains("ns-canvi-phone"))return;
+
+    const sheet=el("nsMobileMoreSheet");
+    if(!sheet)return;
+
+    sheet.hidden=false;
+    sheet.classList.add("open");
+    sheet.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+
+    const btn=el("nsMobileMoreBtn");
+    if(btn)btn.classList.add("on");
+  };
+
+  window.closeMobileMore=function(){
+    const sheet=el("nsMobileMoreSheet");
+    if(sheet){
+      sheet.hidden=true;
+      sheet.classList.remove("open");
+      sheet.setAttribute("aria-hidden","true");
+    }
+    document.body.style.overflow="";
+    const btn=el("nsMobileMoreBtn");
+    if(btn)btn.classList.remove("on");
+  };
+
+  window.mobileMoreBackdrop=function(e){
+    if(e&&e.target===e.currentTarget)window.closeMobileMore();
+  };
+
+  window.mobileMoreGo=function(view){
+    window.closeMobileMore();
+    setTimeout(function(){
+      if(typeof window.goView==="function")window.goView(view);
+    },10);
+  };
+
+  window.mobileMoreLogout=function(){
+    window.closeMobileMore();
+    setTimeout(function(){
+      if(typeof window.logout==="function")window.logout();
+    },10);
+  };
+
+  function bind(){
+    /* Critical: closed at every boot */
+    forceSheetClosed();
+    sync();
+
+    const more=el("nsMobileMoreBtn");
+    if(more&&!more.__canviMobileBound){
+      more.__canviMobileBound=true;
+      more.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        window.openMobileMore();
+        return false;
+      };
+    }
+
+    let rt;
+    window.addEventListener("resize",function(){
+      clearTimeout(rt);
+      rt=setTimeout(sync,60);
+    },{passive:true});
+
+    [el("appView"),el("authView"),el("patientView")].filter(Boolean).forEach(function(node){
+      if(node.__canviShellObserver)return;
+      node.__canviShellObserver=true;
+      new MutationObserver(function(){
+        requestAnimationFrame(sync);
+      }).observe(node,{attributes:true,attributeFilter:["class"]});
+    });
+
+    document.addEventListener("keydown",function(e){
+      if(e.key==="Escape")window.closeMobileMore();
+    });
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",bind,{once:true});
+  }else{
+    bind();
+  }
 })();
 </script>
 
