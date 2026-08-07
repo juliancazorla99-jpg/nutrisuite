@@ -4438,6 +4438,28 @@ body:not(.ns-professional-app) #nsMobileMoreSheet{
 }
 </style>
 
+
+<style id="ns-edit-consulta-final">
+.consult-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:112px}
+.consult-edit-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:30px;padding:5px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--brand-strong);font:700 10.5px var(--fb);white-space:nowrap;touch-action:manipulation}
+.consult-edit-btn:hover{border-color:var(--brand);background:var(--brand-tint)}
+.consult-edit-btn svg{width:13px;height:13px}
+.consult-delete-btn{min-width:30px;min-height:30px}
+.ns-edit-consulta-modal{width:min(620px,calc(100vw - 28px));max-height:min(88vh,760px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ns-edit-consulta-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
+.ns-edit-consulta-head h3{margin:3px 0 2px}.ns-edit-consulta-head p{margin:0;color:var(--ink-soft);font-size:12.5px}
+.ns-edit-consulta-kicker{display:block;color:var(--brand);font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.ns-edit-consulta-close{width:36px;height:36px;flex:none;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font-size:20px}
+#editConsultaCustomFields:empty{display:none}
+.ns-edit-consulta-hint{margin:0 0 14px;padding:9px 11px;border-radius:11px;background:var(--surface-2);color:var(--ink-soft);font-size:11.5px;line-height:1.4}
+@media(max-width:600px){
+ .ns-edit-consulta-modal{width:calc(100vw - 18px);max-height:calc(100dvh - 26px);padding:18px 14px}
+ .ns-edit-consulta-modal .form-grid{grid-template-columns:1fr!important;gap:0!important}
+ .ns-edit-consulta-actions{display:grid!important;grid-template-columns:1fr!important}
+ .ns-edit-consulta-actions .btn{width:100%!important;min-height:44px!important}
+ .consult-row-actions{min-width:92px;gap:4px}.consult-edit-btn{min-height:34px;padding:6px 8px}.consult-edit-btn span{display:none}
+}
+</style>
 </head>
 <body>
 <!-- ===== LOGIN ===== -->
@@ -12095,5 +12117,121 @@ body:not(.ns-canvi-phone) #nsMobileMoreSheet{
 })();
 </script>
 
+
+<div class="modal-bg" id="editConsultaModal">
+  <div class="modal ns-edit-consulta-modal">
+    <div class="ns-edit-consulta-head">
+      <div><span class="ns-edit-consulta-kicker">Historial de consultas</span><h3>Editar consulta</h3><p id="editConsultaPatient"></p></div>
+      <button class="ns-edit-consulta-close" type="button" onclick="closeModal('editConsultaModal')" aria-label="Cerrar">×</button>
+    </div>
+    <input id="editConsultaId" type="hidden">
+    <div class="msg" id="editConsultaMsg"></div>
+    <div class="form-grid">
+      <div class="field"><label>Fecha *</label><input id="editConsultaFecha" type="date"></div>
+      <div class="field"><label>Peso (kg)</label><input id="editConsultaPeso" type="number" step="0.1" inputmode="decimal"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Masa muscular (kg)</label><input id="editConsultaMusc" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Grasa corporal (kg)</label><input id="editConsultaGrasa" type="number" step="0.1" inputmode="decimal"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>% Grasa</label><input id="editConsultaGrasaPct" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Valor registrado ($)</label><input id="editConsultaValor" type="number" step="0.01" inputmode="decimal"></div>
+    </div>
+    <div id="editConsultaCustomFields" class="form-grid"></div>
+    <div class="field"><label>Nota</label><textarea id="editConsultaNota" rows="4"></textarea></div>
+    <div class="ns-edit-consulta-hint">El cobro asociado se modifica desde <b>Editar</b> en la columna Cobro.</div>
+    <div class="form-actions ns-edit-consulta-actions">
+      <button class="btn p" id="saveEditConsultaBtn" type="button" onclick="saveEditConsulta()">Guardar cambios</button>
+      <button class="btn g" type="button" onclick="closeModal('editConsultaModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script id="ns-edit-consulta-final-js">
+(function(){
+  let editMap=new Map();
+  const E=id=>document.getElementById(id);
+  const num=id=>{const v=E(id).value;return v===""?null:(Number.isFinite(Number(v))?Number(v):null)};
+  const userKey=s=>"nutrisuite_"+s+"_"+(window.me&&me.id?me.id:"anon");
+
+  function getParams(){try{
+    const c=window.me&&me.user_metadata&&Array.isArray(me.user_metadata.custom_parameters)?me.user_metadata.custom_parameters:null;
+    return c||JSON.parse(localStorage.getItem(userKey("custom_parameters"))||"[]")||[];
+  }catch(e){return[]}}
+
+  function getVals(){try{
+    const c=window.me&&me.user_metadata&&me.user_metadata.custom_metric_values;
+    return Object.assign({},c||JSON.parse(localStorage.getItem(userKey("custom_metric_values"))||"{}")||{});
+  }catch(e){return{}}}
+
+  async function saveVals(v){
+    try{localStorage.setItem(userKey("custom_metric_values"),JSON.stringify(v))}catch(e){}
+    if(window.me&&window.sb&&sb.auth){
+      const data=Object.assign({},me.user_metadata||{},{custom_metric_values:v});
+      const r=await sb.auth.updateUser({data}); if(r.error)throw r.error;
+      if(r.data&&r.data.user)me=r.data.user;
+    }
+  }
+
+  function renderCustom(id){
+    const box=E("editConsultaCustomFields"), vals=getVals()[String(id)]||{};
+    box.innerHTML=getParams().map(p=>'<div class="field"><label>'+esc(p.label)+(p.unit?' ('+esc(p.unit)+')':'')+'</label><input type="number" step="0.1" inputmode="decimal" data-edit-custom="'+esc(p.id)+'" value="'+(vals[p.id]??'')+'"></div>').join("");
+  }
+
+  function addButtons(){
+    const root=E("fHist"); if(!root)return;
+    root.querySelectorAll("tr[data-consultation-id]").forEach(row=>{
+      const id=String(row.dataset.consultationId||""); if(!id)return;
+      const cell=row.lastElementChild; if(!cell||cell.querySelector(".consult-edit-btn"))return;
+      const del=cell.querySelector('button[onclick*="delConsulta"]');
+      const wrap=document.createElement("div"); wrap.className="consult-row-actions";
+      const b=document.createElement("button"); b.type="button"; b.className="consult-edit-btn"; b.title="Editar consulta";
+      b.innerHTML='<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Editar</span>';
+      b.onclick=e=>{e.preventDefault();e.stopPropagation();openEditConsulta(id)};
+      if(del){del.remove();del.classList.add("consult-delete-btn")}
+      cell.innerHTML="";wrap.appendChild(b);if(del)wrap.appendChild(del);cell.appendChild(wrap);
+    });
+  }
+
+  window.openEditConsulta=function(id){
+    const r=editMap.get(String(id)); if(!r){alert("No se encontró la consulta.");return}
+    clearMsg(E("editConsultaMsg"));
+    E("editConsultaId").value=r.id||"";E("editConsultaFecha").value=r.fecha||"";
+    E("editConsultaPeso").value=r.peso??"";E("editConsultaMusc").value=r.musculo??"";
+    E("editConsultaGrasa").value=r.grasa??"";E("editConsultaGrasaPct").value=r.grasa_pct??"";
+    E("editConsultaValor").value=r.valor??"";E("editConsultaNota").value=r.nota||"";
+    E("editConsultaPatient").textContent=currentPat?"Paciente: "+currentPat.nombre:"";
+    renderCustom(r.id);E("editConsultaModal").classList.add("open");
+  };
+
+  window.saveEditConsulta=async function(){
+    const id=E("editConsultaId").value, fecha=E("editConsultaFecha").value, msg=E("editConsultaMsg"), btn=E("saveEditConsultaBtn");
+    if(!id||!currentPat){showMsg(msg,"No se encontró la consulta.","err");return}
+    if(!fecha){showMsg(msg,"La fecha es obligatoria.","err");return}
+    const patch={fecha,peso:num("editConsultaPeso"),musculo:num("editConsultaMusc"),grasa:num("editConsultaGrasa"),grasa_pct:num("editConsultaGrasaPct"),valor:num("editConsultaValor"),nota:E("editConsultaNota").value.trim()||null};
+    btn.disabled=true;btn.textContent="Guardando…";clearMsg(msg);
+    try{
+      const r=await sb.from("consultas").update(patch).eq("id",id).eq("paciente_id",currentPat.id).eq("nutri_id",me.id).select("*").single();
+      if(r.error)throw r.error;
+      const defs=getParams(), values=getVals(), row=Object.assign({},values[String(id)]||{});
+      defs.forEach(p=>{const input=document.querySelector('#editConsultaCustomFields [data-edit-custom="'+CSS.escape(p.id)+'"]');if(!input)return;if(input.value==="")delete row[p.id];else if(Number.isFinite(Number(input.value)))row[p.id]=Number(input.value)});
+      if(Object.keys(row).length)values[String(id)]=row;else delete values[String(id)];
+      if(defs.length)await saveVals(values);
+      showMsg(msg,"Consulta actualizada.","ok");
+      const pid=currentPat.id;
+      setTimeout(async()=>{closeModal("editConsultaModal");await openFicha(pid);if(typeof loadPatients==="function")loadPatients().catch(console.error)},250);
+    }catch(e){showMsg(msg,"No se pudo guardar: "+(e.message||e),"err")}
+    finally{btn.disabled=false;btn.textContent="Guardar cambios"}
+  };
+
+  const prev=window.renderFicha;
+  window.renderFicha=function(p,regs){
+    editMap=new Map((regs||[]).map(r=>[String(r.id),r]));
+    prev(p,regs);
+    requestAnimationFrame(addButtons);
+  };
+})();
+</script>
 </body>
 </html>
